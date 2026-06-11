@@ -1,0 +1,63 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: techshop
+          POSTGRES_PASSWORD: techshop_pass
+          POSTGRES_DB: techshop
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Backend install & build
+        working-directory: backend
+        env:
+          DATABASE_URL: postgresql://techshop:techshop_pass@localhost:5432/techshop
+        run: |
+          npm ci
+          npx prisma db push
+          npm run build
+
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Frontend install & build
+        working-directory: frontend
+        run: |
+          npm ci
+          npm run build
+
+  ai-service:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: AI service install
+        working-directory: ai-service
+        run: |
+          pip install -r requirements.txt
+          python -c "from app.main import app; print('AI service OK')"

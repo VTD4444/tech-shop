@@ -1,0 +1,83 @@
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: techshop-redis
+    ports:
+      - '6379:6379'
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: techshop-db
+    environment:
+      POSTGRES_USER: techshop
+      POSTGRES_PASSWORD: techshop_pass
+      POSTGRES_DB: techshop
+    ports:
+      - '5433:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U techshop']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: techshop-backend
+    ports:
+      - '3000:3000'
+    environment:
+      DATABASE_URL: postgresql://techshop:techshop_pass@postgres:5432/techshop
+      JWT_SECRET: change-me-in-production
+      JWT_REFRESH_SECRET: change-me-refresh
+      VNPAY_TMN_CODE: your_tmn_code
+      VNPAY_HASH_SECRET: your_hash_secret
+      VNPAY_URL: https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
+      VNPAY_RETURN_URL: http://localhost:3000/api/v1/payments/vnpay/return
+      AI_SERVICE_URL: http://ai-service:8000
+      REDIS_URL: redis://redis:6379
+      REDIS_PRODUCTS_CACHE_TTL: 300
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  ai-service:
+    build:
+      context: ./ai-service
+      dockerfile: Dockerfile
+    container_name: techshop-ai
+    ports:
+      - '8000:8000'
+    environment:
+      GEMINI_API_KEY: your_gemini_api_key
+      BACKEND_API_URL: http://backend:3000/api/v1
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: techshop-frontend
+    ports:
+      - '3001:3001'
+    environment:
+      NUXT_PUBLIC_API_BASE_URL: http://localhost:3000/api/v1
+      NUXT_PUBLIC_AI_API_URL: http://localhost:8000/api/v1
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:
