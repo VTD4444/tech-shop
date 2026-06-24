@@ -6,12 +6,12 @@ interface ToastItem {
   message: string;
 }
 
-const toasts = ref<ToastItem[]>([]);
-let nextId = 0;
-
 export function useToast() {
+  const toasts = useState<ToastItem[]>('app-toasts', () => []);
+  const nextId = useState('app-toast-next-id', () => 0);
+
   function push(type: ToastType, message: string, durationMs = 4000) {
-    const id = ++nextId;
+    const id = ++nextId.value;
     toasts.value = [...toasts.value, { id, type, message }];
     if (import.meta.client) {
       setTimeout(() => dismiss(id), durationMs);

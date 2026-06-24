@@ -1,4 +1,6 @@
 /** Periodically check backend health on the client to update degraded banner state. */
+import { useSystemStore } from '~/stores/system';
+
 export default defineNuxtPlugin(() => {
   const systemStore = useSystemStore();
 

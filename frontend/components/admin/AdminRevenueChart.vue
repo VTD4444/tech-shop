@@ -16,6 +16,11 @@ const props = defineProps<{ revenue?: number; orders?: number }>();
 
 const period = ref<'7D' | '30D' | '90D'>('7D');
 
+function seededValue(index: number, base: number) {
+  // Deterministic values avoid SSR/client hydration mismatches.
+  return base * (0.7 + ((index * 17 + 13) % 10) / 10);
+}
+
 const chartData = computed(() => {
   const days = period.value === '7D' ? 7 : period.value === '30D' ? 30 : 90;
   const labels = Array.from({ length: Math.min(days, 7) }, (_, i) => `Day ${i + 1}`);
@@ -25,7 +30,7 @@ const chartData = computed(() => {
     datasets: [
       {
         label: 'Revenue (VND)',
-        data: labels.map((_, i) => base * (0.7 + Math.random() * 0.6)),
+        data: labels.map((_, i) => seededValue(i, base)),
         backgroundColor: 'rgba(0, 229, 195, 0.5)',
         borderColor: '#00E5C3',
         borderWidth: 1,
@@ -74,7 +79,12 @@ const chartOptions = {
       </div>
     </div>
     <div class="h-64">
-      <Bar :data="chartData" :options="chartOptions" />
+      <ClientOnly>
+        <Bar :data="chartData" :options="chartOptions" />
+        <template #fallback>
+          <div class="h-full flex items-center justify-center text-sm text-text-muted">Loading chart...</div>
+        </template>
+      </ClientOnly>
     </div>
   </UiCard>
 </template>

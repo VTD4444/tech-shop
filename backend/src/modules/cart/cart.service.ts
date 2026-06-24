@@ -51,19 +51,29 @@ export class CartService {
     }
 
     if (existing) {
-      return this.prisma.cartItem.update({
+      const updated = await this.prisma.cartItem.update({
         where: { id: existing.id },
         data: { quantity: newQty },
       });
+      return {
+        id: updated.id.toString(),
+        productId: dto.productId,
+        quantity: updated.quantity,
+      };
     }
 
-    return this.prisma.cartItem.create({
+    const created = await this.prisma.cartItem.create({
       data: {
         userId: BigInt(userId),
         productId: BigInt(dto.productId),
         quantity: dto.quantity,
       },
     });
+    return {
+      id: created.id.toString(),
+      productId: dto.productId,
+      quantity: created.quantity,
+    };
   }
 
   async updateItemQuantity(userId: string, productId: string, quantity: number) {

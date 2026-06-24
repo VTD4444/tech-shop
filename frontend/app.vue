@@ -2,5 +2,7 @@
   <NuxtLayout>
     <NuxtPage />
   </NuxtLayout>
-  <UiToast />
+  <ClientOnly>
+    <UiToast />
+  </ClientOnly>
 </template>

@@ -40,6 +40,15 @@ uvicorn app.main:app --reload --port 8000
 | Frontend | http://localhost:3001 |
 | API | http://localhost:3000/api/v1 |
 | AI Advisor | http://localhost:8000/api/v1 |
-| PostgreSQL | localhost:5432 |
+| PostgreSQL | localhost:5433 |
+
+## Documentation
+
+| Doc | Topic |
+|-----|--------|
+| [docs/SETUP.md](docs/SETUP.md) | Local setup |
+| [docs/VNPAY_INTEGRATION.md](docs/VNPAY_INTEGRATION.md) | VNPay payments |
+| [docs/RESEND_INTEGRATION.md](docs/RESEND_INTEGRATION.md) | Email (Resend) |
+| [docs/SETUP_PRODUCTION.md](docs/SETUP_PRODUCTION.md) | Production checklist |
 
 See [docs/SETUP.md](docs/SETUP.md) for full configuration.

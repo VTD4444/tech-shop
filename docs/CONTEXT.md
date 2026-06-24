@@ -10,9 +10,10 @@
 | Main API | NestJS + TypeScript | ^11.0 |
 | ORM | Prisma (v7, adapter-pg) | ^7.0 |
 | Database | PostgreSQL 16 + pgvector | 16-alpine |
-| AI Service | Python FastAPI + Gemini 2.0 Flash | FastAPI ^0.115 |
+| AI Service | Python FastAPI + Gemini | FastAPI ^0.115 |
 | Auth | JWT (httpOnly cookie + Bearer) | — |
-| Payment | VNPAY Sandbox (HMAC-SHA512) | — |
+| Payment | VNPay Sandbox (HMAC-SHA512) | — |
+| Email | Resend | — |
 
 ## Cấu trúc thư mục
 
@@ -41,7 +42,8 @@ tech-shop/
 | Cart | `backend/src/modules/cart/` | Cart with stock validation |
 | Wishlist | `backend/src/modules/wishlist/` | Wishlist CRUD |
 | Orders | `backend/src/modules/orders/` | Checkout (atomic), history, cancel |
-| Payments | `backend/src/modules/payments/` | VNPAY url gen, IPN, return |
+| Payments | `backend/src/modules/payments/` | VNPay url gen, IPN, return |
+| Mail | `backend/src/modules/mail/` | Resend — order + reset password emails |
 | PC Builder | `backend/src/modules/pc-builder/` | 6 compatibility rules engine |
 | Admin | `backend/src/modules/admin/` | Order mgmt, inventory, analytics |
 
@@ -59,6 +61,8 @@ tech-shop/
 | `/pc-builder` | `pages/pc-builder/index.vue` | No | Yes |
 | `/advisor` | `pages/advisor/index.vue` | No | ClientOnly |
 | `/vnpay/return` | `pages/vnpay/return.vue` | No | Yes |
+| `/forgot-password` | `pages/forgot-password.vue` | No | ClientOnly |
+| `/reset-password` | `pages/reset-password.vue` | No | ClientOnly |
 | `/profile` | `pages/profile.vue` | Yes | Yes |
 | `/login` | `pages/login.vue` | No | Blank layout |
 | `/register` | `pages/register.vue` | No | Blank layout |
@@ -70,6 +74,7 @@ tech-shop/
 | POST | `/api/v1/advisor/recommend` | Recommend PC build by budget + purpose |
 | POST | `/api/v1/advisor/chat` | Conversational Q&A |
 | GET | `/api/v1/advisor/health` | Health check |
+| GET | `/api/v1/advisor/health/gemini` | Gemini API key / quota check |
 
 ## Key Design Decisions
 

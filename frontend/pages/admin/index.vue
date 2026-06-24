@@ -21,14 +21,18 @@ const statCards = computed(() => [
 
 async function loadDashboard() {
   if (!auth.isAdmin) return;
-  const [summaryRes, ordersRes, inventoryRes]: any[] = await Promise.all([
-    $api('/admin/analytics/summary'),
-    $api('/admin/orders?limit=10'),
-    $api('/admin/products/inventory'),
-  ]);
-  summary.value = summaryRes.data ?? summaryRes;
-  orders.value = ordersRes.data ?? [];
-  inventory.value = inventoryRes.data ?? inventoryRes;
+  try {
+    const [summaryRes, ordersRes, inventoryRes]: any[] = await Promise.all([
+      $api('/admin/analytics/summary'),
+      $api('/admin/orders?limit=10'),
+      $api('/admin/products/inventory'),
+    ]);
+    summary.value = summaryRes.data ?? summaryRes;
+    orders.value = ordersRes.data ?? [];
+    inventory.value = inventoryRes.data ?? inventoryRes;
+  } catch (e: any) {
+    toast.error(e.data?.message || 'Failed to load dashboard');
+  }
 }
 
 async function updateStatus(orderId: string, status: string) {

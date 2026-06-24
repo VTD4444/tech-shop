@@ -1,0 +1,23 @@
+MÔ TẢ DỰ ÁN
+  - Frontend:  Nuxt 3 + Pinia + Tailwind CSS
+  - Backend:   NestJS + Prisma + PostgreSQL
+  - AI Service: FastAPI + Gemini RAG
+  - Hạ tầng:   PostgreSQL, Redis, Docker Compose
+
+
+TÍNH NĂNG CHÍNH
+Khách hàng
+  - Duyệt danh mục sản phẩm: tìm kiếm, lọc theo category/brand, phân trang (Sử dụng Redis cache kết quả tìm kiếm/lọc sản phẩm để đảm bảo tìm kiếm < 1s)
+  - Chi tiết sản phẩm, giỏ hàng, wishlist
+  - Đăng ký / đăng nhập JWT (access token + refresh cookie)
+  - Quên mật khẩu, đặt lại mật khẩu qua email
+  - Checkout, thanh toán VNPay, theo dõi đơn hàng
+Tính năng đặc biệt:
+  - PC Builder: cho phép người dùng chọn linh kiện và build PC theo ý thích, hệ thống tự động kiểm tra tương thích và tính tổng giá của các linh kiện
+  - AI Advisor: tư vấn build PC, cấu hình máy dựa trên nhu cầu + ngân sách của người dùng bằng Gemini + RAG
+
+Quản trị (Admin)
+  - Dashboard: doanh thu, đơn hàng gần đây, cảnh báo tồn kho
+  - CRUD sản phẩm, thương hiệu, danh mục
+  - Quản lý đơn hàng, cập nhật trạng thái
+  - Phân quyền theo role (admin / customer)

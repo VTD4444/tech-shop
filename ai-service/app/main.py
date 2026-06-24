@@ -22,5 +22,21 @@ app.include_router(advisor.router, prefix="/api/v1")
 
 @app.on_event("startup")
 async def startup():
-    from app.core.config import settings
-    print(f"AI Service started. Gemini model: {settings.gemini_model}")
+    from app.core.config import gemini_key_override_warning, load_settings
+    from app.services.llm_client import current_api_key, current_api_key_source
+
+    settings = load_settings()
+    api_key = current_api_key()
+    source = current_api_key_source()
+    override_warning = gemini_key_override_warning()
+    if override_warning:
+        print(f"WARNING: {override_warning}")
+
+    if not api_key:
+        print("WARNING: GEMINI_API_KEY is empty")
+    elif api_key.startswith("AQ."):
+        print(f"AI Service started. Gemini model: {settings.gemini_model} (auth key from {source})")
+    elif api_key.startswith("AIza"):
+        print(f"AI Service started. Gemini model: {settings.gemini_model} (standard key from {source})")
+    else:
+        print(f"AI Service started. Gemini model: {settings.gemini_model} (key from {source})")

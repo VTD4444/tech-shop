@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { useToast } from '~/composables/useToast';
 import { useCloudinaryUpload } from '~/composables/useCloudinaryUpload';
+import {
+  pcComponentFromInitial,
+  buildPcComponentPayload,
+} from '~/utils/pcComponentSpecs';
 
 const props = defineProps<{ initial?: Record<string, any> }>();
 const emit = defineEmits<{ submit: [payload: Record<string, unknown>] }>();
@@ -17,6 +21,8 @@ const form = reactive({
   isPcComponent: props.initial?.isPcComponent || false,
   status: props.initial?.status || 'active',
 });
+
+const pcComponent = ref<Record<string, string | number>>(pcComponentFromInitial(props.initial?.pcComponent));
 
 const imagePreview = ref(props.initial?.imageUrl || '');
 const images = ref<{ url: string; isMain: boolean; sortOrder: number }[]>(
@@ -37,12 +43,22 @@ async function onFile(e: Event) {
 }
 
 function onSubmit() {
-  emit('submit', { ...form, images: images.value.length ? images.value : undefined });
+  if (form.isPcComponent && !pcComponent.value.componentType) {
+    toast.error('Select a PC component type and fill required specs');
+    return;
+  }
+
+  emit('submit', {
+    ...form,
+    images: images.value.length ? images.value : undefined,
+    pcComponent: form.isPcComponent ? buildPcComponentPayload(pcComponent.value) : undefined,
+    isPcComponent: form.isPcComponent,
+  });
 }
 </script>
 
 <template>
-  <UiCard padding="md" class="max-w-xl">
+  <UiCard padding="md" class="max-w-2xl">
     <form class="space-y-4" @submit.prevent="onSubmit">
       <div>
         <UiText variant="muted" size="xs" uppercase class="mb-1 block">Name</UiText>
@@ -72,7 +88,11 @@ function onSubmit() {
         <img v-if="imagePreview" :src="imagePreview" class="mt-2 h-24 object-cover rounded-lg border border-subtle" />
         <p v-if="uploadError" class="text-danger text-sm mt-1">{{ uploadError }}</p>
       </div>
-      <UiCheckbox v-model="form.isPcComponent" label="PC component" />
+
+      <UiCheckbox v-model="form.isPcComponent" label="PC component (PC Builder)" />
+
+      <AdminPcComponentFields v-model="pcComponent" :enabled="form.isPcComponent" />
+
       <UiButton type="submit" variant="primary" :loading="uploading">Save</UiButton>
     </form>
   </UiCard>

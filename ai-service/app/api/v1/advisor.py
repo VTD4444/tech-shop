@@ -3,7 +3,7 @@ from app.core.limiter import limiter
 from app.schemas.request import RecommendRequest, ChatRequest
 from app.schemas.response import ChatResponse
 from app.services.rag_engine import recommend_components
-from app.services.llm_client import generate
+from app.services.llm_client import generate, LlmError
 
 router = APIRouter()
 
@@ -19,6 +19,8 @@ async def recommend(request: Request, body: RecommendRequest):
         return {"success": True, "data": result}
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+    except LlmError as e:
+        raise HTTPException(status_code=e.status_code, detail=e.message)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"AI service error: {str(e)}")
 
@@ -40,5 +42,7 @@ compatibility, and build recommendations. Keep answers concise (under 200 words)
             "success": True,
             "data": ChatResponse(reply=reply, suggested_products=[]),
         }
+    except LlmError as e:
+        raise HTTPException(status_code=e.status_code, detail=e.message)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"AI service error: {str(e)}")

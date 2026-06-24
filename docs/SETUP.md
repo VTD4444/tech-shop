@@ -4,42 +4,57 @@
 
 - Node.js 22+
 - Python 3.12+
-- Docker Desktop (for PostgreSQL)
-- npm or yarn
+- Docker Desktop (PostgreSQL; optional Redis)
+- npm
 
-## 1. Clone & Install
+## 1. Clone & install
 
 ```bash
-# Backend
-cd backend
-npm install
-
-# Frontend
-cd ../frontend
-npm install
-
-# AI Service
-cd ../ai-service
-pip install -r requirements.txt
+cd backend && npm install
+cd ../frontend && npm install
+cd ../ai-service && python -m venv .venv && .venv\Scripts\pip install -r requirements.txt
 ```
 
-## 2. Environment Variables
+On macOS/Linux, use `source .venv/bin/activate` and `pip install -r requirements.txt`.
 
-### `backend/.env`
+## 2. Environment variables
+
+Copy examples and fill in secrets:
+
+```bash
+cp backend/.env.example backend/.env
+cp frontend/.env.example frontend/.env
+cp ai-service/.env.example ai-service/.env
+```
+
+### `backend/.env` (main)
 
 ```env
-DATABASE_URL=postgresql://techshop:techshop_pass@localhost:5432/techshop
+DATABASE_URL=postgresql://techshop:techshop_pass@localhost:5433/techshop
 JWT_SECRET=change-me-in-production-jwt-secret
 JWT_REFRESH_SECRET=change-me-in-production-refresh-secret
-JWT_EXPIRES_IN=15m
-JWT_REFRESH_EXPIRES_IN=7d
+FRONTEND_URL=http://localhost:3001
+PORT=3000
+
+# VNPay — see docs/VNPAY_INTEGRATION.md
+VNPAY_ENV=sandbox
 VNPAY_TMN_CODE=your_tmn_code
 VNPAY_HASH_SECRET=your_hash_secret
-VNPAY_URL=https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
-VNPAY_RETURN_URL=http://localhost:3000/api/v1/payments/vnpay/return
+VNPAY_RETURN_URL=http://localhost:3001/vnpay/return
+
+# Resend — see docs/RESEND_INTEGRATION.md
+RESEND_API_KEY=re_your_api_key
+MAIL_FROM=TechShop <onboarding@resend.dev>
+
+# Cloudinary (admin image upload)
+CLOUDINARY_CLOUD_NAME=
+CLOUDINARY_API_KEY=
+CLOUDINARY_API_SECRET=
+
 AI_SERVICE_URL=http://localhost:8000/api/v1
-PORT=3000
 ```
+
+PostgreSQL in Docker maps host port **5433** → container `5432` (see `docker-compose.yml`).
 
 ### `frontend/.env`
 
@@ -52,103 +67,126 @@ NUXT_PUBLIC_AI_API_URL=http://localhost:8000/api/v1
 
 ```env
 GEMINI_API_KEY=your_gemini_api_key
-DATABASE_URL=postgresql://techshop:techshop_pass@localhost:5432/techshop
+GEMINI_MODEL=gemini-3.5-flash
 BACKEND_API_URL=http://localhost:3000/api/v1
 ```
 
-## 3. Start Database
+The AI service reads **`ai-service/.env` first**. If Windows has an old `GEMINI_API_KEY` system variable, remove it or it may override the file. New Google keys may start with `AQ.` instead of `AIza`.
+
+See also: [AI Advisor health check](http://localhost:8000/api/v1/advisor/health/gemini) after starting the AI service.
+
+## 3. Start database
 
 ```bash
 docker compose up -d postgres
 ```
 
-## 4. Database Migration & Seed
+Optional Redis (product cache; app falls back to DB if unavailable):
+
+```bash
+docker compose up -d redis
+```
+
+## 4. Database migration & seed
 
 ```bash
 cd backend
-
-# Generate Prisma Client
 npx prisma generate
-
-# Run migration
-npx prisma migrate dev --name init
-
-# Seed sample data
+npx prisma migrate dev
 npx prisma db seed
 ```
 
-**Seed data includes:**
-- Admin: `admin@techshop.com` / `admin123`
-- Customer: `customer@test.com` / `customer123`
-- 9 categories (CPU, Mainboard, VGA, RAM, Storage, PSU, Case, Cooler, Laptop)
-- 5 brands (Intel, AMD, NVIDIA, Corsair, Samsung)
-- 8 products with pc_components and product_specs
+**Seed accounts:**
 
-## 5. Run Development Servers
+| Role | Email | Password |
+|------|-------|----------|
+| Admin | `admin@techshop.com` | `admin123` |
+| Customer | `customer@test.com` | `customer123` |
+
+## 5. Run development servers
 
 ```bash
-# Terminal 1: Backend (http://localhost:3000)
+# Terminal 1 — Backend (http://localhost:3000)
 cd backend && npm run start:dev
 
-# Terminal 2: Frontend (http://localhost:3001)
+# Terminal 2 — Frontend (http://localhost:3001)
 cd frontend && npm run dev
 
-# Terminal 3: AI Service (http://localhost:8000)
+# Terminal 3 — AI Service (http://localhost:8000)
 cd ai-service && uvicorn app.main:app --reload --port 8000
 ```
 
-## 6. Docker Full Stack
+## 6. Docker full stack
 
 ```bash
 docker compose up --build
 ```
 
-This starts:
-- `postgres` on `:5432`
-- `backend` on `:3000`
-- `frontend` on `:3001`
-- `ai-service` on `:8000`
+| Service | Port |
+|---------|------|
+| postgres | 5433 (host) |
+| backend | 3000 |
+| frontend | 3001 |
+| ai-service | 8000 |
 
-## 7. VNPAY Sandbox Setup
+## 7. VNPay sandbox
 
-1. Register at https://sandbox.vnpayment.vn/merchantv2/
-2. Get `TMN_CODE` and `HASH_SECRET`
-3. Set in `backend/.env`:
-   ```env
-   VNPAY_TMN_CODE=your_code
-   VNPAY_HASH_SECRET=your_secret
-   VNPAY_RETURN_URL=http://localhost:3000/api/v1/payments/vnpay/return
-   ```
-4. Test cards: https://sandbox.vnpayment.vn/apis/
+Full guide: **[VNPAY_INTEGRATION.md](./VNPAY_INTEGRATION.md)**
 
-## 8. Gemini API Setup
+Quick checklist:
 
-1. Get API key from https://aistudio.google.com/apikey
-2. Set in `ai-service/.env`:
-   ```env
-   GEMINI_API_KEY=your_key
-   ```
+1. Register at [sandbox.vnpayment.vn/merchantv2](https://sandbox.vnpayment.vn/merchantv2/) — registration URL cannot be `localhost`; use a Vercel/ngrok URL.
+2. Copy TMN Code + Hash Secret → `backend/.env`
+3. Set `VNPAY_RETURN_URL=http://localhost:3001/vnpay/return`
+4. For orders to become **paid** locally, expose backend with **ngrok** and register IPN:
+   `https://<ngrok-host>/api/v1/payments/vnpay/ipn`
+5. Test: login as customer → checkout → **Pay with VNPAY** on order detail.
 
-## npm Scripts
+## 8. Resend email
+
+Full guide: **[RESEND_INTEGRATION.md](./RESEND_INTEGRATION.md)**
+
+1. Create API key at [resend.com](https://resend.com)
+2. Set `RESEND_API_KEY` and `MAIL_FROM=TechShop <onboarding@resend.dev>` in `backend/.env`
+3. Restart backend
+4. Test: `/forgot-password` (dev: use your Resend account email)
+
+## 9. Gemini AI Advisor
+
+1. Create key at [Google AI Studio](https://aistudio.google.com/apikey)
+2. Set `GEMINI_API_KEY` in `ai-service/.env`
+3. Restart uvicorn (not just `--reload` for `.env` changes)
+4. Open `http://localhost:3001/advisor`
+5. Health: `GET http://localhost:8000/api/v1/advisor/health/gemini`
+
+Free tier has RPM/RPD limits; the service falls back to rule-based recommendations when quota is exceeded.
+
+## npm scripts
 
 ### Backend
 
 | Script | Description |
-|---|---|
+|--------|-------------|
 | `npm run start:dev` | Watch mode |
 | `npm run build` | Compile TypeScript |
 | `npm run start:prod` | Run compiled JS |
-| `npm run test` | Unit tests (Jest) |
-| `npm run lint` | ESLint |
-| `npx prisma generate` | Regenerate Prisma client |
-| `npx prisma migrate dev` | Run pending migrations |
+| `npm run test` | Unit tests |
+| `npx prisma migrate dev` | Run migrations |
 | `npx prisma db seed` | Seed database |
 
 ### Frontend
 
 | Script | Description |
-|---|---|
+|--------|-------------|
 | `npm run dev` | Dev server on :3001 |
 | `npm run build` | Production build |
-| `npm run generate` | Static generation |
-| `npm run preview` | Preview production build |
+
+## Related docs
+
+| Doc | Topic |
+|-----|--------|
+| [VNPAY_INTEGRATION.md](./VNPAY_INTEGRATION.md) | Payments, IPN, ngrok, sandbox vs production |
+| [RESEND_INTEGRATION.md](./RESEND_INTEGRATION.md) | Transactional email |
+| [SETUP_PRODUCTION.md](./SETUP_PRODUCTION.md) | Production checklist |
+| [API.md](./API.md) | REST API reference |
+| [ARCHITECTURE.md](./ARCHITECTURE.md) | System design |

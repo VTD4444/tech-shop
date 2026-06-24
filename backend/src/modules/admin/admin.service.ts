@@ -30,6 +30,14 @@ export class AdminService {
         userId: o.userId?.toString(),
         totalAmount: Number(o.totalAmount),
         shippingFee: Number(o.shippingFee),
+        items: o.items.map((item) => ({
+          ...item,
+          id: item.id.toString(),
+          orderId: item.orderId.toString(),
+          productId: item.productId?.toString() ?? null,
+          price: Number(item.price),
+          subtotal: Number(item.subtotal),
+        })),
       })),
       meta: { page: pageNum, limit: limitNum, total, totalPages: Math.ceil(total / limitNum) },
     };

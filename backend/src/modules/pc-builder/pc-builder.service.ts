@@ -1,5 +1,10 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { serializePcComponent, serializeSavedBuild } from '../../common/utils/serialize';
 
 interface BuildComponent {
   id: string;
@@ -39,6 +44,15 @@ export interface CompatibilityResult {
   psuWattage: number | null;
 }
 
+const productSelect = {
+  id: true,
+  name: true,
+  slug: true,
+  price: true,
+  imageUrl: true,
+  description: true,
+} as const;
+
 @Injectable()
 export class PcBuilderService {
   constructor(private prisma: PrismaService) {}
@@ -49,23 +63,22 @@ export class PcBuilderService {
 
     const components = await this.prisma.pcComponent.findMany({
       where: { ...where, product: { status: 'active' } },
-      include: {
-        product: {
-          select: {
-            id: true, name: true, slug: true, price: true,
-            imageUrl: true, description: true,
-          },
-        },
-      },
+      include: { product: { select: productSelect } },
       orderBy: { product: { name: 'asc' } },
     });
 
-    return components.map((c) => ({
-      ...c,
-      id: c.id.toString(),
-      productId: c.productId.toString(),
-      product: { ...c.product, id: c.product.id.toString(), price: Number(c.product.price) },
-    }));
+    return components.map(serializePcComponent);
+  }
+
+  async getComponentByProductSlug(slug: string) {
+    const component = await this.prisma.pcComponent.findFirst({
+      where: { product: { slug, status: 'active', isPcComponent: true } },
+      include: { product: { select: productSelect } },
+    });
+    if (!component) {
+      throw new NotFoundException('Product is not an available PC component');
+    }
+    return serializePcComponent(component);
   }
 
   async validateBuild(componentIds: string[]): Promise<CompatibilityResult> {
@@ -82,12 +95,7 @@ export class PcBuilderService {
       throw new NotFoundException('One or more components not found');
     }
 
-    const mapped: BuildComponent[] = components.map((c) => ({
-      ...c,
-      id: c.id.toString(),
-      productId: c.productId.toString(),
-      product: { ...c.product, id: c.product.id.toString(), price: Number(c.product.price) },
-    }));
+    const mapped: BuildComponent[] = components.map((c) => serializePcComponent(c));
 
     const issues: CompatibilityIssue[] = [];
     let totalWattage = 0;
@@ -109,7 +117,6 @@ export class PcBuilderService {
       if (comp.componentType === 'PSU') psuWattage = comp.powerSupplyWatt ?? null;
     }
 
-    // CPU ↔ Mainboard: socket
     if (cpu && mb && cpu.socket && mb.socket && cpu.socket !== mb.socket) {
       issues.push({
         type: 'error',
@@ -119,7 +126,6 @@ export class PcBuilderService {
       });
     }
 
-    // RAM gen ↔ Mainboard
     if (ram && mb && ram.ramGeneration && mb.ramGeneration && ram.ramGeneration !== mb.ramGeneration) {
       issues.push({
         type: 'error',
@@ -129,7 +135,6 @@ export class PcBuilderService {
       });
     }
 
-    // RAM capacity check
     if (ram && mb && mb.maxRamCapacity && ram.ramCapacity && ram.ramCapacity > mb.maxRamCapacity) {
       issues.push({
         type: 'error',
@@ -137,7 +142,6 @@ export class PcBuilderService {
       });
     }
 
-    // GPU length ↔ Case
     if (gpu && pcCase && gpu.gpuLengthMm && pcCase.maxGpuLengthMm && gpu.gpuLengthMm > pcCase.maxGpuLengthMm) {
       issues.push({
         type: 'error',
@@ -147,7 +151,6 @@ export class PcBuilderService {
       });
     }
 
-    // Cooler height ↔ Case
     if (cooler && pcCase && cooler.cpuCoolerHeightMm && pcCase.maxCpuCoolerHeightMm && cooler.cpuCoolerHeightMm > pcCase.maxCpuCoolerHeightMm) {
       issues.push({
         type: 'error',
@@ -157,7 +160,6 @@ export class PcBuilderService {
       });
     }
 
-    // Form factor ↔ Case
     if (mb && pcCase && mb.formFactor && pcCase.formFactor) {
       const caseFormFactors = pcCase.formFactor.split('/').map((s) => s.trim());
       if (!caseFormFactors.includes(mb.formFactor)) {
@@ -170,28 +172,33 @@ export class PcBuilderService {
       }
     }
 
-    // Power
-    if (psu && totalWattage > psuWattage!) {
+    if (psu && psuWattage != null && totalWattage > psuWattage) {
       issues.push({
         type: 'error',
         message: `Tổng công suất ${totalWattage}W vượt quá PSU ${psuWattage}W`,
       });
-    } else if (psu && totalWattage > psuWattage! * 0.9) {
+    } else if (psu && psuWattage != null && totalWattage > psuWattage * 0.9) {
       issues.push({
         type: 'warning',
         message: `Công suất tiêu thụ (${totalWattage}W) gần sát giới hạn PSU (${psuWattage}W)`,
       });
     }
 
-    // Missing critical components
-    const requiredTypes = ['CPU', 'MAINBOARD'];
-    for (const required of requiredTypes) {
+    const recommendedTypes = ['CPU', 'MAINBOARD', 'RAM', 'STORAGE', 'PSU', 'CASE'];
+    for (const required of recommendedTypes) {
       if (!mapped.find((c) => c.componentType === required)) {
         issues.push({
           type: 'warning',
-          message: `Thiếu linh kiện bắt buộc: ${required}`,
+          message: `Thiếu linh kiện khuyến nghị: ${required}`,
         });
       }
+    }
+
+    if (!cpu || !mb) {
+      issues.push({
+        type: 'error',
+        message: 'Build cần có CPU và Mainboard',
+      });
     }
 
     return {
@@ -205,8 +212,11 @@ export class PcBuilderService {
 
   async saveBuild(userId: string, dto: { name: string; componentIds: string[] }) {
     const result = await this.validateBuild(dto.componentIds);
+    if (!result.compatible) {
+      throw new ForbiddenException('Build is not compatible');
+    }
 
-    return this.prisma.savedBuild.create({
+    const build = await this.prisma.savedBuild.create({
       data: {
         userId: BigInt(userId),
         name: dto.name,
@@ -217,16 +227,27 @@ export class PcBuilderService {
               const comp = await this.prisma.pcComponent.findUnique({
                 where: { id: BigInt(cid) },
               });
+              if (!comp) throw new NotFoundException('Component not found');
               return {
-                productId: comp!.productId,
-                componentType: comp!.componentType,
+                productId: comp.productId,
+                componentType: comp.componentType,
               };
             }),
           ),
         },
       },
-      include: { items: { include: { product: true } } },
+      include: {
+        items: {
+          include: {
+            product: {
+              select: { id: true, name: true, slug: true, price: true, imageUrl: true },
+            },
+          },
+        },
+      },
     });
+
+    return serializeSavedBuild(build);
   }
 
   async getBuilds(userId: string) {
@@ -244,20 +265,10 @@ export class PcBuilderService {
       },
     });
 
-    return builds.map((b) => ({
-      ...b,
-      id: b.id.toString(),
-      userId: b.userId.toString(),
-      totalPrice: Number(b.totalPrice),
-      items: b.items.map((i) => ({
-        ...i,
-        id: i.id.toString(),
-        product: { ...i.product, id: i.product.id.toString(), price: Number(i.product.price) },
-      })),
-    }));
+    return builds.map(serializeSavedBuild);
   }
 
-  async getBuildDetail(buildId: string) {
+  async getBuildDetail(buildId: string, userId: string) {
     const build = await this.prisma.savedBuild.findUnique({
       where: { id: BigInt(buildId) },
       include: {
@@ -271,21 +282,22 @@ export class PcBuilderService {
       },
     });
     if (!build) throw new NotFoundException('Build not found');
+    if (build.userId.toString() !== userId) {
+      throw new ForbiddenException('Not your build');
+    }
 
-    return {
-      ...build,
-      id: build.id.toString(),
-      userId: build.userId.toString(),
-      totalPrice: Number(build.totalPrice),
-      items: build.items.map((i) => ({
-        ...i,
-        id: i.id.toString(),
-        product: { ...i.product, id: i.product.id.toString(), price: Number(i.product.price) },
-      })),
-    };
+    return serializeSavedBuild(build);
   }
 
-  async deleteBuild(buildId: string) {
-    return this.prisma.savedBuild.delete({ where: { id: BigInt(buildId) } });
+  async deleteBuild(buildId: string, userId: string) {
+    const build = await this.prisma.savedBuild.findUnique({
+      where: { id: BigInt(buildId) },
+    });
+    if (!build) throw new NotFoundException('Build not found');
+    if (build.userId.toString() !== userId) {
+      throw new ForbiddenException('Not your build');
+    }
+    await this.prisma.savedBuild.delete({ where: { id: BigInt(buildId) } });
+    return { deleted: true };
   }
 }

@@ -1,5 +1,6 @@
 import { ref, computed } from 'vue';
 import { defineStore } from 'pinia';
+import { isPublicAuthPath } from '~/utils/auth-paths';
 
 interface User {
   id: string;
@@ -13,6 +14,15 @@ export const useAuthStore = defineStore('auth', () => {
   const bootstrapped = ref(false);
   const isAuthenticated = computed(() => !!user.value);
   const isAdmin = computed(() => user.value?.role === 'admin');
+
+  function markBootstrapped() {
+    bootstrapped.value = true;
+  }
+
+  function clearSession() {
+    user.value = null;
+    bootstrapped.value = true;
+  }
 
   async function bootstrap() {
     if (bootstrapped.value) return;
@@ -73,10 +83,12 @@ export const useAuthStore = defineStore('auth', () => {
     } catch {
       /* ignore */
     }
-    user.value = null;
-    bootstrapped.value = true;
+    clearSession();
     if (import.meta.client) {
-      navigateTo('/login');
+      const route = useRoute();
+      if (!isPublicAuthPath(route.path)) {
+        await navigateTo('/login');
+      }
     }
   }
 
@@ -85,6 +97,8 @@ export const useAuthStore = defineStore('auth', () => {
     bootstrapped,
     isAuthenticated,
     isAdmin,
+    markBootstrapped,
+    clearSession,
     bootstrap,
     login,
     register,

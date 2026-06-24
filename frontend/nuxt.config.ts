@@ -49,4 +49,11 @@ export default defineNuxtConfig({
     },
   },
   compatibilityDate: '2026-05-27',
+  routeRules: {
+    '/login': { ssr: false },
+    '/register': { ssr: false },
+    '/forgot-password': { ssr: false },
+    '/reset-password': { ssr: false },
+    '/admin/**': { ssr: false },
+  },
 });

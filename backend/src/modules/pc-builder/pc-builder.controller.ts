@@ -8,6 +8,12 @@ export class PcBuilderController {
   constructor(private pcBuilderService: PcBuilderService) {}
 
   @Public()
+  @Get('components/by-product/:slug')
+  getComponentByProductSlug(@Param('slug') slug: string) {
+    return this.pcBuilderService.getComponentByProductSlug(slug);
+  }
+
+  @Public()
   @Get('components')
   getComponents(@Query('type') type?: string) {
     return this.pcBuilderService.getComponents(type);
@@ -33,12 +39,18 @@ export class PcBuilderController {
   }
 
   @Get('builds/:id')
-  getBuildDetail(@Param('id') buildId: string) {
-    return this.pcBuilderService.getBuildDetail(buildId);
+  getBuildDetail(
+    @Param('id') buildId: string,
+    @CurrentUser('id') userId: string,
+  ) {
+    return this.pcBuilderService.getBuildDetail(buildId, userId);
   }
 
   @Delete('builds/:id')
-  deleteBuild(@Param('id') buildId: string) {
-    return this.pcBuilderService.deleteBuild(buildId);
+  deleteBuild(
+    @Param('id') buildId: string,
+    @CurrentUser('id') userId: string,
+  ) {
+    return this.pcBuilderService.deleteBuild(buildId, userId);
   }
 }

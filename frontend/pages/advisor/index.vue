@@ -14,6 +14,9 @@ const purpose = ref('gaming');
 const preferences = ref('');
 const loading = ref(false);
 const recommendation = ref<any[]>([]);
+const recommendationNote = ref('');
+const aiSummary = ref('');
+const recommendationSource = ref<'gemini' | 'rule_based' | ''>('');
 const error = ref('');
 
 const totalRecommended = computed(() =>
@@ -23,6 +26,9 @@ const totalRecommended = computed(() =>
 async function getRecommendation() {
   loading.value = true;
   error.value = '';
+  recommendationNote.value = '';
+  aiSummary.value = '';
+  recommendationSource.value = '';
   recommendation.value = [];
   try {
     const res: any = await $aiApi('/advisor/recommend', {
@@ -34,8 +40,16 @@ async function getRecommendation() {
       },
     });
     recommendation.value = res.data?.recommended_components || [];
+    aiSummary.value = res.data?.ai_summary || res.data?.explanation || '';
+    recommendationNote.value = res.data?.explanation || '';
+    recommendationSource.value = res.data?.source || (res.data?.fallback_used ? 'rule_based' : 'gemini');
+    if (res.data?.fallback_used) {
+      toast.info('Using rule-based recommendations because Gemini is unavailable.');
+    } else if (recommendationSource.value === 'gemini') {
+      toast.success('Recommendations powered by Gemini.');
+    }
   } catch (e: any) {
-    error.value = e.data?.message || 'AI service unavailable. Check if AI service is running.';
+    error.value = e.data?.detail || e.data?.message || 'AI service unavailable. Check if AI service is running.';
     toast.error(error.value);
   } finally {
     loading.value = false;
@@ -94,8 +108,20 @@ async function addToCart(item: any) {
         </div>
       </UiCard>
 
-      <UiCard v-if="recommendation.length" padding="md">
-        <UiText as="h2" size="xl" class="mb-4">Recommended Build</UiText>
+      <UiCard v-if="recommendation.length || aiSummary" padding="md">
+        <div class="flex items-center justify-between gap-3 mb-4">
+          <UiText as="h2" size="xl">Recommended Build</UiText>
+          <UiText
+            v-if="recommendationSource"
+            size="xs"
+            class="uppercase tracking-wide"
+            :class="recommendationSource === 'gemini' ? 'text-accent' : 'text-text-muted'"
+          >
+            {{ recommendationSource === 'gemini' ? 'Powered by Gemini' : 'Rule-based fallback' }}
+          </UiText>
+        </div>
+        <p v-if="aiSummary" class="text-sm text-text-primary mb-4 whitespace-pre-wrap">{{ aiSummary }}</p>
+        <p v-else-if="recommendationNote" class="text-sm text-text-muted mb-4">{{ recommendationNote }}</p>
         <div v-for="item in recommendation" :key="item.component_type || item.name" class="flex items-center gap-4 py-3 border-b border-subtle last:border-0">
           <div class="flex-1 min-w-0">
             <p class="font-medium text-text-primary">{{ item.product_name || item.name }}</p>

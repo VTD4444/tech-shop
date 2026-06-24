@@ -2,8 +2,9 @@ import { Injectable, NotFoundException, BadRequestException } from '@nestjs/comm
 import { Prisma } from '../../generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { RedisService } from '../redis/redis.service';
-import { serializeProduct, toId, toNumber } from '../../common/utils/serialize';
+import { serializeProduct, serializePcComponent, toId, toNumber } from '../../common/utils/serialize';
 import { UploadService } from '../upload/upload.service';
+import { normalizePcComponentInput, PcComponentInput } from './pc-component.util';
 
 export type ProductListQuery = {
     page?: number;
@@ -151,13 +152,7 @@ export class ProductsService {
             screenSize: product.spec.screenSize != null ? toNumber(product.spec.screenSize) : null,
           }
         : null,
-      pcComponent: product.pcComponent
-        ? {
-            ...product.pcComponent,
-            id: toId(product.pcComponent.id),
-            productId: toId(product.pcComponent.productId),
-          }
-        : null,
+      pcComponent: product.pcComponent ? serializePcComponent(product.pcComponent) : null,
     };
   }
 
@@ -234,6 +229,31 @@ export class ProductsService {
     return main;
   }
 
+  private async syncPcComponent(
+    productId: bigint,
+    isPcComponent: boolean,
+    pcComponent?: PcComponentInput,
+  ) {
+    if (!isPcComponent) {
+      await this.prisma.pcComponent.deleteMany({ where: { productId } });
+      return;
+    }
+    if (!pcComponent) {
+      throw new BadRequestException('PC component specs are required when isPcComponent is true');
+    }
+    const data = normalizePcComponentInput(pcComponent);
+    await this.prisma.pcComponent.upsert({
+      where: { productId },
+      create: { productId, ...data },
+      update: data,
+    });
+  }
+
+  private productIncludeForAdmin = {
+    images: { orderBy: { sortOrder: 'asc' as const } },
+    pcComponent: true,
+  };
+
   async create(dto: any) {
     this.validateImages(dto.images);
     const mainFromDto =
@@ -259,33 +279,51 @@ export class ProductsService {
       },
     });
     await this.syncProductImages(product.id, dto.images);
+    if (dto.isPcComponent) {
+      await this.syncPcComponent(product.id, true, dto.pcComponent);
+    }
     await this.invalidateProductListCache();
-    return serializeProduct(
-      await this.prisma.product.findUniqueOrThrow({
-        where: { id: product.id },
-        include: {
-          images: { orderBy: { sortOrder: 'asc' } },
-        },
-      }),
-    );
+    const saved = await this.prisma.product.findUniqueOrThrow({
+      where: { id: product.id },
+      include: this.productIncludeForAdmin,
+    });
+    return {
+      ...serializeProduct(saved),
+      pcComponent: saved.pcComponent ? serializePcComponent(saved.pcComponent) : null,
+    };
   }
 
   async update(id: string, dto: any) {
     const data: any = { ...dto };
     delete data.images;
+    delete data.pcComponent;
     if (data.categoryId) data.categoryId = BigInt(data.categoryId);
     if (data.brandId) data.brandId = BigInt(data.brandId);
+
+    const productId = BigInt(id);
     if (dto.images) {
-      await this.syncProductImages(BigInt(id), dto.images);
+      await this.syncProductImages(productId, dto.images);
     }
 
     const product = await this.prisma.product.update({
-      where: { id: BigInt(id) },
+      where: { id: productId },
       data,
-      include: { images: { orderBy: { sortOrder: 'asc' } } },
     });
+
+    if (dto.isPcComponent !== undefined || dto.pcComponent !== undefined) {
+      const isPcComponent = dto.isPcComponent ?? product.isPcComponent;
+      await this.syncPcComponent(productId, isPcComponent, dto.pcComponent);
+    }
+
     await this.invalidateProductListCache();
-    return serializeProduct(product);
+    const saved = await this.prisma.product.findUniqueOrThrow({
+      where: { id: productId },
+      include: this.productIncludeForAdmin,
+    });
+    return {
+      ...serializeProduct(saved),
+      pcComponent: saved.pcComponent ? serializePcComponent(saved.pcComponent) : null,
+    };
   }
 
   async remove(id: string) {
