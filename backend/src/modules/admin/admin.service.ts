@@ -62,18 +62,54 @@ export class AdminService {
   }
 
   async getAnalyticsSummary() {
-    const [totalOrders, totalRevenue, totalProducts, totalUsers] = await Promise.all([
+    const now = new Date();
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+
+    const [totalOrders, totalRevenue, totalProducts, totalUsers, monthRevenue] = await Promise.all([
       this.prisma.order.count(),
       this.prisma.order.aggregate({ _sum: { totalAmount: true }, where: { paymentStatus: 'paid' } }),
       this.prisma.product.count({ where: { status: 'active' } }),
       this.prisma.user.count({ where: { role: 'customer' } }),
+      this.prisma.order.aggregate({
+        _sum: { totalAmount: true },
+        where: {
+          paymentStatus: 'paid',
+          createdAt: { gte: monthStart },
+        },
+      }),
     ]);
 
     return {
       totalOrders,
       totalRevenue: Number(totalRevenue._sum.totalAmount || 0),
+      monthRevenue: Number(monthRevenue._sum.totalAmount || 0),
       totalProducts,
       totalUsers,
     };
+  }
+
+  async getRevenueByMonth(months = 12) {
+    const limit = Math.min(Math.max(Number(months) || 12, 1), 24);
+    const rows = await this.prisma.$queryRaw<
+      { month: Date; revenue: unknown; orders: bigint }[]
+    >`
+      SELECT date_trunc('month', created_at) AS month,
+             COALESCE(SUM(total_amount), 0) AS revenue,
+             COUNT(*)::bigint AS orders
+      FROM orders
+      WHERE payment_status = 'paid'
+      GROUP BY 1
+      ORDER BY 1 DESC
+      LIMIT ${limit}
+    `;
+
+    return rows
+      .map((r) => ({
+        month: r.month,
+        label: new Date(r.month).toLocaleDateString('vi-VN', { month: 'short', year: 'numeric' }),
+        revenue: Number(r.revenue),
+        orders: Number(r.orders),
+      }))
+      .reverse();
   }
 }

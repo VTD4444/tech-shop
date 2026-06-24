@@ -60,8 +60,18 @@ PostgreSQL in Docker maps host port **5433** → container `5432` (see `docker-c
 
 ```env
 NUXT_PUBLIC_API_BASE_URL=http://localhost:3000/api/v1
-NUXT_PUBLIC_AI_API_URL=http://localhost:8000/api/v1
+# Recommended local dev: Nuxt proxies /api/ai → http://127.0.0.1:8000/api/v1
+NUXT_PUBLIC_AI_API_URL=/api/ai
 ```
+
+Proxy is configured in `frontend/nuxt.config.ts`:
+```ts
+routeRules: {
+  '/api/ai/**': { proxy: 'http://127.0.0.1:8000/api/v1/**' },
+}
+```
+
+`$aiApi` (non-stream) and `fetch` for `/advisor/chat/stream` both use `NUXT_PUBLIC_AI_API_URL`.
 
 ### `ai-service/.env`
 
@@ -156,10 +166,10 @@ Full guide: **[RESEND_INTEGRATION.md](./RESEND_INTEGRATION.md)**
 1. Create key at [Google AI Studio](https://aistudio.google.com/apikey)
 2. Set `GEMINI_API_KEY` in `ai-service/.env`
 3. Restart uvicorn (not just `--reload` for `.env` changes)
-4. Open `http://localhost:3001/advisor`
+4. Open `http://localhost:3001/advisor` — tabs **Recommend** (RAG) and **Chat** (SSE streaming)
 5. Health: `GET http://localhost:8000/api/v1/advisor/health/gemini`
 
-Free tier has RPM/RPD limits; the service falls back to rule-based recommendations when quota is exceeded.
+Free tier is limited by RPM/TPM/RPD (not dollars). `max_output_tokens` is a per-response ceiling (8192); billing/quota counts **actual tokens used**. Recommend falls back to rule-based suggestions when Gemini quota is exceeded; Chat shows an error or falls back to non-stream `/advisor/chat`.
 
 ## npm scripts
 

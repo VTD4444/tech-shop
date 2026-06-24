@@ -59,9 +59,11 @@ Optional: `VNPAY_IPN_WHITELIST` with VNPay server IPs.
 
 ### AI service
 
-- `GEMINI_API_KEY` — enable billing or use a paid tier for stable quota
+- `GEMINI_API_KEY` — enable billing or use a paid tier for stable quota (free tier: RPM/TPM/RPD limits)
+- `GEMINI_MODEL` — default `gemini-3.5-flash`
 - `BACKEND_API_URL` — internal or public NestJS API URL
-- `NUXT_PUBLIC_AI_API_URL` on frontend — public AI service URL
+- `NUXT_PUBLIC_AI_API_URL` on frontend — public AI service base URL (e.g. `https://ai.yourdomain.com/api/v1`); in dev use Nuxt proxy `/api/ai`
+- Chat streaming: ensure reverse proxy does not buffer SSE (`X-Accel-Buffering: no` is set by FastAPI)
 
 ### Observability
 

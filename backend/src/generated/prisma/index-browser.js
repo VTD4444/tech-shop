@@ -177,6 +177,7 @@ exports.Prisma.ProductScalarFieldEnum = {
   stockQuantity: 'stockQuantity',
   imageUrl: 'imageUrl',
   description: 'description',
+  longDescription: 'longDescription',
   isPcComponent: 'isPcComponent',
   aiTags: 'aiTags',
   status: 'status',
@@ -247,13 +248,27 @@ exports.Prisma.WishlistScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
-exports.Prisma.ProductReviewScalarFieldEnum = {
+exports.Prisma.ProductRatingScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
   productId: 'productId',
+  orderId: 'orderId',
   rating: 'rating',
-  comment: 'comment',
-  createdAt: 'createdAt'
+  images: 'images',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ProductCommentScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  productId: 'productId',
+  parentId: 'parentId',
+  content: 'content',
+  images: 'images',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.OrderScalarFieldEnum = {
@@ -354,7 +369,8 @@ exports.Prisma.ModelName = {
   PcComponent: 'PcComponent',
   CartItem: 'CartItem',
   Wishlist: 'Wishlist',
-  ProductReview: 'ProductReview',
+  ProductRating: 'ProductRating',
+  ProductComment: 'ProductComment',
   Order: 'Order',
   OrderItem: 'OrderItem',
   VnpayTransaction: 'VnpayTransaction',

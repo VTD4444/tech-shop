@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useAuthStore } from '~/stores/auth';
 
-definePageMeta({ middleware: 'auth' });
+definePageMeta({ middleware: ['auth', 'customer'] });
 
 const authStore = useAuthStore();
 const { $api } = useNuxtApp();

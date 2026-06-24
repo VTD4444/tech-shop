@@ -104,7 +104,7 @@ async def generate(
 
     config_kwargs: dict = {
         "temperature": 0.2,
-        "max_output_tokens": 8192 if json_mode else 2048,
+        "max_output_tokens": 8192,
         "system_instruction": system_instruction,
     }
     if json_mode:
@@ -125,3 +125,50 @@ async def generate(
         raise
     except Exception as exc:
         raise _map_gemini_error(exc) from exc
+
+
+async def generate_stream(
+    prompt: str,
+    system_instruction: str | None = None,
+):
+    """Yield text chunks from Gemini streaming API."""
+    settings = load_settings()
+    client = get_client()
+    contents = [types.Content(role="user", parts=[types.Part.from_text(text=prompt)])]
+    config = types.GenerateContentConfig(
+        temperature=0.2,
+        max_output_tokens=8192,
+        system_instruction=system_instruction,
+    )
+
+    try:
+        stream = client.models.generate_content_stream(
+            model=settings.gemini_model,
+            contents=contents,
+            config=config,
+        )
+        for chunk in stream:
+            text = _extract_stream_chunk_text(chunk)
+            if text:
+                yield text
+    except LlmError:
+        raise
+    except Exception as exc:
+        raise _map_gemini_error(exc) from exc
+
+
+def _extract_stream_chunk_text(chunk) -> str:
+    text = getattr(chunk, "text", None)
+    if text:
+        return text
+    candidates = getattr(chunk, "candidates", None) or []
+    parts: list[str] = []
+    for candidate in candidates:
+        content = getattr(candidate, "content", None)
+        if not content:
+            continue
+        for part in getattr(content, "parts", None) or []:
+            part_text = getattr(part, "text", None)
+            if part_text:
+                parts.append(part_text)
+    return "".join(parts)

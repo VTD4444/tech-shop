@@ -224,3 +224,41 @@ await prisma.$queryRaw`
   WHERE detailed_specs @> ${JSON.stringify({ key: 'value' })}
 `;
 ```
+
+## Sample data
+
+### Prisma seed (minimal)
+
+```bash
+cd backend && npx prisma db seed
+```
+
+Creates admin, 1 customer, ~8 PC components, 1 laptop. Skips if `admin@techshop.com` exists unless `SEED_FORCE=1`.
+
+### Extended SQL sample (large dataset)
+
+File: [`init-scripts/004-sample-data-extended.sql`](../init-scripts/004-sample-data-extended.sql)
+
+**Append-only** — does not delete existing data. Adds:
+
+| Entity | ~Count added |
+|--------|----------------|
+| Brands | 18 |
+| Categories | monitor, keyboard, mouse, laptop sub-categories |
+| PC products | 32 components (CPU→Cooler) |
+| Laptops | 6 |
+| Peripherals | 6 |
+| Users | 3 (`shopper2@test.com`, `gamer@test.com`, `office@test.com`) |
+| Reviews, cart, wishlist, orders, saved builds | yes |
+
+**New user passwords:** `shopper123`, `gamer123`, `office123` (same hash as `customer123` for `office@test.com`).
+
+```bash
+# Docker Postgres
+docker exec -i techshop-db psql -U techshop -d techshop < init-scripts/004-sample-data-extended.sql
+
+# Or with connection string
+psql "postgresql://techshop:techshop_pass@localhost:5433/techshop" -f init-scripts/004-sample-data-extended.sql
+```
+
+Script ends with a row count summary per table.

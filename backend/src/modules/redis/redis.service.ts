@@ -88,6 +88,15 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
     }
   }
 
+  async del(key: string): Promise<void> {
+    if (!this.isAvailable() || !this.client) return;
+    try {
+      await this.client.del(key);
+    } catch (err) {
+      this.logger.warn(`Redis DEL failed for ${key}: ${err}`);
+    }
+  }
+
   async getProductsCacheVersion(): Promise<number> {
     if (!this.isAvailable() || !this.client) return 0;
     try {

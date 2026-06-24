@@ -4,7 +4,10 @@ import { PrismaService } from '../prisma/prisma.service';
 import { RedisService } from '../redis/redis.service';
 import { serializeProduct, serializePcComponent, toId, toNumber } from '../../common/utils/serialize';
 import { UploadService } from '../upload/upload.service';
+import { sanitizeLongDescription } from '../../common/utils/html-sanitize';
 import { normalizePcComponentInput, PcComponentInput } from './pc-component.util';
+import { normalizeProductSpecInput, ProductSpecInput } from './product-spec.util';
+import { ProductsRatingsService } from './products-ratings.service';
 
 export type ProductListQuery = {
     page?: number;
@@ -27,6 +30,7 @@ export class ProductsService {
   constructor(
     private prisma: PrismaService,
     private redis: RedisService,
+    private ratingsService: ProductsRatingsService,
   ) {}
 
   async findAll(query: ProductListQuery) {
@@ -139,6 +143,7 @@ export class ProductsService {
     if (!product) throw new NotFoundException('Product not found');
     return {
       ...serializeProduct({ ...product, images: product.images }),
+      longDescription: product.longDescription,
       images: product.images.map((img) => ({
         id: toId(img.id),
         imageUrl: img.imageUrl,
@@ -150,9 +155,20 @@ export class ProductsService {
             id: toId(product.spec.id),
             productId: toId(product.spec.productId),
             screenSize: product.spec.screenSize != null ? toNumber(product.spec.screenSize) : null,
+            specs: product.spec.specs ?? null,
           }
         : null,
       pcComponent: product.pcComponent ? serializePcComponent(product.pcComponent) : null,
+    };
+  }
+
+  async getUserEngagement(userId: string, slug: string) {
+    const product = await this.prisma.product.findUnique({ where: { slug } });
+    if (!product) throw new NotFoundException('Product not found');
+    const unratedOrders = await this.ratingsService.getUnratedOrders(userId, product.id);
+    return {
+      canComment: true,
+      unratedOrders,
     };
   }
 
@@ -162,31 +178,32 @@ export class ProductsService {
       include: { spec: true, pcComponent: true },
     });
     if (!product) throw new NotFoundException('Product not found');
-    return { spec: product.spec, pcComponent: product.pcComponent };
+    return {
+      spec: product.spec
+        ? {
+            ...product.spec,
+            id: toId(product.spec.id),
+            productId: toId(product.spec.productId),
+            screenSize: product.spec.screenSize != null ? toNumber(product.spec.screenSize) : null,
+            specs: product.spec.specs ?? null,
+          }
+        : null,
+      pcComponent: product.pcComponent ? serializePcComponent(product.pcComponent) : null,
+    };
   }
 
-  async getReviews(slug: string, page = 1, limit = 10) {
-    const product = await this.prisma.product.findUnique({ where: { slug } });
-    if (!product) throw new NotFoundException('Product not found');
-
-    const pageNum = Number(page) || 1;
-    const limitNum = Number(limit) || 10;
-    const skip = (pageNum - 1) * limitNum;
-    const [data, total] = await Promise.all([
-      this.prisma.productReview.findMany({
-        where: { productId: product.id },
-        skip,
-        take: limitNum,
-        orderBy: { createdAt: 'desc' },
-        include: { user: { select: { username: true } } },
-      }),
-      this.prisma.productReview.count({ where: { productId: product.id } }),
-    ]);
-
-    return {
-      data,
-      meta: { page: pageNum, limit: limitNum, total, totalPages: Math.ceil(total / limitNum) },
-    };
+  private async syncProductSpec(productId: bigint, spec?: ProductSpecInput | null) {
+    if (spec === undefined) return;
+    const data = normalizeProductSpecInput(spec);
+    if (!data) {
+      await this.prisma.productSpec.deleteMany({ where: { productId } });
+      return;
+    }
+    await this.prisma.productSpec.upsert({
+      where: { productId },
+      create: { productId, ...data },
+      update: data,
+    });
   }
 
   private validateImages(images?: { url: string; isMain?: boolean; sortOrder?: number }[]) {
@@ -252,6 +269,7 @@ export class ProductsService {
   private productIncludeForAdmin = {
     images: { orderBy: { sortOrder: 'asc' as const } },
     pcComponent: true,
+    spec: true,
   };
 
   async create(dto: any) {
@@ -263,6 +281,9 @@ export class ProductsService {
     if (mainFromDto && !UploadService.isAllowedImageUrl(mainFromDto)) {
       throw new BadRequestException('Invalid image URL');
     }
+    if (dto.longDescription?.length > 50000) {
+      throw new BadRequestException('longDescription exceeds 50000 characters');
+    }
     const product = await this.prisma.product.create({
       data: {
         categoryId: dto.categoryId ? BigInt(dto.categoryId) : null,
@@ -273,6 +294,7 @@ export class ProductsService {
         stockQuantity: dto.stockQuantity || 0,
         imageUrl: mainFromDto,
         description: dto.description,
+        longDescription: sanitizeLongDescription(dto.longDescription),
         isPcComponent: dto.isPcComponent || false,
         aiTags: dto.aiTags || [],
         status: dto.status || 'active',
@@ -282,6 +304,9 @@ export class ProductsService {
     if (dto.isPcComponent) {
       await this.syncPcComponent(product.id, true, dto.pcComponent);
     }
+    if (dto.spec !== undefined) {
+      await this.syncProductSpec(product.id, dto.spec);
+    }
     await this.invalidateProductListCache();
     const saved = await this.prisma.product.findUniqueOrThrow({
       where: { id: product.id },
@@ -289,6 +314,16 @@ export class ProductsService {
     });
     return {
       ...serializeProduct(saved),
+      longDescription: saved.longDescription,
+      spec: saved.spec
+        ? {
+            ...saved.spec,
+            id: toId(saved.spec.id),
+            productId: toId(saved.spec.productId),
+            screenSize: saved.spec.screenSize != null ? toNumber(saved.spec.screenSize) : null,
+            specs: saved.spec.specs ?? null,
+          }
+        : null,
       pcComponent: saved.pcComponent ? serializePcComponent(saved.pcComponent) : null,
     };
   }
@@ -297,8 +332,15 @@ export class ProductsService {
     const data: any = { ...dto };
     delete data.images;
     delete data.pcComponent;
+    delete data.spec;
     if (data.categoryId) data.categoryId = BigInt(data.categoryId);
     if (data.brandId) data.brandId = BigInt(data.brandId);
+    if (dto.longDescription !== undefined) {
+      if (dto.longDescription?.length > 50000) {
+        throw new BadRequestException('longDescription exceeds 50000 characters');
+      }
+      data.longDescription = sanitizeLongDescription(dto.longDescription);
+    }
 
     const productId = BigInt(id);
     if (dto.images) {
@@ -314,6 +356,9 @@ export class ProductsService {
       const isPcComponent = dto.isPcComponent ?? product.isPcComponent;
       await this.syncPcComponent(productId, isPcComponent, dto.pcComponent);
     }
+    if (dto.spec !== undefined) {
+      await this.syncProductSpec(productId, dto.spec);
+    }
 
     await this.invalidateProductListCache();
     const saved = await this.prisma.product.findUniqueOrThrow({
@@ -322,6 +367,16 @@ export class ProductsService {
     });
     return {
       ...serializeProduct(saved),
+      longDescription: saved.longDescription,
+      spec: saved.spec
+        ? {
+            ...saved.spec,
+            id: toId(saved.spec.id),
+            productId: toId(saved.spec.productId),
+            screenSize: saved.spec.screenSize != null ? toNumber(saved.spec.screenSize) : null,
+            specs: saved.spec.specs ?? null,
+          }
+        : null,
       pcComponent: saved.pcComponent ? serializePcComponent(saved.pcComponent) : null,
     };
   }
@@ -333,19 +388,5 @@ export class ProductsService {
     });
     await this.invalidateProductListCache();
     return product;
-  }
-
-  async createReview(userId: string, slug: string, dto: { rating: number; comment?: string }) {
-    const product = await this.prisma.product.findUnique({ where: { slug } });
-    if (!product) throw new NotFoundException('Product not found');
-
-    return this.prisma.productReview.create({
-      data: {
-        userId: BigInt(userId),
-        productId: product.id,
-        rating: dto.rating,
-        comment: dto.comment,
-      },
-    });
   }
 }

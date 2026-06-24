@@ -104,6 +104,7 @@ export function serializeProduct(p: any) {
     stockQuantity: p.stockQuantity,
     imageUrl: p.images?.[0]?.imageUrl ?? p.imageUrl ?? null,
     description: p.description,
+    longDescription: p.longDescription ?? null,
     isPcComponent: p.isPcComponent,
     aiTags: p.aiTags ?? [],
     status: p.status,

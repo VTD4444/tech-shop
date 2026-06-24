@@ -2,7 +2,7 @@
 import { Trash2 } from 'lucide-vue-next';
 import { useCartStore } from '~/stores/cart';
 
-definePageMeta({ middleware: 'auth' });
+definePageMeta({ middleware: ['auth', 'customer'] });
 
 const cartStore = useCartStore();
 const { formatPrice } = useFormatPrice();
@@ -56,8 +56,20 @@ async function decrement(item: any) {
         </div>
       </UiCard>
       <UiCard padding="lg" class="text-right">
-        <UiText variant="muted" size="sm" class="mb-1">Total</UiText>
-        <UiText variant="accent" size="2xl" class="font-bold mb-4">{{ formatPrice(cartStore.totalPrice) }}</UiText>
+        <div class="space-y-2 text-sm mb-4">
+          <div class="flex justify-between">
+            <span class="text-text-muted">Subtotal</span>
+            <span class="text-text-primary">{{ formatPrice(cartStore.subtotal) }}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-text-muted">Tax (10%)</span>
+            <span class="text-text-primary">{{ formatPrice(cartStore.tax) }}</span>
+          </div>
+          <div class="flex justify-between pt-2 border-t border-subtle font-semibold">
+            <span class="text-text-primary">Total</span>
+            <UiText variant="accent" size="xl" class="font-bold">{{ formatPrice(cartStore.totalPrice) }}</UiText>
+          </div>
+        </div>
         <UiButton to="/checkout" variant="primary" size="lg">Proceed to Checkout</UiButton>
       </UiCard>
     </template>

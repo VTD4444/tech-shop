@@ -45,6 +45,7 @@ export class YourController {
 2. Add `<script setup lang="ts">` with Composition API
 3. Use `useFetch` or `useAsyncData` for SSR data fetching
 4. Use `definePageMeta({ middleware: 'auth' })` for protected pages
+5. Customer pages: `middleware: ['auth', 'customer']`; admin: `middleware: ['auth', 'admin']` + `layout: 'admin'`
 
 ### Page Template
 
@@ -96,6 +97,10 @@ Edit `backend/src/modules/pc-builder/pc-builder.service.ts`:
 2. Push `CompatibilityIssue` to `issues[]` array
 3. Test with `POST /pc-builder/validate`
 
+### Component picker filtering
+
+`GET /pc-builder/components?selectedIds=1,2,3` annotates each candidate with `compatible` and `incompatibilityReasons` by running `validateBuild` against the current selection plus that component. Frontend hides or disables incompatible parts in the PC Builder modal.
+
 ### Current Rules
 
 | # | Rule | Type | Condition |
@@ -107,6 +112,18 @@ Edit `backend/src/modules/pc-builder/pc-builder.service.ts`:
 | 5 | Cooler height vs case | error | `cooler.cpuCoolerHeightMm > pcCase.maxCpuCoolerHeightMm` |
 | 6 | Form factor vs case | error | MB form not in case form factors |
 | 7 | Power budget | error/warning | Total > PSU wattage / > 90% |
+
+## AI Advisor Chat
+
+Streaming chat lives in `frontend/composables/useAdvisorChat.ts`:
+
+1. Tries `POST /advisor/chat/stream` via `fetch` + `ReadableStream` (SSE)
+2. Parses events delimited by `\n\n`; flushes remaining buffer when stream ends
+3. Renders markdown in `AdvisorChatMessage.vue` (`marked` + `DOMPurify`)
+4. Persists history to `localStorage` key `techshop-advisor-chat` (max 50 messages)
+5. On stream failure or truncated reply → falls back to `$aiApi('/advisor/chat')`
+
+Requires AI service on port 8000 and `NUXT_PUBLIC_AI_API_URL=/api/ai` (Nuxt proxy).
 
 ## Common Tasks
 

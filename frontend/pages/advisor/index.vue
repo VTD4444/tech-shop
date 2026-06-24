@@ -9,6 +9,7 @@ const { formatPrice } = useFormatPrice();
 const toast = useToast();
 const { $aiApi } = useNuxtApp();
 
+const activeTab = ref<'recommend' | 'chat'>('recommend');
 const budget = ref(20000000);
 const purpose = ref('gaming');
 const preferences = ref('');
@@ -72,69 +73,94 @@ async function addToCart(item: any) {
         <Bot class="w-8 h-8 text-accent" />
         <UiText as="h1" size="2xl">AI Advisor</UiText>
       </div>
-      <UiText variant="muted" class="mb-8">Describe your needs and budget to get personalized PC build recommendations.</UiText>
+      <UiText variant="muted" class="mb-6">
+        Get build recommendations or chat with Gemini about PC components.
+      </UiText>
 
-      <UiCard padding="md" class="mb-6">
-        <div class="space-y-4">
-          <div>
-            <UiText variant="muted" size="xs" uppercase class="mb-1 block">Budget (VND)</UiText>
-            <UiInput v-model="budget" type="number" placeholder="20000000" />
-          </div>
-          <div>
-            <UiText variant="muted" size="xs" uppercase class="mb-1 block">Purpose</UiText>
-            <UiSelect
-              v-model="purpose"
-              :options="[
-                { label: 'Gaming', value: 'gaming' },
-                { label: 'Office / Work', value: 'work' },
-                { label: 'Graphics / Design', value: 'graphics' },
-                { label: 'Development', value: 'development' },
-                { label: 'General Use', value: 'general' },
-              ]"
-            />
-          </div>
-          <div>
-            <UiText variant="muted" size="xs" uppercase class="mb-1 block">Preferences</UiText>
-            <textarea
-              v-model="preferences"
-              rows="2"
-              placeholder="e.g. prefer Intel, need WiFi..."
-              class="w-full rounded-md border border-subtle bg-surface-3 px-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted/60 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
-            />
-          </div>
-          <UiButton variant="primary" :loading="loading" @click="getRecommendation">
-            Get Recommendation
-          </UiButton>
-        </div>
-      </UiCard>
+      <div class="flex gap-2 mb-6 border-b border-subtle">
+        <button
+          type="button"
+          class="px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors"
+          :class="activeTab === 'recommend' ? 'border-accent text-accent' : 'border-transparent text-text-muted'"
+          @click="activeTab = 'recommend'"
+        >
+          Recommend
+        </button>
+        <button
+          type="button"
+          class="px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors"
+          :class="activeTab === 'chat' ? 'border-accent text-accent' : 'border-transparent text-text-muted'"
+          @click="activeTab = 'chat'"
+        >
+          Chat
+        </button>
+      </div>
 
-      <UiCard v-if="recommendation.length || aiSummary" padding="md">
-        <div class="flex items-center justify-between gap-3 mb-4">
-          <UiText as="h2" size="xl">Recommended Build</UiText>
-          <UiText
-            v-if="recommendationSource"
-            size="xs"
-            class="uppercase tracking-wide"
-            :class="recommendationSource === 'gemini' ? 'text-accent' : 'text-text-muted'"
-          >
-            {{ recommendationSource === 'gemini' ? 'Powered by Gemini' : 'Rule-based fallback' }}
-          </UiText>
-        </div>
-        <p v-if="aiSummary" class="text-sm text-text-primary mb-4 whitespace-pre-wrap">{{ aiSummary }}</p>
-        <p v-else-if="recommendationNote" class="text-sm text-text-muted mb-4">{{ recommendationNote }}</p>
-        <div v-for="item in recommendation" :key="item.component_type || item.name" class="flex items-center gap-4 py-3 border-b border-subtle last:border-0">
-          <div class="flex-1 min-w-0">
-            <p class="font-medium text-text-primary">{{ item.product_name || item.name }}</p>
-            <p v-if="item.explanation" class="text-sm text-text-muted">{{ item.explanation }}</p>
+      <template v-if="activeTab === 'recommend'">
+        <UiCard padding="md" class="mb-6">
+          <div class="space-y-4">
+            <div>
+              <UiText variant="muted" size="xs" uppercase class="mb-1 block">Budget (VND)</UiText>
+              <UiInput v-model="budget" type="number" placeholder="20000000" />
+            </div>
+            <div>
+              <UiText variant="muted" size="xs" uppercase class="mb-1 block">Purpose</UiText>
+              <UiSelect
+                v-model="purpose"
+                :options="[
+                  { label: 'Gaming', value: 'gaming' },
+                  { label: 'Office / Work', value: 'work' },
+                  { label: 'Graphics / Design', value: 'graphics' },
+                  { label: 'Development', value: 'development' },
+                  { label: 'General Use', value: 'general' },
+                ]"
+              />
+            </div>
+            <div>
+              <UiText variant="muted" size="xs" uppercase class="mb-1 block">Preferences</UiText>
+              <textarea
+                v-model="preferences"
+                rows="2"
+                placeholder="e.g. prefer Intel, need WiFi..."
+                class="w-full rounded-md border border-subtle bg-surface-3 px-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted/60 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+              />
+            </div>
+            <UiButton variant="primary" :loading="loading" @click="getRecommendation">
+              Get Recommendation
+            </UiButton>
           </div>
-          <p class="font-semibold text-accent shrink-0">{{ formatPrice(item.price) }}</p>
-          <UiButton v-if="item.product_id || item.slug" variant="secondary" size="sm" @click="addToCart(item)">Add</UiButton>
-        </div>
-        <p class="text-right text-lg font-bold mt-4 text-text-primary">
-          Total: <span class="text-accent">{{ formatPrice(totalRecommended) }}</span>
-        </p>
-      </UiCard>
-      <p v-if="error" class="text-danger text-sm mt-2">{{ error }}</p>
+        </UiCard>
+
+        <UiCard v-if="recommendation.length || aiSummary" padding="md">
+          <div class="flex items-center justify-between gap-3 mb-4">
+            <UiText as="h2" size="xl">Recommended Build</UiText>
+            <UiText
+              v-if="recommendationSource"
+              size="xs"
+              class="uppercase tracking-wide"
+              :class="recommendationSource === 'gemini' ? 'text-accent' : 'text-text-muted'"
+            >
+              {{ recommendationSource === 'gemini' ? 'Powered by Gemini' : 'Rule-based fallback' }}
+            </UiText>
+          </div>
+          <p v-if="aiSummary" class="text-sm text-text-primary mb-4 whitespace-pre-wrap">{{ aiSummary }}</p>
+          <p v-else-if="recommendationNote" class="text-sm text-text-muted mb-4">{{ recommendationNote }}</p>
+          <div v-for="item in recommendation" :key="item.component_type || item.name" class="flex items-center gap-4 py-3 border-b border-subtle last:border-0">
+            <div class="flex-1 min-w-0">
+              <p class="font-medium text-text-primary">{{ item.product_name || item.name }}</p>
+              <p v-if="item.explanation" class="text-sm text-text-muted">{{ item.explanation }}</p>
+            </div>
+            <p class="font-semibold text-accent shrink-0">{{ formatPrice(item.price) }}</p>
+            <UiButton v-if="item.product_id || item.slug" variant="secondary" size="sm" @click="addToCart(item)">Add</UiButton>
+          </div>
+          <p class="text-right text-lg font-bold mt-4 text-text-primary">
+            Total: <span class="text-accent">{{ formatPrice(totalRecommended) }}</span>
+          </p>
+        </UiCard>
+        <p v-if="error" class="text-danger text-sm mt-2">{{ error }}</p>
+      </template>
+
+      <AdvisorChat v-else />
     </UiContainer>
   </ClientOnly>
 </template>

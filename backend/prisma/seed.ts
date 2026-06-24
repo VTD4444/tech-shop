@@ -15,7 +15,8 @@ async function clearSeedData() {
   await prisma.order.deleteMany();
   await prisma.cartItem.deleteMany();
   await prisma.wishlist.deleteMany();
-  await prisma.productReview.deleteMany();
+  await prisma.productComment.deleteMany();
+  await prisma.productRating.deleteMany();
   await prisma.pcComponent.deleteMany();
   await prisma.productSpec.deleteMany();
   await prisma.productImage.deleteMany();

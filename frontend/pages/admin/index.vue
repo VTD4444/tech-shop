@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useAuthStore } from '~/stores/auth';
 
-definePageMeta({ layout: 'admin', middleware: 'auth' });
+definePageMeta({ layout: 'admin', middleware: ['auth', 'admin'] });
 
 const auth = useAuthStore();
 const { $api } = useNuxtApp();
@@ -13,9 +13,9 @@ const orders = ref<any[]>([]);
 const inventory = ref<any[]>([]);
 
 const statCards = computed(() => [
-  { label: 'Daily Revenue', value: formatPrice(summary.value.totalRevenue ?? 0), trend: '+12.4% vs yesterday', trendUp: true, accent: true },
-  { label: 'Total Orders', value: summary.value.totalOrders ?? 0, trend: 'Active pipeline', trendUp: true },
-  { label: 'Low Stock Alerts', value: inventory.value.filter((i: any) => i.stockQuantity < 5).length, trend: 'Needs attention', trendUp: false },
+  { label: 'Revenue (This Month)', value: formatPrice(summary.value.monthRevenue ?? 0), accent: true },
+  { label: 'Total Orders', value: summary.value.totalOrders ?? 0 },
+  { label: 'Active Products', value: summary.value.totalProducts ?? 0 },
   { label: 'Customers', value: summary.value.totalUsers ?? 0 },
 ]);
 
@@ -58,8 +58,6 @@ onMounted(loadDashboard);
           :key="stat.label"
           :label="stat.label"
           :value="stat.value"
-          :trend="stat.trend"
-          :trend-up="stat.trendUp"
           :accent="stat.accent"
         />
       </div>

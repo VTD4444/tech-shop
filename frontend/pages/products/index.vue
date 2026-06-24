@@ -2,18 +2,41 @@
 import { useProductStore } from '~/stores/product';
 
 const route = useRoute();
+const router = useRouter();
 const productStore = useProductStore();
 
-const filters = reactive({
-  category: (route.query.category as string) || '',
-  brand: '',
-  minPrice: undefined as number | undefined,
-  maxPrice: undefined as number | undefined,
-  search: (route.query.search as string) || '',
-  sort: 'created_at',
-  isPcComponent: undefined as boolean | undefined,
-  page: 1,
-});
+function parseQuery(query: Record<string, unknown>) {
+  return {
+    category: (query.category as string) || '',
+    brand: (query.brand as string) || '',
+    minPrice: undefined as number | undefined,
+    maxPrice: query.maxPrice ? Number(query.maxPrice) : undefined,
+    search: (query.search as string) || '',
+    sort: (query.sort as string) || 'created_at',
+    isPcComponent:
+      query.isPcComponent === 'true'
+        ? true
+        : query.isPcComponent === 'false'
+          ? false
+          : undefined,
+    page: query.page ? Number(query.page) : 1,
+  };
+}
+
+function filtersToQuery(f: typeof filters) {
+  const q: Record<string, string> = {};
+  if (f.category) q.category = f.category;
+  if (f.brand) q.brand = f.brand;
+  if (f.search) q.search = f.search;
+  if (f.sort && f.sort !== 'created_at') q.sort = f.sort;
+  if (f.maxPrice) q.maxPrice = String(f.maxPrice);
+  if (f.isPcComponent !== undefined) q.isPcComponent = String(f.isPcComponent);
+  if (f.page > 1) q.page = String(f.page);
+  return q;
+}
+
+const filters = reactive(parseQuery(route.query));
+let syncingUrl = false;
 
 await Promise.all([
   productStore.fetchCategories(),
@@ -21,25 +44,36 @@ await Promise.all([
   productStore.fetchProducts(filters),
 ]);
 
-function applyFilters() {
-  filters.page = 1;
+function syncUrl() {
+  syncingUrl = true;
+  router.replace({ query: filtersToQuery(filters) }).finally(() => {
+    nextTick(() => { syncingUrl = false; });
+  });
+}
+
+function applyFilters(resetPage = true) {
+  if (resetPage) filters.page = 1;
+  syncUrl();
   productStore.fetchProducts(filters);
 }
 
 function onFilterUpdate(key: string, value: unknown) {
-  (filters as any)[key] = value;
-  applyFilters();
+  (filters as Record<string, unknown>)[key] = value;
+  applyFilters(key !== 'page');
 }
 
 function resetFilters() {
-  filters.category = '';
-  filters.brand = '';
-  filters.minPrice = undefined;
-  filters.maxPrice = undefined;
-  filters.search = '';
-  filters.sort = 'created_at';
-  filters.isPcComponent = undefined;
-  filters.page = 1;
+  Object.assign(filters, {
+    category: '',
+    brand: '',
+    minPrice: undefined,
+    maxPrice: undefined,
+    search: '',
+    sort: 'created_at',
+    isPcComponent: undefined,
+    page: 1,
+  });
+  syncUrl();
   productStore.fetchProducts(filters);
 }
 
@@ -50,8 +84,18 @@ function onSortChange(sort: string) {
 
 function goToPage(p: number) {
   filters.page = p;
+  syncUrl();
   productStore.fetchProducts(filters);
 }
+
+watch(
+  () => route.query,
+  (query) => {
+    if (syncingUrl) return;
+    Object.assign(filters, parseQuery(query));
+    productStore.fetchProducts(filters);
+  },
+);
 </script>
 
 <template>

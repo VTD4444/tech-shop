@@ -1,8 +1,12 @@
 <script setup lang="ts">
+import { Star } from 'lucide-vue-next';
 import { Heart } from 'lucide-vue-next';
 import { useAuthStore } from '~/stores/auth';
 import { useCartStore } from '~/stores/cart';
 import { useProductStore } from '~/stores/product';
+import { useWishlistStore } from '~/stores/wishlist';
+import { useSystemStore } from '~/stores/system';
+import { useProductDetail } from '~/composables/useProductDetail';
 
 const route = useRoute();
 const productStore = useProductStore();
@@ -11,29 +15,75 @@ const authStore = useAuthStore();
 const toast = useToast();
 const { formatPrice } = useFormatPrice();
 const { stockBadge } = useProductStatus();
-
 const systemStore = useSystemStore();
+const wishlistStore = useWishlistStore();
+
+const slug = route.params.slug as string;
 const product = ref<any>(null);
-const reviews = ref<any[]>([]);
 const loading = ref(true);
 const inWishlist = ref(false);
-const slug = route.params.slug as string;
+
+const {
+  ratingSummary,
+  ratings,
+  ratingsMeta,
+  comments,
+  commentsMeta,
+  unratedOrders,
+  loadingRatings,
+  loadingComments,
+  fetchRatings,
+  fetchComments,
+  refreshEngagement,
+  initEngagement,
+} = useProductDetail(slug);
 
 product.value = await productStore.fetchProduct(slug);
+loading.value = false;
 
 if (product.value && !productStore.usingFallback) {
-  try {
-    const { $api } = useNuxtApp();
-    const revData: any = await $api(`/products/${slug}/reviews`);
-    reviews.value = revData.data || [];
-  } catch {
-    reviews.value = [];
+  await initEngagement();
+  if (authStore.isAuthenticated) {
+    try {
+      if (!wishlistStore.loaded) await wishlistStore.fetchWishlist();
+      inWishlist.value = wishlistStore.isInWishlist(product.value.id.toString());
+    } catch {
+      /* ignore */
+    }
   }
 }
 
-loading.value = false;
-
 const badge = computed(() => product.value ? stockBadge(product.value.stockQuantity) : null);
+
+const schemaOrg = computed(() => {
+  if (!product.value || !ratingSummary.value?.count) return null;
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: product.value.name,
+    description: product.value.description,
+    image: product.value.imageUrl,
+    offers: {
+      '@type': 'Offer',
+      price: product.value.price,
+      priceCurrency: 'VND',
+      availability: product.value.stockQuantity > 0
+        ? 'https://schema.org/InStock'
+        : 'https://schema.org/OutOfStock',
+    },
+    aggregateRating: {
+      '@type': 'AggregateRating',
+      ratingValue: ratingSummary.value.average,
+      reviewCount: ratingSummary.value.count,
+    },
+  };
+});
+
+useHead(() => ({
+  script: schemaOrg.value
+    ? [{ type: 'application/ld+json', innerHTML: JSON.stringify(schemaOrg.value) }]
+    : [],
+}));
 
 async function addToCart() {
   if (systemStore.apiDegraded || productStore.usingFallback) {
@@ -51,14 +101,24 @@ async function addToCart() {
 
 async function toggleWishlist() {
   if (!authStore.isAuthenticated) return navigateTo('/login');
-  const { $api } = useNuxtApp();
+  const productId = product.value.id.toString();
   if (inWishlist.value) {
-    await $api(`/wishlist/${product.value.id}`, { method: 'DELETE' });
+    await wishlistStore.removeItem(productId);
     inWishlist.value = false;
+    toast.info('Removed from wishlist');
   } else {
-    await $api(`/wishlist/${product.value.id}`, { method: 'POST' });
+    await wishlistStore.addItem(productId);
     inWishlist.value = true;
+    toast.success('Added to wishlist');
   }
+}
+
+async function onRatingSubmitted() {
+  await refreshEngagement();
+}
+
+async function onCommentChange() {
+  await fetchComments(commentsMeta.value.page);
 }
 </script>
 
@@ -71,7 +131,7 @@ async function toggleWishlist() {
     <UiEmptyState
       v-else-if="!product"
       :title="systemStore.apiDegraded ? 'Product unavailable offline' : 'Product not found'"
-      :description="systemStore.apiDegraded ? 'This product is not in the offline catalog. Browse sample products instead.' : 'This product may have been removed.'"
+      :description="systemStore.apiDegraded ? 'This product is not in the offline catalog.' : 'This product may have been removed.'"
     >
       <template #action><UiButton to="/products" variant="primary">Browse Products</UiButton></template>
     </UiEmptyState>
@@ -81,15 +141,21 @@ async function toggleWishlist() {
         <span class="mx-2">/</span>
         <span>{{ product.name }}</span>
       </nav>
-      <div class="grid lg:grid-cols-2 gap-10">
+
+      <div class="grid lg:grid-cols-2 gap-10 mb-12">
         <div>
           <UiCard padding="none" class="overflow-hidden">
-            <img :src="product.imageUrl || '/placeholder.svg'" :alt="product.name" class="w-full aspect-square object-cover" />
+            <img :src="product.imageUrl || '/placeholder.svg'" :alt="product.name" class="w-full aspect-square object-cover" loading="eager" />
           </UiCard>
           <div v-if="product.images?.length" class="flex gap-2 mt-4">
-            <img v-for="img in product.images" :key="img.id" :src="img.imageUrl"
-              class="w-16 h-16 object-cover rounded-lg border-2 cursor-pointer"
-              :class="img.isMain ? 'border-accent' : 'border-subtle'" />
+            <img
+              v-for="img in product.images"
+              :key="img.id"
+              :src="img.imageUrl"
+              loading="lazy"
+              class="w-16 h-16 object-cover rounded-lg border-2"
+              :class="img.isMain ? 'border-accent' : 'border-subtle'"
+            />
           </div>
         </div>
         <div>
@@ -98,20 +164,23 @@ async function toggleWishlist() {
             <UiBadge v-if="product.isPcComponent" variant="accent">PC Component</UiBadge>
             <UiBadge v-if="badge" :variant="badge.variant">{{ badge.label }}</UiBadge>
           </div>
-          <UiText as="h1" size="2xl" class="mb-3">{{ product.name }}</UiText>
+          <UiText as="h1" size="2xl" class="mb-2">{{ product.name }}</UiText>
+          <div v-if="ratingSummary?.count" class="flex items-center gap-2 mb-3 text-sm">
+            <ProductRatingStars :model-value="Math.round(ratingSummary.average)" readonly />
+            <span class="text-text-muted">{{ ratingSummary.average }} ({{ ratingSummary.count }})</span>
+          </div>
           <UiText variant="accent" size="3xl" class="font-bold mb-4">{{ formatPrice(product.price) }}</UiText>
           <UiText variant="muted" class="mb-6 leading-relaxed">{{ product.description }}</UiText>
           <p
             v-if="productStore.usingFallback"
             class="mb-4 text-sm text-warning bg-warning/10 border border-warning/20 rounded-lg px-4 py-3"
           >
-            Offline mode — this is sample catalog data. Purchasing is disabled until the server recovers.
+            Offline mode — sample catalog data only.
           </p>
-          <div class="flex gap-3 mb-8">
+          <div class="flex gap-3 mb-4">
             <UiButton
               variant="primary"
               size="lg"
-              block
               class="flex-1"
               :disabled="product.stockQuantity === 0 || productStore.usingFallback"
               @click="addToCart"
@@ -122,47 +191,89 @@ async function toggleWishlist() {
               <Heart class="w-5 h-5" :class="inWishlist ? 'fill-accent text-accent' : ''" />
             </UiButton>
           </div>
-          <UiCard v-if="product.spec || product.pcComponent" padding="md">
-            <UiText as="h2" size="lg" class="mb-4">Specifications</UiText>
-            <dl class="grid grid-cols-2 gap-3 text-sm">
-              <template v-if="product.spec">
-                <div v-if="product.spec.cpuBrand" class="flex justify-between border-b border-subtle pb-2">
-                  <dt class="text-text-muted">CPU</dt>
-                  <dd class="text-text-primary">{{ product.spec.cpuBrand }}</dd>
-                </div>
-                <div v-if="product.spec.ramCapacity" class="flex justify-between border-b border-subtle pb-2">
-                  <dt class="text-text-muted">RAM</dt>
-                  <dd>{{ product.spec.ramCapacity }}GB {{ product.spec.ramGeneration }}</dd>
-                </div>
-                <div v-if="product.spec.gpuModel" class="flex justify-between border-b border-subtle pb-2">
-                  <dt class="text-text-muted">GPU</dt>
-                  <dd>{{ product.spec.gpuModel }}</dd>
-                </div>
-              </template>
-              <template v-if="product.pcComponent">
-                <div v-if="product.pcComponent.socket" class="flex justify-between border-b border-subtle pb-2">
-                  <dt class="text-text-muted">Socket</dt>
-                  <dd>{{ product.pcComponent.socket }}</dd>
-                </div>
-                <div v-if="product.pcComponent.powerConsumption" class="flex justify-between border-b border-subtle pb-2">
-                  <dt class="text-text-muted">TDP</dt>
-                  <dd>{{ product.pcComponent.powerConsumption }}W</dd>
-                </div>
-              </template>
-            </dl>
-          </UiCard>
         </div>
       </div>
-      <UiCard v-if="reviews.length" padding="md" class="mt-12">
-        <UiText as="h2" size="xl" class="mb-4">Reviews ({{ reviews.length }})</UiText>
-        <div v-for="r in reviews" :key="r.id" class="border-b border-subtle py-4 last:border-0">
-          <div class="flex items-center gap-2 mb-1">
-            <span class="font-medium text-text-primary">{{ r.user?.username }}</span>
-            <span class="text-warning text-sm">{{ '★'.repeat(r.rating) }}</span>
-          </div>
-          <p class="text-text-muted text-sm">{{ r.comment }}</p>
-        </div>
-      </UiCard>
+
+      <nav class="sticky top-0 z-10 bg-surface-1/95 backdrop-blur border-b border-subtle mb-8 -mx-4 px-4 py-3 flex gap-6 text-sm overflow-x-auto">
+        <a href="#description" class="text-text-muted hover:text-accent whitespace-nowrap">Mô tả</a>
+        <a href="#specs" class="text-text-muted hover:text-accent whitespace-nowrap">Thông số</a>
+        <a href="#ratings" class="text-text-muted hover:text-accent whitespace-nowrap">Đánh giá</a>
+        <a href="#comments" class="text-text-muted hover:text-accent whitespace-nowrap">Bình luận</a>
+      </nav>
+
+      <section id="description" class="mb-12 scroll-mt-24">
+        <UiText as="h2" size="xl" class="mb-4">Mô tả chi tiết</UiText>
+        <ProductLongDescription :html="product.longDescription" />
+      </section>
+
+      <section id="specs" class="mb-12 scroll-mt-24">
+        <UiText as="h2" size="xl" class="mb-4">Thông số kỹ thuật</UiText>
+        <UiCard padding="md">
+          <ProductSpecTable :spec="product.spec" :pc-component="product.pcComponent" />
+        </UiCard>
+      </section>
+
+      <section id="ratings" class="mb-12 scroll-mt-24">
+        <UiText as="h2" size="xl" class="mb-4">Đánh giá</UiText>
+        <UiCard v-if="ratingSummary" padding="md" class="mb-6">
+          <ProductRatingSummary
+            :average="ratingSummary.average"
+            :count="ratingSummary.count"
+            :distribution="ratingSummary.distribution"
+          />
+        </UiCard>
+
+        <ProductRatingForm
+          v-if="!productStore.usingFallback && unratedOrders.length"
+          :slug="slug"
+          :unrated-orders="unratedOrders"
+          @submitted="onRatingSubmitted"
+        />
+
+        <div v-if="loadingRatings" class="space-y-4"><UiSkeleton v-for="i in 3" :key="i" class="h-16" /></div>
+        <UiEmptyState
+          v-else-if="!ratings.length"
+          title="Chưa có đánh giá nào"
+          description="Hãy là người đầu tiên mua và đánh giá sản phẩm này."
+          :icon="Star"
+        >
+          <template #action>
+            <UiButton v-if="!authStore.isAuthenticated" to="/login" variant="primary" size="sm">Đăng nhập</UiButton>
+          </template>
+        </UiEmptyState>
+        <template v-else>
+          <ProductRatingList
+            :ratings="ratings"
+            :current-user-id="authStore.user?.id"
+          />
+          <UiPagination
+            v-if="ratingsMeta.totalPages > 1"
+            class="mt-6"
+            :page="ratingsMeta.page"
+            :total-pages="ratingsMeta.totalPages"
+            @update:page="fetchRatings"
+          />
+        </template>
+      </section>
+
+      <section id="comments" class="scroll-mt-24">
+        <UiText as="h2" size="xl" class="mb-4">Bình luận</UiText>
+        <ProductCommentThread
+          v-if="!productStore.usingFallback"
+          :slug="slug"
+          :comments="comments"
+          :loading="loadingComments"
+          @submitted="onCommentChange"
+          @updated="onCommentChange"
+        />
+        <UiPagination
+          v-if="commentsMeta.totalPages > 1"
+          class="mt-6"
+          :page="commentsMeta.page"
+          :total-pages="commentsMeta.totalPages"
+          @update:page="fetchComments"
+        />
+      </section>
     </div>
   </UiContainer>
 </template>

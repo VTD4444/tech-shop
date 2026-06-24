@@ -58,9 +58,15 @@ tech-shop/
 | `/checkout` | `pages/checkout.vue` | Yes | Yes |
 | `/orders` | `pages/orders/index.vue` | Yes | Yes |
 | `/orders/:id` | `pages/orders/[id].vue` | Yes | Yes |
+| `/wishlist` | `pages/wishlist.vue` | Yes | Yes |
 | `/pc-builder` | `pages/pc-builder/index.vue` | No | Yes |
-| `/advisor` | `pages/advisor/index.vue` | No | ClientOnly |
+| `/advisor` | `pages/advisor/index.vue` | No | ClientOnly (Recommend + Chat tabs) |
 | `/vnpay/return` | `pages/vnpay/return.vue` | No | Yes |
+| `/admin` | `pages/admin/index.vue` | Admin | No (SSR off) |
+| `/admin/orders` | `pages/admin/orders/index.vue` | Admin | No |
+| `/admin/products` | `pages/admin/products/index.vue` | Admin | No |
+| `/admin/categories` | `pages/admin/categories/index.vue` | Admin | No |
+| `/admin/brands` | `pages/admin/brands/index.vue` | Admin | No |
 | `/forgot-password` | `pages/forgot-password.vue` | No | ClientOnly |
 | `/reset-password` | `pages/reset-password.vue` | No | ClientOnly |
 | `/profile` | `pages/profile.vue` | Yes | Yes |
@@ -71,18 +77,35 @@ tech-shop/
 
 | Method | Path | Chức năng |
 |---|---|---|
-| POST | `/api/v1/advisor/recommend` | Recommend PC build by budget + purpose |
-| POST | `/api/v1/advisor/chat` | Conversational Q&A |
+| POST | `/api/v1/advisor/recommend` | Recommend PC build by budget + purpose (RAG) |
+| POST | `/api/v1/advisor/chat` | Conversational Q&A (non-stream) |
+| POST | `/api/v1/advisor/chat/stream` | Chat SSE streaming (`data: {"token": "..."}`) |
 | GET | `/api/v1/advisor/health` | Health check |
-| GET | `/api/v1/advisor/health/gemini` | Gemini API key / quota check |
+| GET | `/api/v1/advisor/health/gemini` | Gemini API key / quota probe |
+
+Frontend AI client: `$aiApi` + `useAdvisorChat` composable. Dev proxy: `NUXT_PUBLIC_AI_API_URL=/api/ai`.
+
+## Key Frontend Pieces
+
+| Piece | Path | Chức năng |
+|---|---|---|
+| Auth store | `stores/auth.ts` | Session, refresh, admin role |
+| Wishlist store | `stores/wishlist.ts` | Sync with `/wishlist` API |
+| Advisor chat | `composables/useAdvisorChat.ts` | SSE stream, localStorage history, fallback |
+| Advisor UI | `components/advisor/AdvisorChat.vue` | Chat tab with markdown rendering |
+| User menu | `components/layout/AppUserMenu.vue` | Profile dropdown (orders, wishlist, admin, logout) |
+| Middleware | `middleware/admin.ts`, `middleware/customer.ts` | RBAC route guards |
 
 ## Key Design Decisions
 
 1. **Auth**: httpOnly cookie (`Set-Cookie: access_token=...`), Nuxt `credentials: 'include'`
-2. **Checkout atomicity**: `$transaction` + `SELECT ... FOR UPDATE` (sorted IDs to prevent deadlock)
-3. **PC Builder rules**: Server-side NestJS service (6 rules: socket, RAM gen, form factor, GPU length, cooler height, PSU wattage)
-4. **VNPAY**: HMAC-SHA512 signature, idempotent IPN handler
-5. **AI RAG**: FastAPI fetches live product data from NestJS → builds prompt → Gemini parses JSON
+2. **RBAC**: `admin` / `customer` middleware on routes; URLs unchanged (`/orders`, not `/customer/orders`)
+3. **Checkout atomicity**: `$transaction` + `SELECT ... FOR UPDATE` (sorted IDs to prevent deadlock)
+4. **Checkout payment**: Review order → **Pay with VNPay** (redirect) or **Pay Later** (pending order)
+5. **PC Builder rules**: Server-side NestJS service (6 rules) + `selectedIds` pre-filter in component picker
+6. **VNPAY**: HMAC-SHA512 signature, idempotent IPN handler; `VNPAY_RETURN_URL=http://localhost:3001/vnpay/return`
+7. **AI RAG**: FastAPI fetches live product data from NestJS → builds prompt → Gemini parses JSON
+8. **AI Chat**: SSE streaming with non-stream fallback; history in `localStorage` (50 messages)
 
 ## File Naming Conventions
 
@@ -105,5 +128,6 @@ tech-shop/
 
 // Reactivity (Nuxt)
 const store = useXxxStore();        // Pinia
-const { $api } = useNuxtApp();      // API client
+const { $api } = useNuxtApp();      // NestJS API client (credentials: include)
+const { $aiApi } = useNuxtApp();    // AI service client (proxy /api/ai in dev)
 const config = useRuntimeConfig();  // Runtime config

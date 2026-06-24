@@ -21,19 +21,23 @@ Auth: JWT via `Authorization: Bearer <token>` or `httpOnly` cookie `access_token
 ### `POST /auth/register`
 ```json
 { "username": "john", "email": "john@test.com", "password": "123456" }
-// Returns: { accessToken, refreshToken, user }
-// Sets httpOnly cookies
+// Returns: { user }
+// Sets httpOnly cookies: access_token (15m), refresh_token (7d)
 ```
 
 ### `POST /auth/login`
 ```json
 { "email": "john@test.com", "password": "123456" }
-// Returns: { accessToken, refreshToken, user }
+// Returns: { user }
+// Sets httpOnly cookies: access_token, refresh_token
+// Frontend sends credentials: 'include' on all API calls
 ```
 
 ### `POST /auth/refresh`
 ```json
-{ "refreshToken": "..." }
+{}
+// Uses refresh_token cookie (or optional body.refreshToken)
+// Returns: { user }; rotates access_token + refresh_token cookies
 ```
 
 ### `POST /auth/logout`
@@ -119,6 +123,14 @@ Query params:
 ## Cart
 
 ### `GET /cart` [Auth]
+Returns items plus pricing summary:
+```json
+{
+  "items": [ { "productId": "1", "quantity": 2, "product": { ... } } ],
+  "summary": { "subtotal": 1000000, "tax": 100000, "taxRate": 0.1, "shipping": 0, "total": 1100000 }
+}
+```
+Tax rate defaults to `0.1` (10%); override with `CART_TAX_RATE` in `backend/.env`.
 ### `POST /cart` [Auth] — `{ "productId": "1", "quantity": 2 }`
 ### `PATCH /cart/:productId` [Auth] — `{ "quantity": 3 }`
 ### `DELETE /cart/:productId` [Auth]
@@ -160,8 +172,21 @@ Returns: `{ paymentUrl: "https://sandbox.vnpayment.vn/...", txnRef: "..." }`
 
 ## PC Builder
 
-### `GET /pc-builder/components?type=CPU`
+### `GET /pc-builder/components?type=CPU&selectedIds=1,2,3`
 Returns all PC components, optionally filtered by `componentType`.
+
+When `selectedIds` is provided (comma-separated product/component IDs already in the build), each item includes compatibility against the current selection:
+```json
+{
+  "id": "5",
+  "componentType": "VGA",
+  "compatible": false,
+  "incompatibilityReasons": ["GPU length exceeds case limit"],
+  "product": { "name": "...", "price": 8990000 }
+}
+```
+
+Without `selectedIds`, all items return `compatible: true` and `incompatibilityReasons: []`.
 
 ### `POST /pc-builder/validate`
 ```json
@@ -195,12 +220,20 @@ Returns:
 ### `PATCH /admin/orders/:id/status?status=confirmed` [Admin]
 ### `GET /admin/products/inventory` [Admin]
 ### `GET /admin/analytics/summary` [Admin]
+Returns dashboard totals (orders, revenue, low-stock count).
+
+### `GET /admin/analytics/revenue-by-month?months=12` [Admin]
+Returns monthly revenue for charts:
+```json
+{ "data": [ { "month": "2026-01", "revenue": 15000000, "orderCount": 12 } ] }
+```
 
 ---
 
 ## AI Service
 
-Base URL: `http://localhost:8000/api/v1`
+Base URL (direct): `http://localhost:8000/api/v1`  
+Frontend dev proxy: `http://localhost:3001/api/ai` → `http://127.0.0.1:8000/api/v1` (see `frontend/nuxt.config.ts` `routeRules`)
 
 ### `POST /advisor/recommend`
 ```json
@@ -211,14 +244,36 @@ Base URL: `http://localhost:8000/api/v1`
   "current_cart_ids": []
 }
 ```
+Returns RAG-based component list from live catalog. Falls back to rule-based recommendations when Gemini quota is exceeded.
 
 ### `POST /advisor/chat`
+Non-streaming conversational Q&A (fallback when SSE fails or response is truncated):
 ```json
 {
   "message": "Tôi cần build PC 20 triệu cho đồ họa",
   "history": [{"role": "user", "content": "..."}, {"role": "assistant", "content": "..."}]
 }
 ```
+Returns: `{ "success": true, "data": { "reply": "...", "suggested_products": [] } }`
+
+### `POST /advisor/chat/stream`
+Server-Sent Events (SSE) streaming chat. Same request body as `/advisor/chat`.
+
+Response (`Content-Type: text/event-stream`):
+```
+data: {"token": "Hello"}
+data: {"token": " world"}
+data: {"done": true}
+```
+
+On error: `data: {"error": "message"}`
+
+Frontend (`useAdvisorChat.ts`): parses SSE by `\n\n` delimiters, flushes buffer on stream end, auto-falls back to `/advisor/chat` if the reply looks truncated.
+
+LLM `max_output_tokens`: **8192** (actual quota usage is based on tokens generated, not this ceiling).
 
 ### `GET /advisor/health`
 Returns: `{ "status": "ok", "service": "ai-advisor" }`
+
+### `GET /advisor/health/gemini`
+Probes Gemini API key. Returns `{ "ok": true|false, "reason": "...", "key_source": "..." }`

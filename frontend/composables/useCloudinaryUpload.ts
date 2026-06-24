@@ -1,4 +1,4 @@
-export function useCloudinaryUpload() {
+export function useCloudinaryUpload(signPath = '/admin/uploads/sign') {
   const uploading = ref(false);
   const error = ref<string | null>(null);
 
@@ -7,7 +7,7 @@ export function useCloudinaryUpload() {
     error.value = null;
     try {
       const { $api } = useNuxtApp();
-      const sign: any = await $api('/admin/uploads/sign', { method: 'POST' });
+      const sign: any = await $api(signPath, { method: 'POST' });
       const data = sign.data || sign;
       const form = new FormData();
       form.append('file', file);

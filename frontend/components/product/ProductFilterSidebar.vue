@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useDebounceFn } from '@vueuse/core';
 import { useProductStore } from '~/stores/product';
 import { useFormatPrice } from '~/composables/useFormatPrice';
 
@@ -8,6 +9,7 @@ const props = defineProps<{
   filters: {
     category: string;
     brand: string;
+    search?: string;
     minPrice?: number;
     maxPrice?: number;
     isPcComponent?: boolean;
@@ -21,6 +23,22 @@ const emit = defineEmits<{
 
 const { formatPrice } = useFormatPrice();
 const priceMax = ref(props.filters.maxPrice ?? 50000000);
+const localSearch = ref(props.filters.search || '');
+
+watch(
+  () => props.filters.search,
+  (v) => {
+    localSearch.value = v || '';
+  },
+);
+
+const debouncedSearch = useDebounceFn((value: string) => {
+  emit('update', 'search', value);
+}, 400);
+
+watch(localSearch, (value) => {
+  debouncedSearch(value);
+});
 
 function setFilter(key: string, value: unknown) {
   emit('update', key, value);
@@ -33,6 +51,11 @@ function setFilter(key: string, value: unknown) {
       <UiText as="h3" size="sm" uppercase class="mb-4 border-b border-subtle pb-3">Filters</UiText>
 
       <div class="space-y-4">
+        <div>
+          <UiText variant="muted" size="xs" uppercase class="mb-2 block">Search</UiText>
+          <UiInput v-model="localSearch" placeholder="Search products..." />
+        </div>
+
         <div>
           <UiText variant="muted" size="xs" uppercase class="mb-2 block">Category</UiText>
           <UiSelect

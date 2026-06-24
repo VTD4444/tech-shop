@@ -17,6 +17,17 @@ The PC Builder is a server-side compatibility validation engine in `backend/src/
 | CASE | No | `formFactor`, `maxGpuLengthMm`, `maxCpuCoolerHeightMm` |
 | COOLER | No | `cpuCoolerHeightMm`, `powerConsumption` |
 
+## Component Listing with Compatibility
+
+```
+GET /pc-builder/components?type=VGA&selectedIds=1,2,3
+  → For each candidate component, run validateBuild([...selectedIds, candidateId])
+  → Annotate: { compatible: boolean, incompatibilityReasons: string[] }
+  → Frontend uses this to hide/disable incompatible options in the picker modal
+```
+
+Without `selectedIds`, all components return `compatible: true`.
+
 ## Validation Flow
 
 ```

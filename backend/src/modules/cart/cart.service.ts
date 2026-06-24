@@ -19,13 +19,27 @@ export class CartService {
       orderBy: { createdAt: 'asc' },
     });
 
-    return items.map((item) => ({
+    const mapped = items.map((item) => ({
       id: item.id.toString(),
       userId: item.userId.toString(),
       productId: item.productId.toString(),
       quantity: item.quantity,
       product: { ...item.product, id: item.product.id.toString(), price: Number(item.product.price) },
     }));
+
+    const subtotal = mapped.reduce(
+      (sum, item) => sum + item.product.price * item.quantity,
+      0,
+    );
+    const taxRate = Number(process.env.CART_TAX_RATE || 0.1);
+    const tax = Math.round(subtotal * taxRate);
+    const shipping = 0;
+    const total = subtotal + tax + shipping;
+
+    return {
+      items: mapped,
+      summary: { subtotal, tax, taxRate, shipping, total },
+    };
   }
 
   async addItem(userId: string, dto: { productId: string; quantity: number }) {

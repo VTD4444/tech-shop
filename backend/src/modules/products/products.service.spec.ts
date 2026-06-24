@@ -12,7 +12,8 @@ describe('ProductsService pagination parsing', () => {
     set: jest.fn(),
     bumpProductsCacheVersion: jest.fn(),
   };
-  const service = new ProductsService(prisma as any, redis as any);
+  const ratingsService = { getUnratedOrders: jest.fn() };
+  const service = new ProductsService(prisma as any, redis as any, ratingsService as any);
 
   it('parses string limit and page as integers', async () => {
     await service.findAll({ page: '2' as any, limit: '8' as any });

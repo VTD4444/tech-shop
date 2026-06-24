@@ -26,6 +26,7 @@ const {
 const showSelector = ref(false);
 const selectedType = ref('');
 const availableComponents = ref<any[]>([]);
+const showIncompatible = ref(false);
 const saving = ref(false);
 const addingToCart = ref(false);
 
@@ -44,9 +45,22 @@ function typeLabel(type: string) {
   return componentTypes.find((c) => c.value === type)?.label || type;
 }
 
+function selectedIdsExcluding(type: string) {
+  return Object.entries(selectedComponents.value)
+    .filter(([t]) => t !== type)
+    .map(([, comp]) => comp.id);
+}
+
+const visibleComponents = computed(() => {
+  if (showIncompatible.value) return availableComponents.value;
+  return availableComponents.value.filter((c) => c.compatible !== false);
+});
+
 async function openSelector(type: string) {
   selectedType.value = type;
-  availableComponents.value = await pcBuilderStore.fetchComponents(type);
+  showIncompatible.value = false;
+  const selectedIds = selectedIdsExcluding(type);
+  availableComponents.value = await pcBuilderStore.fetchComponents(type, selectedIds);
   showSelector.value = true;
 }
 
@@ -286,22 +300,35 @@ onMounted(async () => {
     </div>
 
     <UiModal :open="showSelector" :title="`Select ${typeLabel(selectedType)}`" @close="showSelector = false">
-      <UiEmptyState v-if="!availableComponents.length" title="No components" description="No components available for this slot." />
+      <div class="flex items-center justify-between mb-3">
+        <UiText variant="muted" size="xs">Only compatible parts shown by default</UiText>
+        <UiCheckbox v-model="showIncompatible" label="Show incompatible" />
+      </div>
+      <UiEmptyState v-if="!visibleComponents.length" title="No components" description="No compatible components for this slot. Try showing incompatible parts or change your selection." />
       <div v-else class="space-y-2 max-h-[50vh] overflow-y-auto">
         <UiCard
-          v-for="comp in availableComponents"
+          v-for="comp in visibleComponents"
           :key="comp.id"
           padding="sm"
-          hover
-          class="cursor-pointer"
-          :class="selectedComponents[selectedType]?.id === comp.id ? 'border-accent bg-accent-muted/20' : ''"
-          @click="selectComponent(comp)"
+          :hover="comp.compatible !== false"
+          :class="[
+            comp.compatible === false ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer',
+            selectedComponents[selectedType]?.id === comp.id ? 'border-accent bg-accent-muted/20' : '',
+          ]"
+          @click="comp.compatible !== false && selectComponent(comp)"
         >
           <div class="flex items-center gap-4">
             <img :src="comp.product?.imageUrl || '/placeholder.svg'" class="w-14 h-14 object-cover rounded bg-surface-3" />
             <div class="flex-1 min-w-0">
               <p class="font-medium text-text-primary truncate">{{ comp.product?.name }}</p>
               <p class="text-accent font-semibold text-sm">{{ formatPrice(comp.product?.price || 0) }}</p>
+              <p
+                v-for="reason in comp.incompatibilityReasons"
+                :key="reason"
+                class="text-xs text-warning mt-1"
+              >
+                ⚠ {{ reason }}
+              </p>
             </div>
           </div>
         </UiCard>

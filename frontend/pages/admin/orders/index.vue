@@ -1,17 +1,22 @@
 <script setup lang="ts">
-definePageMeta({ layout: 'admin', middleware: 'auth' });
+definePageMeta({ layout: 'admin', middleware: ['auth', 'admin'] });
 
 const { $api } = useNuxtApp();
 const { formatPrice } = useFormatPrice();
 const toast = useToast();
 const orders = ref<any[]>([]);
 
-const res: any = await $api('/admin/orders?limit=50');
-orders.value = res.data || [];
+async function loadOrders() {
+  const res: any = await $api('/admin/orders?limit=50');
+  orders.value = res.data || [];
+}
+
+await loadOrders();
 
 async function updateStatus(id: string, status: string) {
   await $api(`/admin/orders/${id}/status?status=${status}`, { method: 'PATCH' });
   toast.success('Status updated');
+  await loadOrders();
 }
 </script>
 

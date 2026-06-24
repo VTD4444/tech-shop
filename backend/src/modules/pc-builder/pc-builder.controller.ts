@@ -15,8 +15,14 @@ export class PcBuilderController {
 
   @Public()
   @Get('components')
-  getComponents(@Query('type') type?: string) {
-    return this.pcBuilderService.getComponents(type);
+  getComponents(
+    @Query('type') type?: string,
+    @Query('selectedIds') selectedIds?: string,
+  ) {
+    const ids = selectedIds
+      ? selectedIds.split(',').map((s) => s.trim()).filter(Boolean)
+      : undefined;
+    return this.pcBuilderService.getComponents(type, ids);
   }
 
   @Public()

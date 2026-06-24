@@ -12,6 +12,9 @@ export default defineNuxtConfig({
       { name: 'useToast', from: '~/composables/useToast' },
       { name: 'useProductStatus', from: '~/composables/useProductStatus' },
       { name: 'useCloudinaryUpload', from: '~/composables/useCloudinaryUpload' },
+      { name: 'useAuthValidation', from: '~/composables/useAuthValidation' },
+      { name: 'useProductDetail', from: '~/composables/useProductDetail' },
+      { name: 'useAdvisorChat', from: '~/composables/useAdvisorChat' },
     ],
   },
   components: [
@@ -37,7 +40,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || 'http://localhost:3000/api/v1',
-      aiApiUrl: process.env.NUXT_PUBLIC_AI_API_URL || 'http://localhost:8000/api/v1',
+      aiApiUrl: process.env.NUXT_PUBLIC_AI_API_URL || '/api/ai',
       sentryDsn: process.env.NUXT_PUBLIC_SENTRY_DSN || '',
     },
   },
@@ -55,5 +58,6 @@ export default defineNuxtConfig({
     '/forgot-password': { ssr: false },
     '/reset-password': { ssr: false },
     '/admin/**': { ssr: false },
+    '/api/ai/**': { proxy: 'http://127.0.0.1:8000/api/v1/**' },
   },
 });

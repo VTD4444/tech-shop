@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ middleware: 'auth' });
+definePageMeta({ middleware: ['auth', 'customer'] });
 
 const route = useRoute();
 const { $api } = useNuxtApp();
@@ -55,6 +55,11 @@ async function cancelOrder() {
           <p class="text-sm text-text-muted mt-1">{{ order.shippingAddress }}</p>
         </UiCard>
       </div>
+      <UiCard padding="md" class="mb-8">
+        <UiText as="h2" size="lg" class="mb-4">Order Timeline</UiText>
+        <OrderTimeline :order="order" />
+      </UiCard>
+
       <UiCard padding="none">
         <div class="p-4 border-b border-subtle"><UiText as="h2" size="lg">Items</UiText></div>
         <div v-for="item in order.items" :key="item.id" class="flex justify-between items-center px-4 py-4 border-b border-subtle last:border-0">

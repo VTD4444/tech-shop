@@ -57,7 +57,7 @@ const productSelect = {
 export class PcBuilderService {
   constructor(private prisma: PrismaService) {}
 
-  async getComponents(type?: string) {
+  async getComponents(type?: string, selectedIds?: string[]) {
     const where: any = {};
     if (type) where.componentType = type.toUpperCase();
 
@@ -67,7 +67,41 @@ export class PcBuilderService {
       orderBy: { product: { name: 'asc' } },
     });
 
-    return components.map(serializePcComponent);
+    const serialized = components.map(serializePcComponent);
+
+    if (!selectedIds?.length) {
+      return serialized.map((c) => ({
+        ...c,
+        compatible: true,
+        incompatibilityReasons: [] as string[],
+      }));
+    }
+
+    const selected = selectedIds.filter(Boolean);
+    const annotated = await Promise.all(
+      serialized.map(async (comp) => {
+        const buildIds = [...selected, comp.id];
+        try {
+          const validation = await this.validateBuild(buildIds);
+          const errors = validation.issues
+            .filter((i) => i.type === 'error')
+            .map((i) => i.message);
+          return {
+            ...comp,
+            compatible: errors.length === 0,
+            incompatibilityReasons: errors,
+          };
+        } catch {
+          return {
+            ...comp,
+            compatible: false,
+            incompatibilityReasons: ['Không thể kiểm tra tương thích'],
+          };
+        }
+      }),
+    );
+
+    return annotated;
   }
 
   async getComponentByProductSlug(slug: string) {

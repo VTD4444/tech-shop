@@ -2,8 +2,9 @@
 import { useAuthStore } from '~/stores/auth';
 
 const authStore = useAuthStore();
-if (!authStore.isAdmin && import.meta.client) {
-  navigateTo('/');
+
+if (!authStore.bootstrapped) {
+  await authStore.bootstrap();
 }
 </script>
 

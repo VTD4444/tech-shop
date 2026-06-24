@@ -26,4 +26,9 @@ export class AdminController {
   getAnalyticsSummary() {
     return this.adminService.getAnalyticsSummary();
   }
+
+  @Get('analytics/revenue-by-month')
+  getRevenueByMonth(@Query('months') months?: number) {
+    return this.adminService.getRevenueByMonth(months);
+  }
 }

@@ -12,28 +12,28 @@
         │            │               │                   │
         ▼            ▼               ▼                   ▼
 ┌───────────────────────────────────────────────────────────────┐
-│                    NestJS API :3000                           │
+│                    NestJS API :3000 (BFF)                     │
 │  ┌───┐ ┌──────┐ ┌──────┐ ┌──────┐ ┌──────┐ ┌───────┐       │
 │  │Auth│ │Users │ │Prod  │ │Cart  │ │Order │ │PC     │       │
 │  │    │ │Addr  │ │Cat   │ │Wish  │ │Pay   │ │Builder│       │
 │  └───┘ └──────┘ └──────┘ └──────┘ └──────┘ └───────┘       │
-│                  │ Prisma ORM                                │
-└──────────────────┼───────────────────────────────────────────┘
-                   │
-                   ▼
+│                  │ Prisma ORM          │ Redis (cache)      │
+└──────────────────┼─────────────────────┼────────────────────┘
+                   │                     │
+                   ▼                     ▼
 ┌───────────────────────────────────────────────────────────────┐
-│          PostgreSQL 16 + pgvector :5432                       │
-│  users │ products │ pc_components │ orders │ vnpay_txns      │
+│          PostgreSQL 16 :5432          │  VNPay Sandbox        │
+│  users │ products │ orders │ vnpay    │  (payment gateway)    │
 └───────────────────────────────────────────────────────────────┘
 
-┌────────────────────────────────────────┐
-│   FastAPI AI Service :8000             │
-│   POST /advisor/recommend              │
-│   POST /advisor/chat                   │
-│        │                               │
-│        ▼                               │
-│   Gemini 2.0 Flash API (external)      │
-└────────────────────────────────────────┘
+Nuxt AI Advisor ──HTTP──> FastAPI AI Service :8000
+  (dev: /api/ai proxy in Nuxt routeRules)
+                              POST /advisor/recommend
+                              POST /advisor/chat
+                              POST /advisor/chat/stream (SSE)
+                                   │
+                                   ├──> NestJS catalog API (internal)
+                                   └──> Gemini API (gemini-3.5-flash, external)
 ```
 
 ## Data Flow
@@ -73,20 +73,32 @@ User clicks "Pay with VNPAY"
 ### 5. PC Builder Compatibility
 ```
 User selects components → Vue modal
+  → GET /pc-builder/components?selectedIds=1,2,3 (per-slot filtering)
   → POST /pc-builder/validate { componentIds[] }
   → NestJS queries pc_components JOIN products
   → Applies 6 rules: socket, RAM gen, form factor, GPU length, cooler height, PSU wattage
   → Returns { compatible, issues[], totalWattage, totalPrice }
 ```
 
-### 6. AI Advisor (RAG)
+### 6. AI Advisor — Recommend (RAG)
 ```
 POST /ai-service/api/v1/advisor/recommend { budget, purpose }
   → FastAPI calls NestJS GET /pc-builder/components + GET /products
   → Builds prompt with product data
-  → Calls Gemini 2.0 Flash
+  → Calls Gemini (gemini-3.5-flash)
   → Parses JSON response
   → Returns { recommended_components[], total_price, explanation }
+  → Falls back to rule-based recommendations on quota errors
+```
+
+### 7. AI Advisor — Chat (SSE)
+```
+User types in AdvisorChat → useAdvisorChat.sendMessage()
+  → POST /api/ai/advisor/chat/stream (Nuxt proxy → FastAPI)
+  → FastAPI streams Gemini tokens as SSE: data: {"token": "..."}
+  → Frontend appends tokens to assistant message (markdown via marked + DOMPurify)
+  → History persisted in localStorage (last 50 messages)
+  → If stream fails or reply looks truncated → POST /advisor/chat (non-stream fallback)
 ```
 
 ## Communication Protocols
@@ -94,10 +106,23 @@ POST /ai-service/api/v1/advisor/recommend { budget, purpose }
 | From | To | Protocol | Auth |
 |---|---|---|---|
 | Nuxt | NestJS | HTTP REST | httpOnly JWT cookie |
-| Nuxt | FastAPI | HTTP REST | None (internal) |
+| Nuxt | FastAPI | HTTP REST / SSE | None (dev proxy `/api/ai`) |
 | FastAPI | NestJS | HTTP REST | None (internal Docker network) |
-| FastAPI | Gemini | HTTPS (gRPC/HTTP) | API Key |
+| FastAPI | Gemini | HTTPS | API Key |
 | NestJS | VNPAY | HTTPS | HMAC-SHA512 |
+
+## Frontend RBAC
+
+Route middleware enforces role-based access without changing URL structure:
+
+| Middleware | Routes | Behavior |
+|---|---|---|
+| `auth` | `/cart`, `/checkout`, `/orders`, `/profile`, `/wishlist`, `/admin/**` | Redirect to `/login` if unauthenticated |
+| `customer` | `/cart`, `/checkout`, `/orders`, `/profile`, `/wishlist` | Same auth gate as `auth` (used together on customer routes) |
+| `admin` | `/admin/**` | Redirect to `/` if `role !== 'admin'` |
+
+Admin pages: `definePageMeta({ layout: 'admin', middleware: ['auth', 'admin'] })`.  
+SSR auth bootstrap: `plugins/auth.server.ts` hydrates session from cookies on `/admin` routes.
 
 ## Security
 

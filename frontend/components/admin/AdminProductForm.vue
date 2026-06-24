@@ -22,6 +22,8 @@ const form = reactive({
   status: props.initial?.status || 'active',
 });
 
+const longDescription = ref(props.initial?.longDescription || '');
+const productSpec = ref<Record<string, any>>({ ...(props.initial?.spec || {}) });
 const pcComponent = ref<Record<string, string | number>>(pcComponentFromInitial(props.initial?.pcComponent));
 
 const imagePreview = ref(props.initial?.imageUrl || '');
@@ -47,9 +49,15 @@ function onSubmit() {
     toast.error('Select a PC component type and fill required specs');
     return;
   }
+  if ((longDescription.value || '').length > 50000) {
+    toast.error('Long description exceeds 50,000 characters');
+    return;
+  }
 
   emit('submit', {
     ...form,
+    longDescription: longDescription.value || null,
+    spec: productSpec.value,
     images: images.value.length ? images.value : undefined,
     pcComponent: form.isPcComponent ? buildPcComponentPayload(pcComponent.value) : undefined,
     isPcComponent: form.isPcComponent,
@@ -58,7 +66,7 @@ function onSubmit() {
 </script>
 
 <template>
-  <UiCard padding="md" class="max-w-2xl">
+  <UiCard padding="md" class="max-w-3xl">
     <form class="space-y-4" @submit.prevent="onSubmit">
       <div>
         <UiText variant="muted" size="xs" uppercase class="mb-1 block">Name</UiText>
@@ -79,9 +87,18 @@ function onSubmit() {
         </div>
       </div>
       <div>
-        <UiText variant="muted" size="xs" uppercase class="mb-1 block">Description</UiText>
+        <UiText variant="muted" size="xs" uppercase class="mb-1 block">Short description</UiText>
         <textarea v-model="form.description" rows="3" class="w-full rounded-md border border-subtle bg-surface-3 px-4 py-2.5 text-sm text-text-primary" />
       </div>
+      <div>
+        <UiText variant="muted" size="xs" uppercase class="mb-1 block">Detailed description</UiText>
+        <ClientOnly>
+          <AdminRichTextEditor v-model="longDescription" />
+        </ClientOnly>
+      </div>
+
+      <AdminProductSpecFields v-model="productSpec" />
+
       <div>
         <UiText variant="muted" size="xs" uppercase class="mb-1 block">Image</UiText>
         <input type="file" accept="image/*" class="text-sm text-text-muted" @change="onFile" />
@@ -90,7 +107,6 @@ function onSubmit() {
       </div>
 
       <UiCheckbox v-model="form.isPcComponent" label="PC component (PC Builder)" />
-
       <AdminPcComponentFields v-model="pcComponent" :enabled="form.isPcComponent" />
 
       <UiButton type="submit" variant="primary" :loading="uploading">Save</UiButton>
