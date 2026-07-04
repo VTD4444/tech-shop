@@ -10,6 +10,8 @@ export default defineNuxtConfig({
     imports: [
       { name: 'useFormatPrice', from: '~/composables/useFormatPrice' },
       { name: 'useToast', from: '~/composables/useToast' },
+      { name: 'useConfirmDialog', from: '~/composables/useConfirmDialog' },
+      { name: 'usePromptDialog', from: '~/composables/usePromptDialog' },
       { name: 'useProductStatus', from: '~/composables/useProductStatus' },
       { name: 'useCloudinaryUpload', from: '~/composables/useCloudinaryUpload' },
       { name: 'useAuthValidation', from: '~/composables/useAuthValidation' },
@@ -31,9 +33,9 @@ export default defineNuxtConfig({
     head: {
       charset: 'utf-8',
       viewport: 'width=device-width, initial-scale=1',
-      title: 'TechShop - Build Your Dream PC',
+      title: 'TechShop - Xây dựng PC mơ ước',
       meta: [
-        { name: 'description', content: 'TechShop - High-performance tech e-commerce for PC components and laptops' },
+        { name: 'description', content: 'TechShop - Cửa hàng linh kiện PC, laptop hiệu năng cao tại Việt Nam' },
       ],
     },
   },

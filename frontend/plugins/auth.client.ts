@@ -1,6 +1,19 @@
 import { useAuthStore } from '~/stores/auth';
 import { isPublicAuthPath } from '~/utils/auth-paths';
 
+async function handleGoogleAuthReturn(nuxtApp: any) {
+  const authStore = useAuthStore();
+  try {
+    await authStore.fetchProfile();
+    authStore.markBootstrapped();
+    useToast().success('Đăng nhập Google thành công!');
+  } catch {
+    authStore.markBootstrapped();
+  }
+  const route = nuxtApp.$router.currentRoute.value;
+  await nuxtApp.$router.replace({ path: route.path, query: {} });
+}
+
 export default defineNuxtPlugin((nuxtApp) => {
   const initAuth = async (path: string) => {
     const authStore = useAuthStore();
@@ -20,10 +33,19 @@ export default defineNuxtPlugin((nuxtApp) => {
   };
 
   nuxtApp.hook('app:mounted', () => {
-    void initAuth(nuxtApp.$router.currentRoute.value.path);
+    const route = nuxtApp.$router.currentRoute.value;
+    if (route.query.auth === 'google') {
+      void handleGoogleAuthReturn(nuxtApp);
+      return;
+    }
+    void initAuth(route.path);
   });
 
   nuxtApp.$router.afterEach((to) => {
+    if (to.query.auth === 'google') {
+      void handleGoogleAuthReturn(nuxtApp);
+      return;
+    }
     void initAuth(to.path);
   });
 });

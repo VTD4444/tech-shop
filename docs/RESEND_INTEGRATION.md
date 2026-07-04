@@ -8,7 +8,7 @@ TechShop uses [Resend](https://resend.com) for transactional email via `backend/
 |---------|--------|
 | Forgot password | Reset link (`/reset-password?token=...`) |
 | Order placed | Order created confirmation |
-| VNPay IPN success | Payment received confirmation |
+| SePay IPN success | Payment received confirmation |
 
 If `RESEND_API_KEY` or `MAIL_FROM` is missing, the backend logs a warning and **skips** sending (API still returns success for forgot-password to avoid email enumeration).
 

@@ -9,9 +9,9 @@ const rows = computed(() => {
   const s = props.spec;
   if (s?.cpuBrand || s?.cpuModel) list.push({ label: 'CPU', value: [s.cpuBrand, s.cpuSeries, s.cpuModel].filter(Boolean).join(' ') });
   if (s?.ramCapacity) list.push({ label: 'RAM', value: `${s.ramCapacity}GB ${s.ramGeneration || ''}`.trim() });
-  if (s?.storageCapacity) list.push({ label: 'Storage', value: `${s.storageCapacity}GB ${s.storageType || ''}`.trim() });
+  if (s?.storageCapacity) list.push({ label: 'Ổ cứng', value: `${s.storageCapacity}GB ${s.storageType || ''}`.trim() });
   if (s?.gpuModel) list.push({ label: 'GPU', value: s.gpuModel });
-  if (s?.screenSize) list.push({ label: 'Screen', value: `${s.screenSize}"` });
+  if (s?.screenSize) list.push({ label: 'Màn hình', value: `${s.screenSize}"` });
   if (s?.specs && typeof s.specs === 'object') {
     for (const [k, v] of Object.entries(s.specs)) {
       list.push({ label: k, value: String(v) });
@@ -20,9 +20,9 @@ const rows = computed(() => {
   const pc = props.pcComponent;
   if (pc?.socket) list.push({ label: 'Socket', value: pc.socket });
   if (pc?.chipset) list.push({ label: 'Chipset', value: pc.chipset });
-  if (pc?.ramGeneration) list.push({ label: 'RAM type', value: pc.ramGeneration });
+  if (pc?.ramGeneration) list.push({ label: 'Loại RAM', value: pc.ramGeneration });
   if (pc?.powerConsumption) list.push({ label: 'TDP', value: `${pc.powerConsumption}W` });
-  if (pc?.formFactor) list.push({ label: 'Form factor', value: pc.formFactor });
+  if (pc?.formFactor) list.push({ label: 'Kích thước', value: pc.formFactor });
   return list;
 });
 </script>
@@ -34,5 +34,5 @@ const rows = computed(() => {
       <dd class="text-text-primary text-right">{{ row.value }}</dd>
     </div>
   </dl>
-  <p v-else class="text-text-muted text-sm">No specifications listed.</p>
+  <p v-else class="text-text-muted text-sm">Chưa có thông số kỹ thuật.</p>
 </template>

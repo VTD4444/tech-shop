@@ -6,7 +6,7 @@ export interface ChatMessage {
 const STORAGE_KEY = 'techshop-advisor-chat';
 
 const AI_OFFLINE_MSG =
-  'AI service is not running. Start it with: cd ai-service && uvicorn app.main:app --reload --port 8000';
+  'Dịch vụ AI chưa chạy. Khởi động: cd ai-service && uvicorn app.main:app --reload --port 8000';
 
 function parseSseEvents(buffer: string): { events: string[]; rest: string } {
   const events: string[] = [];
@@ -103,7 +103,7 @@ export function useAdvisorChat() {
       if (msg.includes('Failed to fetch') || msg.includes('fetch')) {
         error.value = AI_OFFLINE_MSG;
       } else {
-        error.value = msg || 'Chat failed';
+        error.value = msg || 'Gửi tin nhắn thất bại';
       }
       messages.value.splice(assistantIndex, 1);
     } finally {
@@ -208,7 +208,7 @@ export function useAdvisorChat() {
         method: 'POST',
         body: { message, history },
       });
-      messages.value[assistantIndex].content = res.data?.reply || 'No response';
+      messages.value[assistantIndex].content = res.data?.reply || 'Không có phản hồi';
     } catch (e: any) {
       const status = e?.status || e?.statusCode;
       if (status === 502 || status === 503 || e?.message?.includes('fetch')) {

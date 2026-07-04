@@ -5,7 +5,9 @@ import { isPublicAuthPath } from '~/utils/auth-paths';
 interface User {
   id: string;
   username: string;
+  fullName?: string;
   email?: string;
+  phone?: string;
   role: string;
 }
 
@@ -14,6 +16,7 @@ export const useAuthStore = defineStore('auth', () => {
   const bootstrapped = ref(false);
   const isAuthenticated = computed(() => !!user.value);
   const isAdmin = computed(() => user.value?.role === 'admin');
+  const displayName = computed(() => user.value?.fullName || user.value?.username || user.value?.email || '');
 
   function markBootstrapped() {
     bootstrapped.value = true;
@@ -41,11 +44,17 @@ export const useAuthStore = defineStore('auth', () => {
     return data.data.user;
   }
 
-  async function register(username: string, email: string, password: string) {
+  async function register(payload: {
+    fullName: string;
+    email: string;
+    phone: string;
+    password: string;
+    confirmPassword: string;
+  }) {
     const { $api } = useNuxtApp();
     const data: any = await $api('/auth/register', {
       method: 'POST',
-      body: { username, email, password },
+      body: payload,
     });
     user.value = data.data.user;
     bootstrapped.value = true;
@@ -97,6 +106,7 @@ export const useAuthStore = defineStore('auth', () => {
     bootstrapped,
     isAuthenticated,
     isAdmin,
+    displayName,
     markBootstrapped,
     clearSession,
     bootstrap,

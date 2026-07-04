@@ -13,11 +13,11 @@ import {
 const route = useRoute();
 
 const links = [
-  { to: '/admin', label: 'Dashboard', icon: LayoutDashboard, exact: true },
-  { to: '/admin/products', label: 'Products', icon: Package },
-  { to: '/admin/categories', label: 'Categories', icon: FolderTree },
-  { to: '/admin/brands', label: 'Brands', icon: Tag },
-  { to: '/admin/orders', label: 'Orders', icon: ClipboardList },
+  { to: '/admin', label: 'Tổng quan', icon: LayoutDashboard, exact: true },
+  { to: '/admin/products', label: 'Sản phẩm', icon: Package },
+  { to: '/admin/categories', label: 'Danh mục', icon: FolderTree },
+  { to: '/admin/brands', label: 'Thương hiệu', icon: Tag },
+  { to: '/admin/orders', label: 'Đơn hàng', icon: ClipboardList },
 ];
 
 function isActive(link: { to: string; exact?: boolean }) {
@@ -47,13 +47,13 @@ function isActive(link: { to: string; exact?: boolean }) {
     <div class="mt-8 pt-6 border-t border-subtle space-y-2">
       <UiButton to="/pc-builder" variant="primary" block size="sm">
         <Wrench class="w-4 h-4" />
-        Build Your PC
+        Xây dựng PC
       </UiButton>
       <NuxtLink to="/" class="flex items-center gap-2 px-3 py-2 text-xs text-text-muted hover:text-accent">
-        <HelpCircle class="w-4 h-4" /> Support
+        <HelpCircle class="w-4 h-4" /> Hỗ trợ
       </NuxtLink>
       <span class="flex items-center gap-2 px-3 py-2 text-xs text-text-muted">
-        <Settings class="w-4 h-4" /> Settings
+        <Settings class="w-4 h-4" /> Cài đặt
       </span>
     </div>
   </aside>

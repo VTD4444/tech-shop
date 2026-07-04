@@ -183,16 +183,14 @@ CREATE TABLE order_items (
 CREATE INDEX idx_order_items_order_id ON order_items(order_id);
 CREATE INDEX idx_order_items_product_id ON order_items(product_id);
 
-CREATE TABLE vnpay_transactions (
+CREATE TABLE payment_transactions (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     order_id BIGINT UNIQUE REFERENCES orders(id) ON DELETE CASCADE,
-    vnpay_txn_ref VARCHAR(100) UNIQUE NOT NULL,
-    vnpay_transaction_no VARCHAR(100),
+    provider VARCHAR(50) NOT NULL DEFAULT 'sepay',
+    invoice_number VARCHAR(100) UNIQUE NOT NULL,
+    external_txn_id VARCHAR(100),
     amount NUMERIC(12, 2) NOT NULL CHECK (amount >= 0),
-    bank_code VARCHAR(20),
-    response_code VARCHAR(10),
-    status VARCHAR(50) NOT NULL DEFAULT 'processing' CHECK (status IN ('processing', 'success', 'failed')),
-    secure_hash VARCHAR(255),
+    status VARCHAR(50) NOT NULL DEFAULT 'processing' CHECK (status IN ('processing', 'success', 'failed', 'cancelled')),
     raw_response JSONB,
     payment_date TIMESTAMP,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

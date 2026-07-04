@@ -7,26 +7,26 @@ defineEmits<{ 'update-status': [id: string, status: string] }>();
 const { formatPrice } = useFormatPrice();
 
 const statusOptions = [
-  { label: 'pending', value: 'pending' },
-  { label: 'confirmed', value: 'confirmed' },
-  { label: 'shipping', value: 'shipping' },
-  { label: 'completed', value: 'completed' },
-  { label: 'cancelled', value: 'cancelled' },
+  { label: 'Chờ xử lý', value: 'pending' },
+  { label: 'Đã xác nhận', value: 'confirmed' },
+  { label: 'Đang giao', value: 'shipping' },
+  { label: 'Hoàn thành', value: 'completed' },
+  { label: 'Đã hủy', value: 'cancelled' },
 ];
 </script>
 
 <template>
   <UiCard padding="none">
     <div class="p-4 border-b border-subtle">
-      <UiText as="h3" size="lg">Recent Transaction Flow</UiText>
+      <UiText as="h3" size="lg">Giao dịch gần đây</UiText>
     </div>
     <UiTable>
       <template #head>
-        <UiTableHead>Order ID</UiTableHead>
-        <UiTableHead>Client</UiTableHead>
-        <UiTableHead>Status</UiTableHead>
-        <UiTableHead align="right">Amount</UiTableHead>
-        <UiTableHead align="right">Payment</UiTableHead>
+        <UiTableHead>Mã đơn</UiTableHead>
+        <UiTableHead>Khách hàng</UiTableHead>
+        <UiTableHead>Trạng thái</UiTableHead>
+        <UiTableHead align="right">Số tiền</UiTableHead>
+        <UiTableHead align="right">Thanh toán</UiTableHead>
       </template>
       <UiTableRow v-for="order in orders" :key="order.id">
         <UiTableCell>

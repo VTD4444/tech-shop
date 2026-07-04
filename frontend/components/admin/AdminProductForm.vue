@@ -38,19 +38,19 @@ async function onFile(e: Event) {
     const url = await uploadFile(file);
     imagePreview.value = url;
     images.value = [{ url, isMain: true, sortOrder: 0 }];
-    toast.success('Image uploaded');
+    toast.success('Đã tải ảnh lên');
   } catch {
-    toast.error('Upload failed');
+    toast.error('Tải ảnh thất bại');
   }
 }
 
 function onSubmit() {
   if (form.isPcComponent && !pcComponent.value.componentType) {
-    toast.error('Select a PC component type and fill required specs');
+    toast.error('Chọn loại linh kiện PC và điền thông số bắt buộc');
     return;
   }
   if ((longDescription.value || '').length > 50000) {
-    toast.error('Long description exceeds 50,000 characters');
+    toast.error('Mô tả chi tiết vượt quá 50.000 ký tự');
     return;
   }
 
@@ -69,29 +69,29 @@ function onSubmit() {
   <UiCard padding="md" class="max-w-3xl">
     <form class="space-y-4" @submit.prevent="onSubmit">
       <div>
-        <UiText variant="muted" size="xs" uppercase class="mb-1 block">Name</UiText>
+        <UiText variant="muted" size="xs" uppercase class="mb-1 block">Tên</UiText>
         <UiInput v-model="form.name" required />
       </div>
       <div>
-        <UiText variant="muted" size="xs" uppercase class="mb-1 block">Slug</UiText>
+        <UiText variant="muted" size="xs" uppercase class="mb-1 block">Đường dẫn</UiText>
         <UiInput v-model="form.slug" required />
       </div>
       <div class="grid grid-cols-2 gap-4">
         <div>
-          <UiText variant="muted" size="xs" uppercase class="mb-1 block">Price (VND)</UiText>
+          <UiText variant="muted" size="xs" uppercase class="mb-1 block">Giá (VND)</UiText>
           <UiInput v-model="form.price" type="number" required />
         </div>
         <div>
-          <UiText variant="muted" size="xs" uppercase class="mb-1 block">Stock</UiText>
+          <UiText variant="muted" size="xs" uppercase class="mb-1 block">Tồn kho</UiText>
           <UiInput v-model="form.stockQuantity" type="number" />
         </div>
       </div>
       <div>
-        <UiText variant="muted" size="xs" uppercase class="mb-1 block">Short description</UiText>
+        <UiText variant="muted" size="xs" uppercase class="mb-1 block">Mô tả ngắn</UiText>
         <textarea v-model="form.description" rows="3" class="w-full rounded-md border border-subtle bg-surface-3 px-4 py-2.5 text-sm text-text-primary" />
       </div>
       <div>
-        <UiText variant="muted" size="xs" uppercase class="mb-1 block">Detailed description</UiText>
+        <UiText variant="muted" size="xs" uppercase class="mb-1 block">Mô tả chi tiết</UiText>
         <ClientOnly>
           <AdminRichTextEditor v-model="longDescription" />
         </ClientOnly>
@@ -100,16 +100,16 @@ function onSubmit() {
       <AdminProductSpecFields v-model="productSpec" />
 
       <div>
-        <UiText variant="muted" size="xs" uppercase class="mb-1 block">Image</UiText>
+        <UiText variant="muted" size="xs" uppercase class="mb-1 block">Ảnh</UiText>
         <input type="file" accept="image/*" class="text-sm text-text-muted" @change="onFile" />
         <img v-if="imagePreview" :src="imagePreview" class="mt-2 h-24 object-cover rounded-lg border border-subtle" />
         <p v-if="uploadError" class="text-danger text-sm mt-1">{{ uploadError }}</p>
       </div>
 
-      <UiCheckbox v-model="form.isPcComponent" label="PC component (PC Builder)" />
+      <UiCheckbox v-model="form.isPcComponent" label="Linh kiện PC (PC Builder)" />
       <AdminPcComponentFields v-model="pcComponent" :enabled="form.isPcComponent" />
 
-      <UiButton type="submit" variant="primary" :loading="uploading">Save</UiButton>
+      <UiButton type="submit" variant="primary" :loading="uploading">Lưu</UiButton>
     </form>
   </UiCard>
 </template>

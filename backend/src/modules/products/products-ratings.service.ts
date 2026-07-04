@@ -92,7 +92,7 @@ export class ProductsRatingsService {
         skip,
         take: limitNum,
         orderBy: { createdAt: 'desc' },
-        include: { user: { select: { id: true, username: true } } },
+        include: { user: { select: { id: true, username: true, fullName: true } } },
       }),
       this.prisma.productRating.count({ where: { productId: product.id } }),
     ]);
@@ -176,7 +176,7 @@ export class ProductsRatingsService {
         rating: dto.rating,
         images: dto.images ?? [],
       },
-      include: { user: { select: { id: true, username: true } } },
+      include: { user: { select: { id: true, username: true, fullName: true } } },
     });
 
     await this.invalidateSummary(product.id);
@@ -187,7 +187,7 @@ export class ProductsRatingsService {
     const product = await this.getProductBySlug(slug);
     const rating = await this.prisma.productRating.findFirst({
       where: { id: BigInt(ratingId), productId: product.id },
-      include: { user: { select: { id: true, username: true } } },
+      include: { user: { select: { id: true, username: true, fullName: true } } },
     });
     if (!rating) throw new NotFoundException('Rating not found');
     if (rating.userId.toString() !== userId) {
@@ -205,7 +205,7 @@ export class ProductsRatingsService {
         ...(dto.rating != null ? { rating: dto.rating } : {}),
         ...(dto.images != null ? { images: dto.images } : {}),
       },
-      include: { user: { select: { id: true, username: true } } },
+      include: { user: { select: { id: true, username: true, fullName: true } } },
     });
 
     await this.invalidateSummary(product.id);

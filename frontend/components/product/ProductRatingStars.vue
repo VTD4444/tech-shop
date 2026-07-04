@@ -6,7 +6,7 @@ const props = withDefaults(defineProps<{
 }>(), {
   modelValue: 0,
   readonly: false,
-  label: 'Rating',
+  label: 'Đánh giá',
 });
 
 const emit = defineEmits<{ 'update:modelValue': [value: number] }>();
@@ -30,7 +30,7 @@ function setRating(n: number) {
       class="text-lg leading-none transition-colors"
       :class="n <= modelValue ? 'text-warning' : 'text-text-muted/40'"
       :disabled="readonly"
-      :aria-label="`${n} star${n > 1 ? 's' : ''}`"
+      :aria-label="`${n} sao`"
       :aria-checked="n === modelValue"
       role="radio"
       @click="setRating(n)"

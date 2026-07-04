@@ -44,7 +44,7 @@ const placeholder = '/placeholder.svg';
         size="sm"
         block
       >
-        ADD TO BUILD
+        THÊM VÀO CẤU HÌNH
       </UiButton>
     </div>
   </UiCard>

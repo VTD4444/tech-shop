@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { User, KeyRound, Package, Heart, Shield, LogOut } from 'lucide-vue-next';
+import { User, KeyRound, Package, Heart, Shield, LogOut, MapPin } from 'lucide-vue-next';
 import { onClickOutside } from '@vueuse/core';
 import { useAuthStore } from '~/stores/auth';
 
@@ -22,12 +22,13 @@ async function logout() {
 
 const items = computed(() => {
   const links = [
-    { label: 'Change Password', to: '/forgot-password', icon: KeyRound },
-    { label: 'Orders', to: '/orders', icon: Package },
-    { label: 'My Wishlist', to: '/wishlist', icon: Heart },
+    { label: 'Đổi mật khẩu', to: '/forgot-password', icon: KeyRound },
+    { label: 'Quản lý địa chỉ', to: '/profile#addresses', icon: MapPin },
+    { label: 'Đơn hàng', to: '/orders', icon: Package },
+    { label: 'Yêu thích của tôi', to: '/wishlist', icon: Heart },
   ];
   if (authStore.isAdmin) {
-    links.push({ label: 'Admin', to: '/admin', icon: Shield });
+    links.push({ label: 'Quản trị', to: '/admin', icon: Shield });
   }
   return links;
 });
@@ -38,7 +39,7 @@ const items = computed(() => {
     <button
       type="button"
       class="p-2 text-text-muted hover:text-accent transition-colors rounded-lg hover:bg-surface-2"
-      aria-label="Account menu"
+      aria-label="Menu tài khoản"
       aria-haspopup="true"
       :aria-expanded="open"
       @click="open = !open"
@@ -60,7 +61,7 @@ const items = computed(() => {
         role="menu"
       >
         <p class="px-3 py-2 text-xs text-text-muted border-b border-subtle truncate">
-          {{ authStore.user?.username || authStore.user?.email }}
+          {{ authStore.displayName }}
         </p>
         <NuxtLink
           v-for="item in items"
@@ -81,7 +82,7 @@ const items = computed(() => {
             @click="logout"
           >
             <LogOut class="w-4 h-4 shrink-0" />
-            Logout
+            Đăng xuất
           </button>
         </div>
       </div>

@@ -48,21 +48,21 @@ function setFilter(key: string, value: unknown) {
 <template>
   <aside class="w-full lg:w-64 shrink-0 space-y-6">
     <UiCard padding="md">
-      <UiText as="h3" size="sm" uppercase class="mb-4 border-b border-subtle pb-3">Filters</UiText>
+      <UiText as="h3" size="sm" uppercase class="mb-4 border-b border-subtle pb-3">Bộ lọc</UiText>
 
       <div class="space-y-4">
         <div>
-          <UiText variant="muted" size="xs" uppercase class="mb-2 block">Search</UiText>
-          <UiInput v-model="localSearch" placeholder="Search products..." />
+          <UiText variant="muted" size="xs" uppercase class="mb-2 block">Tìm kiếm</UiText>
+          <UiInput v-model="localSearch" placeholder="Tìm sản phẩm..." />
         </div>
 
         <div>
-          <UiText variant="muted" size="xs" uppercase class="mb-2 block">Category</UiText>
+          <UiText variant="muted" size="xs" uppercase class="mb-2 block">Danh mục</UiText>
           <UiSelect
             :model-value="filters.category"
-            placeholder="All Categories"
+            placeholder="Tất cả danh mục"
             :options="[
-              { label: 'All Categories', value: '' },
+              { label: 'Tất cả danh mục', value: '' },
               ...productStore.categories.map((c: any) => ({ label: c.name, value: c.slug })),
             ]"
             @update:model-value="setFilter('category', $event)"
@@ -70,12 +70,12 @@ function setFilter(key: string, value: unknown) {
         </div>
 
         <div>
-          <UiText variant="muted" size="xs" uppercase class="mb-2 block">Brand</UiText>
+          <UiText variant="muted" size="xs" uppercase class="mb-2 block">Thương hiệu</UiText>
           <UiSelect
             :model-value="filters.brand"
-            placeholder="All Brands"
+            placeholder="Tất cả thương hiệu"
             :options="[
-              { label: 'All Brands', value: '' },
+              { label: 'Tất cả thương hiệu', value: '' },
               ...productStore.brands.map((b: any) => ({ label: b.name, value: b.slug })),
             ]"
             @update:model-value="setFilter('brand', $event)"
@@ -83,7 +83,7 @@ function setFilter(key: string, value: unknown) {
         </div>
 
         <div>
-          <UiText variant="muted" size="xs" uppercase class="mb-2 block">Max Price</UiText>
+          <UiText variant="muted" size="xs" uppercase class="mb-2 block">Giá tối đa</UiText>
           <UiRangeSlider
             v-model="priceMax"
             :min="0"
@@ -96,13 +96,13 @@ function setFilter(key: string, value: unknown) {
 
         <UiCheckbox
           :model-value="!!filters.isPcComponent"
-          label="PC Components Only"
+          label="Chỉ linh kiện PC"
           @update:model-value="setFilter('isPcComponent', $event || undefined)"
         />
       </div>
 
       <UiButton variant="ghost" size="sm" block class="mt-6" @click="emit('clear')">
-        Clear All Filters
+        Xóa tất cả bộ lọc
       </UiButton>
     </UiCard>
   </aside>

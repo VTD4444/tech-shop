@@ -20,11 +20,11 @@ export function useCloudinaryUpload(signPath = '/admin/uploads/sign') {
         `https://api.cloudinary.com/v1_1/${data.cloudName}/image/upload`,
         { method: 'POST', body: form },
       );
-      if (!res.ok) throw new Error('Cloudinary upload failed');
+      if (!res.ok) throw new Error('Tải lên Cloudinary thất bại');
       const json = await res.json();
       return json.secure_url as string;
     } catch (e: any) {
-      error.value = e.message || 'Upload failed';
+      error.value = e.message || 'Tải lên thất bại';
       throw e;
     } finally {
       uploading.value = false;

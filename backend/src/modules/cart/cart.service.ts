@@ -1,9 +1,26 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { toId } from '../../common/utils/serialize';
 
 @Injectable()
 export class CartService {
   constructor(private prisma: PrismaService) {}
+
+  private mapCartItem(item: {
+    id: bigint;
+    userId: bigint;
+    productId: bigint;
+    quantity: number;
+    createdAt?: Date;
+    updatedAt?: Date;
+  }) {
+    return {
+      id: toId(item.id)!,
+      userId: toId(item.userId)!,
+      productId: toId(item.productId)!,
+      quantity: item.quantity,
+    };
+  }
 
   async getCart(userId: string) {
     const items = await this.prisma.cartItem.findMany({
@@ -31,14 +48,12 @@ export class CartService {
       (sum, item) => sum + item.product.price * item.quantity,
       0,
     );
-    const taxRate = Number(process.env.CART_TAX_RATE || 0.1);
-    const tax = Math.round(subtotal * taxRate);
     const shipping = 0;
-    const total = subtotal + tax + shipping;
+    const total = subtotal + shipping;
 
     return {
       items: mapped,
-      summary: { subtotal, tax, taxRate, shipping, total },
+      summary: { subtotal, shipping, total },
     };
   }
 
@@ -91,6 +106,10 @@ export class CartService {
   }
 
   async updateItemQuantity(userId: string, productId: string, quantity: number) {
+    if (!Number.isInteger(quantity) || quantity < 1) {
+      throw new BadRequestException('Quantity must be at least 1');
+    }
+
     const item = await this.prisma.cartItem.findUnique({
       where: {
         userId_productId: {
@@ -106,10 +125,12 @@ export class CartService {
       throw new BadRequestException('Insufficient stock');
     }
 
-    return this.prisma.cartItem.update({
+    const updated = await this.prisma.cartItem.update({
       where: { id: item.id },
       data: { quantity },
     });
+
+    return this.mapCartItem(updated);
   }
 
   async removeItem(userId: string, productId: string) {
@@ -123,7 +144,8 @@ export class CartService {
     });
     if (!cartItem) throw new NotFoundException('Cart item not found');
 
-    return this.prisma.cartItem.delete({ where: { id: cartItem.id } });
+    const deleted = await this.prisma.cartItem.delete({ where: { id: cartItem.id } });
+    return this.mapCartItem(deleted);
   }
 
   async clearCart(userId: string) {

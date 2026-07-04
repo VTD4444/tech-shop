@@ -45,12 +45,12 @@ export class ProductsCommentsService {
         take: limitNum,
         orderBy: { createdAt: 'desc' },
         include: {
-          user: { select: { id: true, username: true } },
+          user: { select: { id: true, username: true, fullName: true } },
           replies: {
             where: { status: 'active' },
             orderBy: { createdAt: 'asc' },
             take: 50,
-            include: { user: { select: { id: true, username: true } } },
+            include: { user: { select: { id: true, username: true, fullName: true } } },
           },
         },
       }),
@@ -78,9 +78,9 @@ export class ProductsCommentsService {
         status: 'active',
       },
       include: {
-        user: { select: { id: true, username: true } },
+        user: { select: { id: true, username: true, fullName: true } },
         replies: {
-          include: { user: { select: { id: true, username: true } } },
+          include: { user: { select: { id: true, username: true, fullName: true } } },
         },
       },
     });
@@ -113,7 +113,7 @@ export class ProductsCommentsService {
         images: dto.images ?? [],
         status: 'active',
       },
-      include: { user: { select: { id: true, username: true } } },
+      include: { user: { select: { id: true, username: true, fullName: true } } },
     });
 
     return serializeComment({ ...reply, replies: [] });
@@ -124,11 +124,11 @@ export class ProductsCommentsService {
     const comment = await this.prisma.productComment.findFirst({
       where: { id: BigInt(commentId), productId: product.id },
       include: {
-        user: { select: { id: true, username: true } },
+        user: { select: { id: true, username: true, fullName: true } },
         replies: {
           where: { status: 'active' },
           orderBy: { createdAt: 'asc' },
-          include: { user: { select: { id: true, username: true } } },
+          include: { user: { select: { id: true, username: true, fullName: true } } },
         },
       },
     });
@@ -151,11 +151,11 @@ export class ProductsCommentsService {
         ...(dto.images != null ? { images: dto.images } : {}),
       },
       include: {
-        user: { select: { id: true, username: true } },
+        user: { select: { id: true, username: true, fullName: true } },
         replies: {
           where: { status: 'active' },
           orderBy: { createdAt: 'asc' },
-          include: { user: { select: { id: true, username: true } } },
+          include: { user: { select: { id: true, username: true, fullName: true } } },
         },
       },
     });

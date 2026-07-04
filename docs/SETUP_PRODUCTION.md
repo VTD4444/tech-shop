@@ -35,27 +35,29 @@ See [RESEND_INTEGRATION.md](./RESEND_INTEGRATION.md).
 - `MAIL_FROM` — verified domain, e.g. `TechShop <noreply@yourdomain.com>`
 - `FRONTEND_URL` — public frontend URL for email links
 
-### VNPay
+### SePay
 
-See [VNPAY_INTEGRATION.md](./VNPAY_INTEGRATION.md).
+See [SEPAY_INTEGRATION.md](./SEPAY_INTEGRATION.md).
 
 ```env
-VNPAY_ENV=production
-VNPAY_TMN_CODE=<from VNPay contract>
-VNPAY_HASH_SECRET=<from VNPay contract>
-VNPAY_URL=https://vnpayment.vn/paymentv2/vpcpay.html
-VNPAY_RETURN_URL=https://yourdomain.com/vnpay/return
+SEPAY_ENV=production
+SEPAY_MERCHANT_ID=<production_merchant>
+SEPAY_SECRET_KEY=<production_secret>
+SEPAY_CHECKOUT_URL=https://pay.sepay.vn/v1/checkout/init
+SEPAY_SUCCESS_URL=https://yourdomain.com/payments/return?status=success
+SEPAY_ERROR_URL=https://yourdomain.com/payments/return?status=error
+SEPAY_CANCEL_URL=https://yourdomain.com/payments/return?status=cancel
 ```
 
-Register IPN in the VNPay merchant portal:
+Register IPN in the SePay merchant portal:
 
 ```text
-https://api.yourdomain.com/api/v1/payments/vnpay/ipn
+https://api.yourdomain.com/api/v1/payments/sepay/ipn
 ```
 
-Optional: `VNPAY_IPN_WHITELIST` with VNPay server IPs.
+Optional: `SEPAY_IPN_WHITELIST` with SePay server IPs.
 
-**Note:** Sandbox credentials are for testing only. Production requires a separate VNPay merchant agreement.
+**Note:** Sandbox credentials are for testing only. Production requires a linked bank account and production merchant keys from SePay.
 
 ### AI service
 
@@ -75,9 +77,9 @@ Optional: `VNPAY_IPN_WHITELIST` with VNPay server IPs.
 
 | Item | Staging (sandbox) | Production |
 |------|-------------------|------------|
-| VNPay credentials | Same sandbox TMN/secret | Production TMN/secret |
-| VNPay return URL | `https://staging.app/vnpay/return` | `https://yourdomain.com/vnpay/return` |
-| VNPay IPN URL | Update in sandbox portal | Register on production portal |
+| SePay credentials | Sandbox merchant/secret | Production merchant/secret |
+| SePay return URLs | `https://staging.app/payments/return?...` | `https://yourdomain.com/payments/return?...` |
+| SePay IPN URL | Update in sandbox portal | Register on production portal |
 | Resend `MAIL_FROM` | `onboarding@resend.dev` or verified domain | Verified domain only |
 | `FRONTEND_URL` | Staging frontend URL | Production frontend URL |
 | HTTPS | Required for public IPN | Required |

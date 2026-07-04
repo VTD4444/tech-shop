@@ -35,7 +35,7 @@ async function onImages(e: Event) {
     try {
       images.value.push(await uploadFile(file));
     } catch {
-      toast.error('Image upload failed');
+      toast.error('Tải ảnh thất bại');
     }
   }
 }
@@ -43,7 +43,7 @@ async function onImages(e: Event) {
 async function submit() {
   if (!authStore.isAuthenticated) return navigateTo('/login');
   if (!orderId.value || !rating.value) {
-    toast.error('Select an order and rating');
+    toast.error('Chọn đơn hàng và số sao');
     return;
   }
   submitting.value = true;
@@ -52,12 +52,12 @@ async function submit() {
       method: 'POST',
       body: { rating: rating.value, orderId: orderId.value, images: images.value },
     });
-    toast.success('Rating submitted');
+    toast.success('Đã gửi đánh giá');
     rating.value = 0;
     images.value = [];
     emit('submitted');
   } catch (e: any) {
-    const msg = e?.data?.error?.message || e?.data?.message || 'Could not submit rating';
+    const msg = e?.data?.error?.message || e?.data?.message || 'Không thể gửi đánh giá';
     toast.error(msg);
   } finally {
     submitting.value = false;
@@ -78,7 +78,7 @@ async function submit() {
       </div>
       <div>
         <UiText variant="muted" size="xs" class="mb-1 block">Số sao</UiText>
-        <ProductRatingStars v-model="rating" label="Your rating" />
+        <ProductRatingStars v-model="rating" label="Đánh giá của bạn" />
       </div>
       <div>
         <UiText variant="muted" size="xs" class="mb-1 block">Ảnh (tùy chọn)</UiText>

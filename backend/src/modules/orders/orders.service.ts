@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { MailService } from '../mail/mail.service';
+import { toId } from '../../common/utils/serialize';
 
 @Injectable()
 export class OrdersService {
@@ -8,6 +9,82 @@ export class OrdersService {
     private prisma: PrismaService,
     private mailService: MailService,
   ) {}
+
+  private mapOrderItem(item: {
+    id: bigint;
+    orderId: bigint;
+    productId: bigint | null;
+    productName: string;
+    productSlug: string | null;
+    productImageUrl: string | null;
+    quantity: number;
+    price: { toString(): string } | number | bigint;
+    subtotal?: { toString(): string } | number | bigint;
+  }) {
+    return {
+      id: toId(item.id)!,
+      orderId: toId(item.orderId)!,
+      productId: toId(item.productId),
+      productName: item.productName,
+      productSlug: item.productSlug,
+      productImageUrl: item.productImageUrl,
+      quantity: item.quantity,
+      price: Number(item.price),
+      subtotal: Number(item.subtotal ?? Number(item.price) * item.quantity),
+    };
+  }
+
+  private mapOrder(
+    order: {
+      id: bigint;
+      userId: bigint | null;
+      totalAmount: { toString(): string } | number | bigint;
+      shippingFee: { toString(): string } | number | bigint;
+      shippingAddress: string;
+      customerName: string;
+      customerPhone: string;
+      note: string | null;
+      status: string;
+      paymentStatus: string;
+      createdAt: Date;
+      updatedAt: Date;
+      items?: Parameters<OrdersService['mapOrderItem']>[0][];
+      paymentTxn?: {
+        id?: bigint;
+        orderId?: bigint;
+        status: string;
+        paymentDate: Date | null;
+      } | null;
+    },
+  ) {
+    return {
+      id: toId(order.id)!,
+      userId: toId(order.userId),
+      totalAmount: Number(order.totalAmount),
+      shippingFee: Number(order.shippingFee),
+      shippingAddress: order.shippingAddress,
+      customerName: order.customerName,
+      customerPhone: order.customerPhone,
+      note: order.note,
+      status: order.status,
+      paymentStatus: order.paymentStatus,
+      createdAt: order.createdAt,
+      updatedAt: order.updatedAt,
+      ...(order.items ? { items: order.items.map((item) => this.mapOrderItem(item)) } : {}),
+      ...(order.paymentTxn
+        ? {
+            paymentTxn: {
+              ...(order.paymentTxn.id != null ? { id: toId(order.paymentTxn.id)! } : {}),
+              ...(order.paymentTxn.orderId != null
+                ? { orderId: toId(order.paymentTxn.orderId)! }
+                : {}),
+              status: order.paymentTxn.status,
+              paymentDate: order.paymentTxn.paymentDate,
+            },
+          }
+        : {}),
+    };
+  }
 
   async checkout(userId: string, dto: { shippingAddressId: string; note?: string }) {
     const address = await this.prisma.userAddress.findFirst({
@@ -98,13 +175,7 @@ export class OrdersService {
         where: { userId: BigInt(userId) },
       });
 
-      return {
-        ...order,
-        id: order.id.toString(),
-        userId: order.userId?.toString(),
-        totalAmount: Number(order.totalAmount),
-        shippingFee: Number(order.shippingFee),
-      };
+      return this.mapOrder(order);
     });
 
     const user = await this.prisma.user.findUnique({
@@ -133,20 +204,14 @@ export class OrdersService {
         orderBy: { createdAt: 'desc' },
         include: {
           items: true,
-          vnpayTxn: { select: { status: true, paymentDate: true } },
+          paymentTxn: { select: { status: true, paymentDate: true } },
         },
       }),
       this.prisma.order.count({ where: { userId: BigInt(userId) } }),
     ]);
 
     return {
-      data: data.map((o) => ({
-        ...o,
-        id: o.id.toString(),
-        userId: o.userId?.toString(),
-        totalAmount: Number(o.totalAmount),
-        shippingFee: Number(o.shippingFee),
-      })),
+      data: data.map((o) => this.mapOrder(o)),
       meta: { page: pageNum, limit: limitNum, total, totalPages: Math.ceil(total / limitNum) },
     };
   }
@@ -154,23 +219,11 @@ export class OrdersService {
   async getOrderDetail(userId: string, orderId: string) {
     const order = await this.prisma.order.findFirst({
       where: { id: BigInt(orderId), userId: BigInt(userId) },
-      include: { items: true, vnpayTxn: true },
+      include: { items: true, paymentTxn: true },
     });
     if (!order) throw new NotFoundException('Order not found');
 
-    return {
-      ...order,
-      id: order.id.toString(),
-      userId: order.userId?.toString(),
-      totalAmount: Number(order.totalAmount),
-      shippingFee: Number(order.shippingFee),
-      items: order.items.map((i) => ({
-        ...i,
-        id: i.id.toString(),
-        price: Number(i.price),
-        subtotal: Number(i.subtotal),
-      })),
-    };
+    return this.mapOrder(order);
   }
 
   async cancelOrder(userId: string, orderId: string) {
@@ -205,13 +258,10 @@ export class OrdersService {
       const updated = await tx.order.update({
         where: { id: BigInt(orderId) },
         data: { status: 'cancelled' },
+        include: { items: true },
       });
 
-      return {
-        ...updated,
-        id: updated.id.toString(),
-        totalAmount: Number(updated.totalAmount),
-      };
+      return this.mapOrder(updated);
     });
   }
 }

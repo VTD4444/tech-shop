@@ -11,7 +11,7 @@ Khách hàng
   - Chi tiết sản phẩm, giỏ hàng, wishlist
   - Đăng ký / đăng nhập JWT (access token + refresh cookie)
   - Quên mật khẩu, đặt lại mật khẩu qua email
-  - Checkout, thanh toán VNPay, theo dõi đơn hàng
+  - Checkout, thanh toán SePay, theo dõi đơn hàng
 Tính năng đặc biệt:
   - PC Builder: cho phép người dùng chọn linh kiện và build PC theo ý thích, hệ thống tự động kiểm tra tương thích và tính tổng giá của các linh kiện
   - AI Advisor: tư vấn build PC, cấu hình máy dựa trên nhu cầu + ngân sách của người dùng bằng Gemini + RAG

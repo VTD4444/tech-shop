@@ -24,7 +24,7 @@ const chartData = computed(() => ({
   labels: data.value.map((d) => d.label),
   datasets: [
     {
-      label: 'Revenue (VND)',
+      label: 'Doanh thu (VND)',
       data: data.value.map((d) => d.revenue),
       backgroundColor: 'rgba(0, 229, 195, 0.5)',
       borderColor: '#00E5C3',
@@ -72,18 +72,18 @@ watch(() => props.monthlyData, loadChart);
 
 <template>
   <UiCard padding="md">
-    <UiText as="h3" size="lg" class="mb-4">Revenue by Month</UiText>
+    <UiText as="h3" size="lg" class="mb-4">Doanh thu theo tháng</UiText>
     <div class="h-64">
       <ClientOnly>
         <div v-if="loading" class="h-full flex items-center justify-center text-sm text-text-muted">
-          Loading chart...
+          Đang tải biểu đồ...
         </div>
         <Bar v-else-if="data.length" :data="chartData" :options="chartOptions" />
         <div v-else class="h-full flex items-center justify-center text-sm text-text-muted">
-          No paid orders yet
+          Chưa có đơn hàng thanh toán
         </div>
         <template #fallback>
-          <div class="h-full flex items-center justify-center text-sm text-text-muted">Loading chart...</div>
+          <div class="h-full flex items-center justify-center text-sm text-text-muted">Đang tải biểu đồ...</div>
         </template>
       </ClientOnly>
     </div>

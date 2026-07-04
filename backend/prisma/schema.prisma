@@ -11,8 +11,12 @@ datasource db {
 model User {
   id           BigInt    @id @default(autoincrement()) @map("id")
   username     String    @unique @map("username")
+  fullName     String    @map("full_name")
   email        String    @unique @map("email")
-  passwordHash String    @map("password_hash")
+  phone        String?   @unique @map("phone")
+  passwordHash String?   @map("password_hash")
+  googleId     String?   @unique @map("google_id")
+  authProvider String    @default("local") @map("auth_provider")
   role         String    @default("customer") @map("role")
   isActive     Boolean   @default(true) @map("is_active")
   createdAt    DateTime  @default(now()) @map("created_at")
@@ -283,7 +287,7 @@ model Order {
 
   user        User?              @relation(fields: [userId], references: [id], onDelete: SetNull)
   items       OrderItem[]
-  vnpayTxn    VnpayTransaction?
+  paymentTxn  PaymentTransaction?
   ratings     ProductRating[]
 
   @@index([userId], name: "idx_orders_user_id")
@@ -311,24 +315,22 @@ model OrderItem {
   @@map("order_items")
 }
 
-model VnpayTransaction {
-  id                 BigInt   @id @default(autoincrement())
-  orderId            BigInt   @unique @map("order_id")
-  vnpayTxnRef        String   @unique @map("vnpay_txn_ref")
-  vnpayTransactionNo String?  @map("vnpay_transaction_no")
-  amount             Decimal  @db.Decimal(12, 2)
-  bankCode           String?  @map("bank_code")
-  responseCode       String?  @map("response_code")
-  status             String   @default("processing")
-  secureHash         String?  @map("secure_hash")
-  rawResponse        Json?    @db.JsonB @map("raw_response")
-  paymentDate        DateTime? @map("payment_date")
-  createdAt          DateTime @default(now()) @map("created_at")
-  updatedAt          DateTime @updatedAt @map("updated_at")
+model PaymentTransaction {
+  id            BigInt    @id @default(autoincrement())
+  orderId       BigInt    @unique @map("order_id")
+  provider      String    @default("sepay")
+  invoiceNumber String    @unique @map("invoice_number")
+  externalTxnId String?   @map("external_txn_id")
+  amount        Decimal   @db.Decimal(12, 2)
+  status        String    @default("processing")
+  rawResponse   Json?     @db.JsonB @map("raw_response")
+  paymentDate   DateTime? @map("payment_date")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
 
   order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
-  @@map("vnpay_transactions")
+  @@map("payment_transactions")
 }
 
 model SavedBuild {

@@ -45,7 +45,7 @@ export class MailService {
     await this.send(
       to,
       `Payment received for order #${orderId}`,
-      `<p>We received your VNPAY payment for order <strong>#${orderId}</strong>.</p>
+      `<p>We received your payment for order <strong>#${orderId}</strong>.</p>
        <p>Amount: <strong>${totalAmount.toLocaleString('vi-VN')} VND</strong></p>
        <p><a href="${frontend}/orders/${orderId}">View order</a></p>`,
     );

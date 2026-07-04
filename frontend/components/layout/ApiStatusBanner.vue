@@ -39,20 +39,20 @@ async function retry() {
     <UiContainer class="flex items-start gap-3 py-3">
       <AlertTriangle class="w-5 h-5 text-warning shrink-0 mt-0.5" />
       <div class="flex-1 min-w-0">
-        <p class="text-sm font-medium">Limited mode</p>
+        <p class="text-sm font-medium">Chế độ hạn chế</p>
         <p class="text-sm text-text-muted">
-          {{ degradedMessage || 'Some features are unavailable. You can still browse sample products.' }}
+          {{ degradedMessage || 'Một số tính năng không khả dụng. Bạn vẫn có thể duyệt sản phẩm mẫu.' }}
         </p>
       </div>
       <div class="flex items-center gap-2 shrink-0">
         <UiButton variant="secondary" size="sm" :disabled="retrying" @click="retry">
           <RefreshCw class="w-4 h-4" :class="retrying ? 'animate-spin' : ''" />
-          Retry
+          Thử lại
         </UiButton>
         <button
           type="button"
           class="p-1.5 rounded-md text-text-muted hover:text-text-primary hover:bg-surface-2"
-          aria-label="Dismiss"
+          aria-label="Đóng"
           @click="dismissed = true"
         >
           <X class="w-4 h-4" />

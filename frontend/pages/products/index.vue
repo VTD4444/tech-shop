@@ -114,11 +114,11 @@ watch(
         </div>
         <UiEmptyState
           v-else-if="productStore.products.length === 0"
-          title="No products found"
-          description="Try adjusting your filters or search terms."
+          title="Không tìm thấy sản phẩm"
+          description="Hãy thử điều chỉnh bộ lọc hoặc từ khóa tìm kiếm."
         >
           <template #action>
-            <UiButton variant="secondary" @click="resetFilters">Clear Filters</UiButton>
+            <UiButton variant="secondary" @click="resetFilters">Xóa bộ lọc</UiButton>
           </template>
         </UiEmptyState>
         <div v-else>
@@ -126,7 +126,7 @@ watch(
             v-if="productStore.usingFallback"
             class="mb-4 text-sm text-warning bg-warning/10 border border-warning/20 rounded-lg px-4 py-3"
           >
-            Offline mode — sample catalog only. Cart and checkout are disabled until the server recovers.
+            Chế độ ngoại tuyến — chỉ hiển thị danh mục mẫu. Giỏ hàng và thanh toán bị tắt cho đến khi máy chủ hoạt động trở lại.
           </p>
           <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
             <ProductCard v-for="p in productStore.products" :key="p.id" :product="p" />

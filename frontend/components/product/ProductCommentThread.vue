@@ -29,9 +29,9 @@ async function submit() {
     });
     content.value = '';
     emit('submitted');
-    toast.success('Comment posted');
+    toast.success('Đã đăng bình luận');
   } catch {
-    toast.error('Could not post comment');
+    toast.error('Không thể đăng bình luận');
   } finally {
     submitting.value = false;
   }

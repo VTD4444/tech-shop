@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Req, Query } from '@nestjs/common';
+import { Controller, Post, Get, Req, Query, Body } from '@nestjs/common';
 import { Request } from 'express';
 import { Throttle } from '@nestjs/throttler';
 import { PaymentsService } from './payments.service';
@@ -9,35 +9,25 @@ import { Public } from '../../common/decorators/public.decorator';
 export class PaymentsController {
   constructor(private paymentsService: PaymentsService) {}
 
-  @Post('vnpay/create-url')
-  createPaymentUrl(
+  @Post('sepay/init')
+  createCheckout(
     @CurrentUser('id') userId: string,
-    @Req() req: Request,
     @Query('orderId') orderId: string,
   ) {
-    const ipAddr = req.ip || req.socket.remoteAddress || '127.0.0.1';
-    return this.paymentsService.createPaymentUrl(userId, orderId, ipAddr);
+    return this.paymentsService.createCheckout(userId, orderId);
   }
 
   @Public()
-  @Get('vnpay/return')
-  handleReturn(@Query() query: Record<string, any>) {
-    return this.paymentsService.handleReturn(query);
-  }
-
-  @Public()
-  @Get('vnpay/return-status')
-  returnStatus(@Query('txnRef') txnRef: string) {
-    return this.paymentsService.getReturnStatus(txnRef);
+  @Get('sepay/status')
+  returnStatus(@Query('invoice') invoice: string) {
+    return this.paymentsService.getReturnStatus(invoice);
   }
 
   @Public()
   @Throttle({ default: { limit: 30, ttl: 60000 } })
-  @Post('vnpay/ipn')
-  handleIpn(@Query() query: Record<string, any>, @Req() req: Request) {
-    return this.paymentsService.handleIpn({
-      ...query,
-      clientIp: req.ip || req.socket.remoteAddress,
-    });
+  @Post('sepay/ipn')
+  handleIpn(@Body() body: Record<string, any>, @Req() req: Request) {
+    const clientIp = req.ip || req.socket.remoteAddress;
+    return this.paymentsService.handleIpn(body, clientIp);
   }
 }

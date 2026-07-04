@@ -87,15 +87,15 @@ useHead(() => ({
 
 async function addToCart() {
   if (systemStore.apiDegraded || productStore.usingFallback) {
-    toast.error('Cart is unavailable while the server is offline.');
+    toast.error('Không thể dùng giỏ hàng khi máy chủ đang ngoại tuyến.');
     return;
   }
   if (!authStore.isAuthenticated) return navigateTo('/login');
   try {
     await cartStore.addItem(product.value.id.toString());
-    toast.success('Added to cart');
+    toast.success('Đã thêm vào giỏ hàng');
   } catch {
-    toast.error('Could not add to cart. Please try again later.');
+    toast.error('Không thể thêm vào giỏ hàng. Vui lòng thử lại sau.');
   }
 }
 
@@ -105,11 +105,11 @@ async function toggleWishlist() {
   if (inWishlist.value) {
     await wishlistStore.removeItem(productId);
     inWishlist.value = false;
-    toast.info('Removed from wishlist');
+    toast.info('Đã xóa khỏi danh sách yêu thích');
   } else {
     await wishlistStore.addItem(productId);
     inWishlist.value = true;
-    toast.success('Added to wishlist');
+    toast.success('Đã thêm vào danh sách yêu thích');
   }
 }
 
@@ -130,14 +130,14 @@ async function onCommentChange() {
     </div>
     <UiEmptyState
       v-else-if="!product"
-      :title="systemStore.apiDegraded ? 'Product unavailable offline' : 'Product not found'"
-      :description="systemStore.apiDegraded ? 'This product is not in the offline catalog.' : 'This product may have been removed.'"
+      :title="systemStore.apiDegraded ? 'Sản phẩm không khả dụng ngoại tuyến' : 'Không tìm thấy sản phẩm'"
+      :description="systemStore.apiDegraded ? 'Sản phẩm này không có trong danh mục ngoại tuyến.' : 'Sản phẩm này có thể đã bị gỡ.'"
     >
-      <template #action><UiButton to="/products" variant="primary">Browse Products</UiButton></template>
+      <template #action><UiButton to="/products" variant="primary">Xem sản phẩm</UiButton></template>
     </UiEmptyState>
     <div v-else>
       <nav class="text-sm mb-6 text-text-muted">
-        <NuxtLink to="/products" class="hover:text-accent">Products</NuxtLink>
+        <NuxtLink to="/products" class="hover:text-accent">Sản phẩm</NuxtLink>
         <span class="mx-2">/</span>
         <span>{{ product.name }}</span>
       </nav>
@@ -161,7 +161,7 @@ async function onCommentChange() {
         <div>
           <div class="flex gap-2 mb-3 flex-wrap">
             <UiBadge v-if="product.brand" variant="neutral">{{ product.brand.name }}</UiBadge>
-            <UiBadge v-if="product.isPcComponent" variant="accent">PC Component</UiBadge>
+            <UiBadge v-if="product.isPcComponent" variant="accent">Linh kiện PC</UiBadge>
             <UiBadge v-if="badge" :variant="badge.variant">{{ badge.label }}</UiBadge>
           </div>
           <UiText as="h1" size="2xl" class="mb-2">{{ product.name }}</UiText>
@@ -175,7 +175,7 @@ async function onCommentChange() {
             v-if="productStore.usingFallback"
             class="mb-4 text-sm text-warning bg-warning/10 border border-warning/20 rounded-lg px-4 py-3"
           >
-            Offline mode — sample catalog data only.
+            Chế độ ngoại tuyến — chỉ hiển thị dữ liệu danh mục mẫu.
           </p>
           <div class="flex gap-3 mb-4">
             <UiButton
@@ -185,7 +185,7 @@ async function onCommentChange() {
               :disabled="product.stockQuantity === 0 || productStore.usingFallback"
               @click="addToCart"
             >
-              Add to Cart
+              Thêm vào giỏ
             </UiButton>
             <UiButton variant="secondary" size="lg" @click="toggleWishlist">
               <Heart class="w-5 h-5" :class="inWishlist ? 'fill-accent text-accent' : ''" />

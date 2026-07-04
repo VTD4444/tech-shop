@@ -6,14 +6,14 @@ const toast = useToast();
 
 async function create(payload: Record<string, unknown>) {
   await $api('/products', { method: 'POST', body: payload });
-  toast.success('Product created');
+  toast.success('Đã tạo sản phẩm');
   navigateTo('/admin/products');
 }
 </script>
 
 <template>
   <div>
-    <UiText as="h1" size="2xl" class="mb-6">New product</UiText>
+    <UiText as="h1" size="2xl" class="mb-6">Sản phẩm mới</UiText>
     <AdminProductForm @submit="create" />
   </div>
 </template>

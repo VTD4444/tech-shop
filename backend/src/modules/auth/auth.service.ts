@@ -7,8 +7,18 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import * as crypto from 'crypto';
+import { Profile } from 'passport-google-oauth20';
 import { PrismaService } from '../prisma/prisma.service';
 import { MailService } from '../mail/mail.service';
+
+type SessionUser = {
+  id: bigint;
+  username: string;
+  fullName: string;
+  email: string;
+  phone: string | null;
+  role: string;
+};
 
 @Injectable()
 export class AuthService {
@@ -18,34 +28,49 @@ export class AuthService {
     private mailService: MailService,
   ) {}
 
-  async register(dto: { username: string; email: string; password: string }) {
+  async register(dto: {
+    fullName: string;
+    email: string;
+    phone: string;
+    password: string;
+  }) {
     const existing = await this.prisma.user.findFirst({
       where: {
-        OR: [{ email: dto.email }, { username: dto.username }],
+        OR: [{ email: dto.email }, { phone: dto.phone }],
       },
     });
     if (existing) {
-      throw new ConflictException('Username or email already exists');
+      if (existing.email === dto.email) {
+        throw new ConflictException('Email already exists');
+      }
+      throw new ConflictException('Phone number already exists');
     }
 
+    const username = await this.generateUniqueUsername(dto.email);
     const passwordHash = await bcrypt.hash(dto.password, 10);
     const user = await this.prisma.user.create({
       data: {
-        username: dto.username,
-        email: dto.email,
+        username,
+        fullName: dto.fullName.trim(),
+        email: dto.email.trim().toLowerCase(),
+        phone: dto.phone.trim(),
         passwordHash,
+        authProvider: 'local',
       },
     });
 
-    return this.generateTokens(user.id, user.username, user.role);
+    return this.issueSession(user);
   }
 
   async login(dto: { email: string; password: string }) {
     const user = await this.prisma.user.findUnique({
-      where: { email: dto.email },
+      where: { email: dto.email.trim().toLowerCase() },
     });
     if (!user || !user.isActive) {
       throw new UnauthorizedException('Invalid credentials');
+    }
+    if (!user.passwordHash) {
+      throw new UnauthorizedException('Please sign in with Google');
     }
 
     const valid = await bcrypt.compare(dto.password, user.passwordHash);
@@ -53,7 +78,54 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    return this.generateTokens(user.id, user.username, user.role);
+    return this.issueSession(user);
+  }
+
+  async findOrCreateGoogleUser(profile: Profile): Promise<SessionUser> {
+    const googleId = profile.id;
+    const email = profile.emails?.[0]?.value?.trim().toLowerCase();
+    if (!email) {
+      throw new BadRequestException('Google account has no email');
+    }
+
+    const fullName =
+      profile.displayName?.trim() ||
+      [profile.name?.givenName, profile.name?.familyName].filter(Boolean).join(' ').trim() ||
+      email.split('@')[0];
+
+    let user = await this.prisma.user.findFirst({
+      where: { OR: [{ googleId }, { email }] },
+    });
+
+    if (user) {
+      if (!user.googleId) {
+        user = await this.prisma.user.update({
+          where: { id: user.id },
+          data: { googleId },
+        });
+      }
+    } else {
+      const username = await this.generateUniqueUsername(email);
+      user = await this.prisma.user.create({
+        data: {
+          username,
+          fullName,
+          email,
+          googleId,
+          authProvider: 'google',
+        },
+      });
+    }
+
+    if (!user.isActive) {
+      throw new UnauthorizedException('User account is inactive');
+    }
+
+    return user;
+  }
+
+  issueSession(user: SessionUser) {
+    return this.generateTokens(user);
   }
 
   async refresh(refreshToken: string) {
@@ -61,17 +133,30 @@ export class AuthService {
       const payload = this.jwtService.verify(refreshToken, {
         secret: process.env.JWT_REFRESH_SECRET || 'default-refresh-secret',
       });
-      return this.generateTokens(payload.sub, payload.username, payload.role);
-    } catch {
+      const user = await this.prisma.user.findUnique({
+        where: { id: BigInt(payload.sub) },
+      });
+      if (!user || !user.isActive) {
+        throw new UnauthorizedException('Invalid refresh token');
+      }
+      return this.issueSession(user);
+    } catch (error) {
+      if (error instanceof UnauthorizedException) throw error;
       throw new UnauthorizedException('Invalid refresh token');
     }
   }
 
   async forgotPassword(email: string) {
-    const user = await this.prisma.user.findUnique({ where: { email } });
+    const user = await this.prisma.user.findUnique({
+      where: { email: email.trim().toLowerCase() },
+    });
     if (!user) {
       return { message: 'If the email exists, a reset link was sent' };
     }
+    if (!user.passwordHash) {
+      return { message: 'If the email exists, a reset link was sent' };
+    }
+
     const rawToken = crypto.randomBytes(32).toString('hex');
     const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex');
     const expiresAt = new Date(Date.now() + 60 * 60 * 1000);
@@ -102,15 +187,35 @@ export class AuthService {
     await this.prisma.$transaction([
       this.prisma.user.update({
         where: { id: record.userId },
-        data: { passwordHash },
+        data: { passwordHash, authProvider: record.user.authProvider === 'google' ? 'local' : record.user.authProvider },
       }),
       this.prisma.passwordResetToken.deleteMany({ where: { userId: record.userId } }),
     ]);
     return { message: 'Password updated successfully' };
   }
 
-  private generateTokens(userId: bigint, username: string, role: string) {
-    const payload = { sub: userId.toString(), username, role };
+  private async generateUniqueUsername(email: string): Promise<string> {
+    const base = email
+      .split('@')[0]
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '')
+      .slice(0, 40) || 'user';
+
+    let candidate = base;
+    let suffix = 0;
+    while (await this.prisma.user.findUnique({ where: { username: candidate } })) {
+      suffix += 1;
+      candidate = `${base}${suffix}`;
+    }
+    return candidate;
+  }
+
+  private generateTokens(user: SessionUser) {
+    const payload = {
+      sub: user.id.toString(),
+      username: user.username,
+      role: user.role,
+    };
 
     const accessToken = this.jwtService.sign(payload, {
       secret: process.env.JWT_SECRET || 'default-secret',
@@ -125,7 +230,14 @@ export class AuthService {
     return {
       accessToken,
       refreshToken,
-      user: { id: userId.toString(), username, role },
+      user: {
+        id: user.id.toString(),
+        username: user.username,
+        fullName: user.fullName,
+        email: user.email,
+        phone: user.phone ?? undefined,
+        role: user.role,
+      },
     };
   }
 }

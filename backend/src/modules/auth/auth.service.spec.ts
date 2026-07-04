@@ -54,12 +54,31 @@ describe('AuthService', () => {
     prisma.user.findUnique.mockResolvedValue({
       id: 1n,
       username: 'tester',
+      fullName: 'Tester',
+      email: 'a@b.com',
+      phone: '0901234567',
       role: 'customer',
       isActive: true,
       passwordHash: hash,
     });
     const result = await service.login({ email: 'a@b.com', password: 'secret1' });
     expect(result.accessToken).toBe('token');
-    expect(result.user.username).toBe('tester');
+    expect(result.user.fullName).toBe('Tester');
+  });
+
+  it('login throws for Google-only users', async () => {
+    prisma.user.findUnique.mockResolvedValue({
+      id: 1n,
+      username: 'tester',
+      fullName: 'Tester',
+      email: 'a@b.com',
+      phone: null,
+      role: 'customer',
+      isActive: true,
+      passwordHash: null,
+    });
+    await expect(
+      service.login({ email: 'a@b.com', password: 'secret1' }),
+    ).rejects.toBeInstanceOf(UnauthorizedException);
   });
 });

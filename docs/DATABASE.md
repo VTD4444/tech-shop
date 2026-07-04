@@ -9,7 +9,7 @@ users ─── user_addresses
   ├── wishlists ─── products
   ├── product_reviews ─── products
   ├── orders ─── order_items ─── products
-  │     └── vnpay_transactions
+  │     └── payment_transactions
   └── saved_builds ─── saved_build_items ─── products
 
 categories ─── products
@@ -164,19 +164,17 @@ products ─── product_images
 | quantity | INT | |
 | price / subtotal | NUMERIC(12,2) | subtotal = GENERATED ALWAYS AS (quantity * price) |
 
-### `vnpay_transactions`
+### `payment_transactions`
 | Column | Type | Notes |
 |---|---|---|
 | id | BIGINT PK | |
 | order_id | BIGINT FK UNIQUE | CASCADE |
-| vnpay_txn_ref | VARCHAR(100) UNIQUE | |
-| vnpay_transaction_no | VARCHAR(100) | From VNPAY |
+| provider | VARCHAR(50) | Default `sepay` |
+| invoice_number | VARCHAR(100) UNIQUE | SePay `order_invoice_number` |
+| external_txn_id | VARCHAR(100) | SePay transaction id |
 | amount | NUMERIC(12,2) | |
-| bank_code | VARCHAR(20) | |
-| response_code | VARCHAR(10) | |
-| status | VARCHAR(50) | `processing`, `success`, `failed` |
-| secure_hash | VARCHAR(255) | HMAC-SHA512 |
-| raw_response | JSONB | Full VNPAY response |
+| status | VARCHAR(50) | `processing`, `success`, `failed`, `cancelled` |
+| raw_response | JSONB | Full IPN payload |
 | payment_date | TIMESTAMP | |
 
 ### `saved_builds`
@@ -202,7 +200,7 @@ products ─── product_images
 | products | `idx_products_ai_tags` | GIN |
 | product_specs | `idx_product_specs_jsonb` | GIN |
 | pc_components | `idx_pc_components_detailed_specs` | GIN |
-| vnpay_transactions | — | raw_response is JSONB |
+| payment_transactions | — | raw_response is JSONB |
 | products | `idx_products_category_id`, `brand_id`, `price`, `status`, `is_pc_component` | B-tree |
 | pc_components | `idx_pc_components_type`, `socket`, `ram_generation`, `form_factor` | B-tree |
 | product_specs | `idx_product_specs_cpu_brand`, `ram_capacity`, `gpu_model` | B-tree |

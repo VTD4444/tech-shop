@@ -22,8 +22,8 @@
                    │                     │
                    ▼                     ▼
 ┌───────────────────────────────────────────────────────────────┐
-│          PostgreSQL 16 :5432          │  VNPay Sandbox        │
-│  users │ products │ orders │ vnpay    │  (payment gateway)    │
+│          PostgreSQL 16 :5432          │  SePay Sandbox        │
+│  users │ products │ orders │ payment  │  (payment gateway)    │
 └───────────────────────────────────────────────────────────────┘
 
 Nuxt AI Advisor ──HTTP──> FastAPI AI Service :8000
@@ -61,13 +61,13 @@ POST /orders/checkout
   → Return order
 ```
 
-### 4. VNPAY Payment
+### 4. SePay Payment
 ```
-User clicks "Pay with VNPAY"
-  → NestJS generates signed URL → redirect to VNPAY Sandbox
-  → User pays on VNPAY
-  → VNPAY IPN (server-to-server POST) → NestJS verifies HMAC → updates DB
-  → VNPAY redirect (browser GET) → Nuxt displays result
+User clicks "Thanh toán bằng SePay"
+  → NestJS builds signed form fields → frontend POST form to SePay checkout
+  → User pays on SePay
+  → SePay IPN (server-to-server POST JSON) → NestJS marks order paid
+  → SePay redirect (browser) → Nuxt /payments/return reads DB status
 ```
 
 ### 5. PC Builder Compatibility
@@ -109,7 +109,7 @@ User types in AdvisorChat → useAdvisorChat.sendMessage()
 | Nuxt | FastAPI | HTTP REST / SSE | None (dev proxy `/api/ai`) |
 | FastAPI | NestJS | HTTP REST | None (internal Docker network) |
 | FastAPI | Gemini | HTTPS | API Key |
-| NestJS | VNPAY | HTTPS | HMAC-SHA512 |
+| NestJS | SePay | HTTPS | HMAC-SHA256 (form) + IPN webhook |
 
 ## Frontend RBAC
 
@@ -127,7 +127,7 @@ SSR auth bootstrap: `plugins/auth.server.ts` hydrates session from cookies on `/
 ## Security
 
 - **JWT**: Access (15m) + Refresh (7d) tokens stored in httpOnly, Secure cookies
-- **VNPAY**: HMAC-SHA512 signature verification on both IPN and Return
+- **SePay**: HMAC-SHA256 form signature; IPN is source of truth for `paid`
 - **Rate limiting**: `@nestjs/throttler` (60 req/min)
 - **Helmet**: HTTP headers security
 - **Validation**: `class-validator` with `whitelist: true` (strips unknown fields)

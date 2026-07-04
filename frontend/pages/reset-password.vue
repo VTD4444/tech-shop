@@ -21,15 +21,15 @@ async function submit() {
     return;
   }
   if (!token) {
-    error.value = 'Invalid or missing reset token';
+    error.value = 'Token đặt lại không hợp lệ hoặc bị thiếu';
     return;
   }
   try {
     await $api('/auth/reset-password', { method: 'POST', body: { token, password: password.value } });
-    toast.success('Password updated');
+    toast.success('Mật khẩu đã được cập nhật');
     navigateTo('/login');
   } catch (e: any) {
-    error.value = e?.data?.message || 'Reset failed';
+    error.value = e?.data?.message || 'Đặt lại mật khẩu thất bại';
     toast.error(error.value);
   }
 }
@@ -37,14 +37,14 @@ async function submit() {
 
 <template>
   <UiCard padding="lg">
-    <UiText as="h1" size="2xl" class="text-center mb-6">Reset password</UiText>
+    <UiText as="h1" size="2xl" class="text-center mb-6">Đặt lại mật khẩu</UiText>
     <form class="space-y-4" @submit.prevent="submit">
       <div>
-        <UiInput v-model="password" type="password" required minlength="6" placeholder="New password" />
+        <UiInput v-model="password" type="password" required minlength="6" placeholder="Mật khẩu mới" />
         <p v-if="fieldErrors.password" class="text-danger text-xs mt-1">{{ fieldErrors.password }}</p>
       </div>
       <p v-if="error" class="text-danger text-sm">{{ error }}</p>
-      <UiButton type="submit" variant="primary" block>Update password</UiButton>
+      <UiButton type="submit" variant="primary" block>Cập nhật mật khẩu</UiButton>
     </form>
   </UiCard>
 </template>

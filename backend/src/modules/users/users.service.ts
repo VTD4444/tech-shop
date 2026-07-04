@@ -1,33 +1,81 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { toId } from '../../common/utils/serialize';
 
 @Injectable()
 export class UsersService {
   constructor(private prisma: PrismaService) {}
 
+  private mapAddress(address: {
+    id: bigint;
+    userId: bigint;
+    receiverName: string;
+    phone: string;
+    addressLine: string;
+    ward: string | null;
+    district: string | null;
+    city: string | null;
+    isDefault: boolean;
+    createdAt: Date;
+  }) {
+    return {
+      id: toId(address.id)!,
+      userId: toId(address.userId)!,
+      receiverName: address.receiverName,
+      phone: address.phone,
+      addressLine: address.addressLine,
+      ward: address.ward,
+      district: address.district,
+      city: address.city,
+      isDefault: address.isDefault,
+      createdAt: address.createdAt,
+    };
+  }
+
   async getProfile(userId: string) {
     const user = await this.prisma.user.findUnique({
       where: { id: BigInt(userId) },
-      select: { id: true, username: true, email: true, role: true, createdAt: true },
+      select: {
+        id: true,
+        username: true,
+        fullName: true,
+        email: true,
+        phone: true,
+        role: true,
+        authProvider: true,
+        createdAt: true,
+      },
     });
     if (!user) throw new NotFoundException('User not found');
     return { ...user, id: user.id.toString() };
   }
 
-  async updateProfile(userId: string, dto: { username?: string; email?: string }) {
+  async updateProfile(
+    userId: string,
+    dto: { fullName?: string; email?: string; phone?: string },
+  ) {
     const user = await this.prisma.user.update({
       where: { id: BigInt(userId) },
       data: dto,
-      select: { id: true, username: true, email: true, role: true },
+      select: {
+        id: true,
+        username: true,
+        fullName: true,
+        email: true,
+        phone: true,
+        role: true,
+        authProvider: true,
+      },
     });
     return { ...user, id: user.id.toString() };
   }
 
   async getAddresses(userId: string) {
-    return this.prisma.userAddress.findMany({
+    const addresses = await this.prisma.userAddress.findMany({
       where: { userId: BigInt(userId) },
       orderBy: { isDefault: 'desc' },
     });
+    return addresses.map((address) => this.mapAddress(address));
   }
 
   async createAddress(userId: string, dto: any) {
@@ -40,7 +88,8 @@ export class UsersService {
       });
     }
 
-    return this.prisma.userAddress.create({ data });
+    const created = await this.prisma.userAddress.create({ data });
+    return this.mapAddress(created);
   }
 
   async updateAddress(userId: string, addressId: string, dto: any) {
@@ -56,10 +105,11 @@ export class UsersService {
       });
     }
 
-    return this.prisma.userAddress.update({
+    const updated = await this.prisma.userAddress.update({
       where: { id: BigInt(addressId) },
       data: dto,
     });
+    return this.mapAddress(updated);
   }
 
   async deleteAddress(userId: string, addressId: string) {
@@ -68,8 +118,9 @@ export class UsersService {
     });
     if (!addr) throw new NotFoundException('Address not found');
 
-    return this.prisma.userAddress.delete({
+    const deleted = await this.prisma.userAddress.delete({
       where: { id: BigInt(addressId) },
     });
+    return this.mapAddress(deleted);
   }
 }

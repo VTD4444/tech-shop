@@ -36,11 +36,14 @@ JWT_REFRESH_SECRET=change-me-in-production-refresh-secret
 FRONTEND_URL=http://localhost:3001
 PORT=3000
 
-# VNPay — see docs/VNPAY_INTEGRATION.md
-VNPAY_ENV=sandbox
-VNPAY_TMN_CODE=your_tmn_code
-VNPAY_HASH_SECRET=your_hash_secret
-VNPAY_RETURN_URL=http://localhost:3001/vnpay/return
+# SePay — see docs/SEPAY_INTEGRATION.md
+SEPAY_ENV=sandbox
+SEPAY_MERCHANT_ID=
+SEPAY_SECRET_KEY=
+SEPAY_CHECKOUT_URL=https://pay-sandbox.sepay.vn/v1/checkout/init
+SEPAY_SUCCESS_URL=http://localhost:3001/payments/return?status=success
+SEPAY_ERROR_URL=http://localhost:3001/payments/return?status=error
+SEPAY_CANCEL_URL=http://localhost:3001/payments/return?status=cancel
 
 # Resend — see docs/RESEND_INTEGRATION.md
 RESEND_API_KEY=re_your_api_key
@@ -139,18 +142,18 @@ docker compose up --build
 | frontend | 3001 |
 | ai-service | 8000 |
 
-## 7. VNPay sandbox
+## 7. SePay sandbox
 
-Full guide: **[VNPAY_INTEGRATION.md](./VNPAY_INTEGRATION.md)**
+Full guide: **[SEPAY_INTEGRATION.md](./SEPAY_INTEGRATION.md)**
 
 Quick checklist:
 
-1. Register at [sandbox.vnpayment.vn/merchantv2](https://sandbox.vnpayment.vn/merchantv2/) — registration URL cannot be `localhost`; use a Vercel/ngrok URL.
-2. Copy TMN Code + Hash Secret → `backend/.env`
-3. Set `VNPAY_RETURN_URL=http://localhost:3001/vnpay/return`
+1. Register at [my.sepay.vn](https://my.sepay.vn/register) → Payment Gateway → Sandbox.
+2. Copy MERCHANT ID + SECRET KEY → `backend/.env`
+3. Set callback URLs to `http://localhost:3001/payments/return?status=success|error|cancel`
 4. For orders to become **paid** locally, expose backend with **ngrok** and register IPN:
-   `https://<ngrok-host>/api/v1/payments/vnpay/ipn`
-5. Test: login as customer → checkout → **Pay with VNPAY** on order detail.
+   `https://<ngrok-host>/api/v1/payments/sepay/ipn`
+5. Test: login as customer → checkout → **Thanh toán bằng SePay**.
 
 ## 8. Resend email
 
@@ -195,7 +198,7 @@ Free tier is limited by RPM/TPM/RPD (not dollars). `max_output_tokens` is a per-
 
 | Doc | Topic |
 |-----|--------|
-| [VNPAY_INTEGRATION.md](./VNPAY_INTEGRATION.md) | Payments, IPN, ngrok, sandbox vs production |
+| [SEPAY_INTEGRATION.md](./SEPAY_INTEGRATION.md) | Payments, IPN, ngrok, sandbox vs production |
 | [RESEND_INTEGRATION.md](./RESEND_INTEGRATION.md) | Transactional email |
 | [SETUP_PRODUCTION.md](./SETUP_PRODUCTION.md) | Production checklist |
 | [API.md](./API.md) | REST API reference |

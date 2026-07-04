@@ -28,14 +28,14 @@ watch(
 <template>
   <UiCard padding="md" class="flex flex-col h-[min(70vh,600px)]">
     <div class="flex items-center justify-between mb-4">
-      <UiText as="h2" size="lg">Chat with AI Advisor</UiText>
+      <UiText as="h2" size="lg">Trò chuyện với Cố vấn AI</UiText>
       <button
         v-if="messages.length"
         type="button"
         class="text-xs text-text-muted hover:text-danger flex items-center gap-1"
         @click="clearHistory"
       >
-        <Trash2 class="w-3.5 h-3.5" /> Clear history
+        <Trash2 class="w-3.5 h-3.5" /> Xóa lịch sử
       </button>
     </div>
 
@@ -45,8 +45,8 @@ watch(
     >
       <UiEmptyState
         v-if="!messages.length"
-        title="Start a conversation"
-        description="Ask about budgets, games, or component compatibility."
+        title="Bắt đầu trò chuyện"
+        description="Hỏi về ngân sách, game hoặc tương thích linh kiện."
       />
       <AdvisorChatMessage
         v-for="(msg, i) in messages"
@@ -61,7 +61,7 @@ watch(
     <form class="flex gap-2" @submit.prevent="submit">
       <UiInput
         v-model="input"
-        placeholder="e.g. I have 20M VND and want to play games at 2K..."
+        placeholder="VD: Tôi có 20 triệu VND và muốn chơi game 2K..."
         class="flex-1"
         :disabled="loading"
       />

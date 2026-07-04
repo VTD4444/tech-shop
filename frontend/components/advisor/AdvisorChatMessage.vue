@@ -27,7 +27,7 @@ const html = computed(() => {
         ? 'bg-accent text-surface-0'
         : 'bg-surface-2 border border-subtle text-text-primary prose prose-invert prose-sm max-w-none'"
     >
-      <div v-if="role === 'assistant' && !content" class="text-text-muted italic">Thinking...</div>
+      <div v-if="role === 'assistant' && !content" class="text-text-muted italic">Đang suy nghĩ...</div>
       <div v-else v-html="html" />
     </div>
   </div>

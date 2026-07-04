@@ -89,10 +89,10 @@ export type Order = $Result.DefaultSelection<Prisma.$OrderPayload>
  */
 export type OrderItem = $Result.DefaultSelection<Prisma.$OrderItemPayload>
 /**
- * Model VnpayTransaction
+ * Model PaymentTransaction
  * 
  */
-export type VnpayTransaction = $Result.DefaultSelection<Prisma.$VnpayTransactionPayload>
+export type PaymentTransaction = $Result.DefaultSelection<Prisma.$PaymentTransactionPayload>
 /**
  * Model SavedBuild
  * 
@@ -376,14 +376,14 @@ export class PrismaClient<
   get orderItem(): Prisma.OrderItemDelegate<ExtArgs, ClientOptions>;
 
   /**
-   * `prisma.vnpayTransaction`: Exposes CRUD operations for the **VnpayTransaction** model.
+   * `prisma.paymentTransaction`: Exposes CRUD operations for the **PaymentTransaction** model.
     * Example usage:
     * ```ts
-    * // Fetch zero or more VnpayTransactions
-    * const vnpayTransactions = await prisma.vnpayTransaction.findMany()
+    * // Fetch zero or more PaymentTransactions
+    * const paymentTransactions = await prisma.paymentTransaction.findMany()
     * ```
     */
-  get vnpayTransaction(): Prisma.VnpayTransactionDelegate<ExtArgs, ClientOptions>;
+  get paymentTransaction(): Prisma.PaymentTransactionDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.savedBuild`: Exposes CRUD operations for the **SavedBuild** model.
@@ -853,7 +853,7 @@ export namespace Prisma {
     ProductComment: 'ProductComment',
     Order: 'Order',
     OrderItem: 'OrderItem',
-    VnpayTransaction: 'VnpayTransaction',
+    PaymentTransaction: 'PaymentTransaction',
     SavedBuild: 'SavedBuild',
     SavedBuildItem: 'SavedBuildItem'
   };
@@ -871,7 +871,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "passwordResetToken" | "userAddress" | "category" | "brand" | "product" | "productImage" | "productSpec" | "pcComponent" | "cartItem" | "wishlist" | "productRating" | "productComment" | "order" | "orderItem" | "vnpayTransaction" | "savedBuild" | "savedBuildItem"
+      modelProps: "user" | "passwordResetToken" | "userAddress" | "category" | "brand" | "product" | "productImage" | "productSpec" | "pcComponent" | "cartItem" | "wishlist" | "productRating" | "productComment" | "order" | "orderItem" | "paymentTransaction" | "savedBuild" | "savedBuildItem"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1985,77 +1985,77 @@ export namespace Prisma {
           }
         }
       }
-      VnpayTransaction: {
-        payload: Prisma.$VnpayTransactionPayload<ExtArgs>
-        fields: Prisma.VnpayTransactionFieldRefs
+      PaymentTransaction: {
+        payload: Prisma.$PaymentTransactionPayload<ExtArgs>
+        fields: Prisma.PaymentTransactionFieldRefs
         operations: {
           findUnique: {
-            args: Prisma.VnpayTransactionFindUniqueArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$VnpayTransactionPayload> | null
+            args: Prisma.PaymentTransactionFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PaymentTransactionPayload> | null
           }
           findUniqueOrThrow: {
-            args: Prisma.VnpayTransactionFindUniqueOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$VnpayTransactionPayload>
+            args: Prisma.PaymentTransactionFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PaymentTransactionPayload>
           }
           findFirst: {
-            args: Prisma.VnpayTransactionFindFirstArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$VnpayTransactionPayload> | null
+            args: Prisma.PaymentTransactionFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PaymentTransactionPayload> | null
           }
           findFirstOrThrow: {
-            args: Prisma.VnpayTransactionFindFirstOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$VnpayTransactionPayload>
+            args: Prisma.PaymentTransactionFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PaymentTransactionPayload>
           }
           findMany: {
-            args: Prisma.VnpayTransactionFindManyArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$VnpayTransactionPayload>[]
+            args: Prisma.PaymentTransactionFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PaymentTransactionPayload>[]
           }
           create: {
-            args: Prisma.VnpayTransactionCreateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$VnpayTransactionPayload>
+            args: Prisma.PaymentTransactionCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PaymentTransactionPayload>
           }
           createMany: {
-            args: Prisma.VnpayTransactionCreateManyArgs<ExtArgs>
+            args: Prisma.PaymentTransactionCreateManyArgs<ExtArgs>
             result: BatchPayload
           }
           createManyAndReturn: {
-            args: Prisma.VnpayTransactionCreateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$VnpayTransactionPayload>[]
+            args: Prisma.PaymentTransactionCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PaymentTransactionPayload>[]
           }
           delete: {
-            args: Prisma.VnpayTransactionDeleteArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$VnpayTransactionPayload>
+            args: Prisma.PaymentTransactionDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PaymentTransactionPayload>
           }
           update: {
-            args: Prisma.VnpayTransactionUpdateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$VnpayTransactionPayload>
+            args: Prisma.PaymentTransactionUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PaymentTransactionPayload>
           }
           deleteMany: {
-            args: Prisma.VnpayTransactionDeleteManyArgs<ExtArgs>
+            args: Prisma.PaymentTransactionDeleteManyArgs<ExtArgs>
             result: BatchPayload
           }
           updateMany: {
-            args: Prisma.VnpayTransactionUpdateManyArgs<ExtArgs>
+            args: Prisma.PaymentTransactionUpdateManyArgs<ExtArgs>
             result: BatchPayload
           }
           updateManyAndReturn: {
-            args: Prisma.VnpayTransactionUpdateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$VnpayTransactionPayload>[]
+            args: Prisma.PaymentTransactionUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PaymentTransactionPayload>[]
           }
           upsert: {
-            args: Prisma.VnpayTransactionUpsertArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$VnpayTransactionPayload>
+            args: Prisma.PaymentTransactionUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PaymentTransactionPayload>
           }
           aggregate: {
-            args: Prisma.VnpayTransactionAggregateArgs<ExtArgs>
-            result: $Utils.Optional<AggregateVnpayTransaction>
+            args: Prisma.PaymentTransactionAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregatePaymentTransaction>
           }
           groupBy: {
-            args: Prisma.VnpayTransactionGroupByArgs<ExtArgs>
-            result: $Utils.Optional<VnpayTransactionGroupByOutputType>[]
+            args: Prisma.PaymentTransactionGroupByArgs<ExtArgs>
+            result: $Utils.Optional<PaymentTransactionGroupByOutputType>[]
           }
           count: {
-            args: Prisma.VnpayTransactionCountArgs<ExtArgs>
-            result: $Utils.Optional<VnpayTransactionCountAggregateOutputType> | number
+            args: Prisma.PaymentTransactionCountArgs<ExtArgs>
+            result: $Utils.Optional<PaymentTransactionCountAggregateOutputType> | number
           }
         }
       }
@@ -2330,7 +2330,7 @@ export namespace Prisma {
     productComment?: ProductCommentOmit
     order?: OrderOmit
     orderItem?: OrderItemOmit
-    vnpayTransaction?: VnpayTransactionOmit
+    paymentTransaction?: PaymentTransactionOmit
     savedBuild?: SavedBuildOmit
     savedBuildItem?: SavedBuildItemOmit
   }
@@ -2787,8 +2787,12 @@ export namespace Prisma {
   export type UserMinAggregateOutputType = {
     id: bigint | null
     username: string | null
+    fullName: string | null
     email: string | null
+    phone: string | null
     passwordHash: string | null
+    googleId: string | null
+    authProvider: string | null
     role: string | null
     isActive: boolean | null
     createdAt: Date | null
@@ -2798,8 +2802,12 @@ export namespace Prisma {
   export type UserMaxAggregateOutputType = {
     id: bigint | null
     username: string | null
+    fullName: string | null
     email: string | null
+    phone: string | null
     passwordHash: string | null
+    googleId: string | null
+    authProvider: string | null
     role: string | null
     isActive: boolean | null
     createdAt: Date | null
@@ -2809,8 +2817,12 @@ export namespace Prisma {
   export type UserCountAggregateOutputType = {
     id: number
     username: number
+    fullName: number
     email: number
+    phone: number
     passwordHash: number
+    googleId: number
+    authProvider: number
     role: number
     isActive: number
     createdAt: number
@@ -2830,8 +2842,12 @@ export namespace Prisma {
   export type UserMinAggregateInputType = {
     id?: true
     username?: true
+    fullName?: true
     email?: true
+    phone?: true
     passwordHash?: true
+    googleId?: true
+    authProvider?: true
     role?: true
     isActive?: true
     createdAt?: true
@@ -2841,8 +2857,12 @@ export namespace Prisma {
   export type UserMaxAggregateInputType = {
     id?: true
     username?: true
+    fullName?: true
     email?: true
+    phone?: true
     passwordHash?: true
+    googleId?: true
+    authProvider?: true
     role?: true
     isActive?: true
     createdAt?: true
@@ -2852,8 +2872,12 @@ export namespace Prisma {
   export type UserCountAggregateInputType = {
     id?: true
     username?: true
+    fullName?: true
     email?: true
+    phone?: true
     passwordHash?: true
+    googleId?: true
+    authProvider?: true
     role?: true
     isActive?: true
     createdAt?: true
@@ -2950,8 +2974,12 @@ export namespace Prisma {
   export type UserGroupByOutputType = {
     id: bigint
     username: string
+    fullName: string
     email: string
-    passwordHash: string
+    phone: string | null
+    passwordHash: string | null
+    googleId: string | null
+    authProvider: string
     role: string
     isActive: boolean
     createdAt: Date
@@ -2980,8 +3008,12 @@ export namespace Prisma {
   export type UserSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     username?: boolean
+    fullName?: boolean
     email?: boolean
+    phone?: boolean
     passwordHash?: boolean
+    googleId?: boolean
+    authProvider?: boolean
     role?: boolean
     isActive?: boolean
     createdAt?: boolean
@@ -3000,8 +3032,12 @@ export namespace Prisma {
   export type UserSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     username?: boolean
+    fullName?: boolean
     email?: boolean
+    phone?: boolean
     passwordHash?: boolean
+    googleId?: boolean
+    authProvider?: boolean
     role?: boolean
     isActive?: boolean
     createdAt?: boolean
@@ -3011,8 +3047,12 @@ export namespace Prisma {
   export type UserSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     username?: boolean
+    fullName?: boolean
     email?: boolean
+    phone?: boolean
     passwordHash?: boolean
+    googleId?: boolean
+    authProvider?: boolean
     role?: boolean
     isActive?: boolean
     createdAt?: boolean
@@ -3022,15 +3062,19 @@ export namespace Prisma {
   export type UserSelectScalar = {
     id?: boolean
     username?: boolean
+    fullName?: boolean
     email?: boolean
+    phone?: boolean
     passwordHash?: boolean
+    googleId?: boolean
+    authProvider?: boolean
     role?: boolean
     isActive?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "username" | "email" | "passwordHash" | "role" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "username" | "fullName" | "email" | "phone" | "passwordHash" | "googleId" | "authProvider" | "role" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     addresses?: boolean | User$addressesArgs<ExtArgs>
     cartItems?: boolean | User$cartItemsArgs<ExtArgs>
@@ -3060,8 +3104,12 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: bigint
       username: string
+      fullName: string
       email: string
-      passwordHash: string
+      phone: string | null
+      passwordHash: string | null
+      googleId: string | null
+      authProvider: string
       role: string
       isActive: boolean
       createdAt: Date
@@ -3499,8 +3547,12 @@ export namespace Prisma {
   interface UserFieldRefs {
     readonly id: FieldRef<"User", 'BigInt'>
     readonly username: FieldRef<"User", 'String'>
+    readonly fullName: FieldRef<"User", 'String'>
     readonly email: FieldRef<"User", 'String'>
+    readonly phone: FieldRef<"User", 'String'>
     readonly passwordHash: FieldRef<"User", 'String'>
+    readonly googleId: FieldRef<"User", 'String'>
+    readonly authProvider: FieldRef<"User", 'String'>
     readonly role: FieldRef<"User", 'String'>
     readonly isActive: FieldRef<"User", 'Boolean'>
     readonly createdAt: FieldRef<"User", 'DateTime'>
@@ -18731,7 +18783,7 @@ export namespace Prisma {
     updatedAt?: boolean
     user?: boolean | Order$userArgs<ExtArgs>
     items?: boolean | Order$itemsArgs<ExtArgs>
-    vnpayTxn?: boolean | Order$vnpayTxnArgs<ExtArgs>
+    paymentTxn?: boolean | Order$paymentTxnArgs<ExtArgs>
     ratings?: boolean | Order$ratingsArgs<ExtArgs>
     _count?: boolean | OrderCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["order"]>
@@ -18787,7 +18839,7 @@ export namespace Prisma {
   export type OrderInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | Order$userArgs<ExtArgs>
     items?: boolean | Order$itemsArgs<ExtArgs>
-    vnpayTxn?: boolean | Order$vnpayTxnArgs<ExtArgs>
+    paymentTxn?: boolean | Order$paymentTxnArgs<ExtArgs>
     ratings?: boolean | Order$ratingsArgs<ExtArgs>
     _count?: boolean | OrderCountOutputTypeDefaultArgs<ExtArgs>
   }
@@ -18803,7 +18855,7 @@ export namespace Prisma {
     objects: {
       user: Prisma.$UserPayload<ExtArgs> | null
       items: Prisma.$OrderItemPayload<ExtArgs>[]
-      vnpayTxn: Prisma.$VnpayTransactionPayload<ExtArgs> | null
+      paymentTxn: Prisma.$PaymentTransactionPayload<ExtArgs> | null
       ratings: Prisma.$ProductRatingPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -19215,7 +19267,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     user<T extends Order$userArgs<ExtArgs> = {}>(args?: Subset<T, Order$userArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     items<T extends Order$itemsArgs<ExtArgs> = {}>(args?: Subset<T, Order$itemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    vnpayTxn<T extends Order$vnpayTxnArgs<ExtArgs> = {}>(args?: Subset<T, Order$vnpayTxnArgs<ExtArgs>>): Prisma__VnpayTransactionClient<$Result.GetResult<Prisma.$VnpayTransactionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    paymentTxn<T extends Order$paymentTxnArgs<ExtArgs> = {}>(args?: Subset<T, Order$paymentTxnArgs<ExtArgs>>): Prisma__PaymentTransactionClient<$Result.GetResult<Prisma.$PaymentTransactionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     ratings<T extends Order$ratingsArgs<ExtArgs> = {}>(args?: Subset<T, Order$ratingsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProductRatingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -19702,22 +19754,22 @@ export namespace Prisma {
   }
 
   /**
-   * Order.vnpayTxn
+   * Order.paymentTxn
    */
-  export type Order$vnpayTxnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Order$paymentTxnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the VnpayTransaction
+     * Select specific fields to fetch from the PaymentTransaction
      */
-    select?: VnpayTransactionSelect<ExtArgs> | null
+    select?: PaymentTransactionSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the VnpayTransaction
+     * Omit specific fields from the PaymentTransaction
      */
-    omit?: VnpayTransactionOmit<ExtArgs> | null
+    omit?: PaymentTransactionOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: VnpayTransactionInclude<ExtArgs> | null
-    where?: VnpayTransactionWhereInput
+    include?: PaymentTransactionInclude<ExtArgs> | null
+    where?: PaymentTransactionWhereInput
   }
 
   /**
@@ -20960,69 +21012,63 @@ export namespace Prisma {
 
 
   /**
-   * Model VnpayTransaction
+   * Model PaymentTransaction
    */
 
-  export type AggregateVnpayTransaction = {
-    _count: VnpayTransactionCountAggregateOutputType | null
-    _avg: VnpayTransactionAvgAggregateOutputType | null
-    _sum: VnpayTransactionSumAggregateOutputType | null
-    _min: VnpayTransactionMinAggregateOutputType | null
-    _max: VnpayTransactionMaxAggregateOutputType | null
+  export type AggregatePaymentTransaction = {
+    _count: PaymentTransactionCountAggregateOutputType | null
+    _avg: PaymentTransactionAvgAggregateOutputType | null
+    _sum: PaymentTransactionSumAggregateOutputType | null
+    _min: PaymentTransactionMinAggregateOutputType | null
+    _max: PaymentTransactionMaxAggregateOutputType | null
   }
 
-  export type VnpayTransactionAvgAggregateOutputType = {
+  export type PaymentTransactionAvgAggregateOutputType = {
     id: number | null
     orderId: number | null
     amount: Decimal | null
   }
 
-  export type VnpayTransactionSumAggregateOutputType = {
+  export type PaymentTransactionSumAggregateOutputType = {
     id: bigint | null
     orderId: bigint | null
     amount: Decimal | null
   }
 
-  export type VnpayTransactionMinAggregateOutputType = {
+  export type PaymentTransactionMinAggregateOutputType = {
     id: bigint | null
     orderId: bigint | null
-    vnpayTxnRef: string | null
-    vnpayTransactionNo: string | null
+    provider: string | null
+    invoiceNumber: string | null
+    externalTxnId: string | null
     amount: Decimal | null
-    bankCode: string | null
-    responseCode: string | null
     status: string | null
-    secureHash: string | null
     paymentDate: Date | null
     createdAt: Date | null
     updatedAt: Date | null
   }
 
-  export type VnpayTransactionMaxAggregateOutputType = {
+  export type PaymentTransactionMaxAggregateOutputType = {
     id: bigint | null
     orderId: bigint | null
-    vnpayTxnRef: string | null
-    vnpayTransactionNo: string | null
+    provider: string | null
+    invoiceNumber: string | null
+    externalTxnId: string | null
     amount: Decimal | null
-    bankCode: string | null
-    responseCode: string | null
     status: string | null
-    secureHash: string | null
     paymentDate: Date | null
     createdAt: Date | null
     updatedAt: Date | null
   }
 
-  export type VnpayTransactionCountAggregateOutputType = {
+  export type PaymentTransactionCountAggregateOutputType = {
     id: number
     orderId: number
-    vnpayTxnRef: number
-    vnpayTransactionNo: number
+    provider: number
+    invoiceNumber: number
+    externalTxnId: number
     amount: number
-    bankCode: number
-    responseCode: number
     status: number
-    secureHash: number
     rawResponse: number
     paymentDate: number
     createdAt: number
@@ -21031,58 +21077,52 @@ export namespace Prisma {
   }
 
 
-  export type VnpayTransactionAvgAggregateInputType = {
+  export type PaymentTransactionAvgAggregateInputType = {
     id?: true
     orderId?: true
     amount?: true
   }
 
-  export type VnpayTransactionSumAggregateInputType = {
+  export type PaymentTransactionSumAggregateInputType = {
     id?: true
     orderId?: true
     amount?: true
   }
 
-  export type VnpayTransactionMinAggregateInputType = {
+  export type PaymentTransactionMinAggregateInputType = {
     id?: true
     orderId?: true
-    vnpayTxnRef?: true
-    vnpayTransactionNo?: true
+    provider?: true
+    invoiceNumber?: true
+    externalTxnId?: true
     amount?: true
-    bankCode?: true
-    responseCode?: true
     status?: true
-    secureHash?: true
     paymentDate?: true
     createdAt?: true
     updatedAt?: true
   }
 
-  export type VnpayTransactionMaxAggregateInputType = {
+  export type PaymentTransactionMaxAggregateInputType = {
     id?: true
     orderId?: true
-    vnpayTxnRef?: true
-    vnpayTransactionNo?: true
+    provider?: true
+    invoiceNumber?: true
+    externalTxnId?: true
     amount?: true
-    bankCode?: true
-    responseCode?: true
     status?: true
-    secureHash?: true
     paymentDate?: true
     createdAt?: true
     updatedAt?: true
   }
 
-  export type VnpayTransactionCountAggregateInputType = {
+  export type PaymentTransactionCountAggregateInputType = {
     id?: true
     orderId?: true
-    vnpayTxnRef?: true
-    vnpayTransactionNo?: true
+    provider?: true
+    invoiceNumber?: true
+    externalTxnId?: true
     amount?: true
-    bankCode?: true
-    responseCode?: true
     status?: true
-    secureHash?: true
     rawResponse?: true
     paymentDate?: true
     createdAt?: true
@@ -21090,354 +21130,342 @@ export namespace Prisma {
     _all?: true
   }
 
-  export type VnpayTransactionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type PaymentTransactionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Filter which VnpayTransaction to aggregate.
+     * Filter which PaymentTransaction to aggregate.
      */
-    where?: VnpayTransactionWhereInput
+    where?: PaymentTransactionWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of VnpayTransactions to fetch.
+     * Determine the order of PaymentTransactions to fetch.
      */
-    orderBy?: VnpayTransactionOrderByWithRelationInput | VnpayTransactionOrderByWithRelationInput[]
+    orderBy?: PaymentTransactionOrderByWithRelationInput | PaymentTransactionOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the start position
      */
-    cursor?: VnpayTransactionWhereUniqueInput
+    cursor?: PaymentTransactionWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` VnpayTransactions from the position of the cursor.
+     * Take `±n` PaymentTransactions from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` VnpayTransactions.
+     * Skip the first `n` PaymentTransactions.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
-     * Count returned VnpayTransactions
+     * Count returned PaymentTransactions
     **/
-    _count?: true | VnpayTransactionCountAggregateInputType
+    _count?: true | PaymentTransactionCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to average
     **/
-    _avg?: VnpayTransactionAvgAggregateInputType
+    _avg?: PaymentTransactionAvgAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to sum
     **/
-    _sum?: VnpayTransactionSumAggregateInputType
+    _sum?: PaymentTransactionSumAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the minimum value
     **/
-    _min?: VnpayTransactionMinAggregateInputType
+    _min?: PaymentTransactionMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the maximum value
     **/
-    _max?: VnpayTransactionMaxAggregateInputType
+    _max?: PaymentTransactionMaxAggregateInputType
   }
 
-  export type GetVnpayTransactionAggregateType<T extends VnpayTransactionAggregateArgs> = {
-        [P in keyof T & keyof AggregateVnpayTransaction]: P extends '_count' | 'count'
+  export type GetPaymentTransactionAggregateType<T extends PaymentTransactionAggregateArgs> = {
+        [P in keyof T & keyof AggregatePaymentTransaction]: P extends '_count' | 'count'
       ? T[P] extends true
         ? number
-        : GetScalarType<T[P], AggregateVnpayTransaction[P]>
-      : GetScalarType<T[P], AggregateVnpayTransaction[P]>
+        : GetScalarType<T[P], AggregatePaymentTransaction[P]>
+      : GetScalarType<T[P], AggregatePaymentTransaction[P]>
   }
 
 
 
 
-  export type VnpayTransactionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: VnpayTransactionWhereInput
-    orderBy?: VnpayTransactionOrderByWithAggregationInput | VnpayTransactionOrderByWithAggregationInput[]
-    by: VnpayTransactionScalarFieldEnum[] | VnpayTransactionScalarFieldEnum
-    having?: VnpayTransactionScalarWhereWithAggregatesInput
+  export type PaymentTransactionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PaymentTransactionWhereInput
+    orderBy?: PaymentTransactionOrderByWithAggregationInput | PaymentTransactionOrderByWithAggregationInput[]
+    by: PaymentTransactionScalarFieldEnum[] | PaymentTransactionScalarFieldEnum
+    having?: PaymentTransactionScalarWhereWithAggregatesInput
     take?: number
     skip?: number
-    _count?: VnpayTransactionCountAggregateInputType | true
-    _avg?: VnpayTransactionAvgAggregateInputType
-    _sum?: VnpayTransactionSumAggregateInputType
-    _min?: VnpayTransactionMinAggregateInputType
-    _max?: VnpayTransactionMaxAggregateInputType
+    _count?: PaymentTransactionCountAggregateInputType | true
+    _avg?: PaymentTransactionAvgAggregateInputType
+    _sum?: PaymentTransactionSumAggregateInputType
+    _min?: PaymentTransactionMinAggregateInputType
+    _max?: PaymentTransactionMaxAggregateInputType
   }
 
-  export type VnpayTransactionGroupByOutputType = {
+  export type PaymentTransactionGroupByOutputType = {
     id: bigint
     orderId: bigint
-    vnpayTxnRef: string
-    vnpayTransactionNo: string | null
+    provider: string
+    invoiceNumber: string
+    externalTxnId: string | null
     amount: Decimal
-    bankCode: string | null
-    responseCode: string | null
     status: string
-    secureHash: string | null
     rawResponse: JsonValue | null
     paymentDate: Date | null
     createdAt: Date
     updatedAt: Date
-    _count: VnpayTransactionCountAggregateOutputType | null
-    _avg: VnpayTransactionAvgAggregateOutputType | null
-    _sum: VnpayTransactionSumAggregateOutputType | null
-    _min: VnpayTransactionMinAggregateOutputType | null
-    _max: VnpayTransactionMaxAggregateOutputType | null
+    _count: PaymentTransactionCountAggregateOutputType | null
+    _avg: PaymentTransactionAvgAggregateOutputType | null
+    _sum: PaymentTransactionSumAggregateOutputType | null
+    _min: PaymentTransactionMinAggregateOutputType | null
+    _max: PaymentTransactionMaxAggregateOutputType | null
   }
 
-  type GetVnpayTransactionGroupByPayload<T extends VnpayTransactionGroupByArgs> = Prisma.PrismaPromise<
+  type GetPaymentTransactionGroupByPayload<T extends PaymentTransactionGroupByArgs> = Prisma.PrismaPromise<
     Array<
-      PickEnumerable<VnpayTransactionGroupByOutputType, T['by']> &
+      PickEnumerable<PaymentTransactionGroupByOutputType, T['by']> &
         {
-          [P in ((keyof T) & (keyof VnpayTransactionGroupByOutputType))]: P extends '_count'
+          [P in ((keyof T) & (keyof PaymentTransactionGroupByOutputType))]: P extends '_count'
             ? T[P] extends boolean
               ? number
-              : GetScalarType<T[P], VnpayTransactionGroupByOutputType[P]>
-            : GetScalarType<T[P], VnpayTransactionGroupByOutputType[P]>
+              : GetScalarType<T[P], PaymentTransactionGroupByOutputType[P]>
+            : GetScalarType<T[P], PaymentTransactionGroupByOutputType[P]>
         }
       >
     >
 
 
-  export type VnpayTransactionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+  export type PaymentTransactionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     orderId?: boolean
-    vnpayTxnRef?: boolean
-    vnpayTransactionNo?: boolean
+    provider?: boolean
+    invoiceNumber?: boolean
+    externalTxnId?: boolean
     amount?: boolean
-    bankCode?: boolean
-    responseCode?: boolean
     status?: boolean
-    secureHash?: boolean
     rawResponse?: boolean
     paymentDate?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     order?: boolean | OrderDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["vnpayTransaction"]>
+  }, ExtArgs["result"]["paymentTransaction"]>
 
-  export type VnpayTransactionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+  export type PaymentTransactionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     orderId?: boolean
-    vnpayTxnRef?: boolean
-    vnpayTransactionNo?: boolean
+    provider?: boolean
+    invoiceNumber?: boolean
+    externalTxnId?: boolean
     amount?: boolean
-    bankCode?: boolean
-    responseCode?: boolean
     status?: boolean
-    secureHash?: boolean
     rawResponse?: boolean
     paymentDate?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     order?: boolean | OrderDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["vnpayTransaction"]>
+  }, ExtArgs["result"]["paymentTransaction"]>
 
-  export type VnpayTransactionSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+  export type PaymentTransactionSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     orderId?: boolean
-    vnpayTxnRef?: boolean
-    vnpayTransactionNo?: boolean
+    provider?: boolean
+    invoiceNumber?: boolean
+    externalTxnId?: boolean
     amount?: boolean
-    bankCode?: boolean
-    responseCode?: boolean
     status?: boolean
-    secureHash?: boolean
     rawResponse?: boolean
     paymentDate?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     order?: boolean | OrderDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["vnpayTransaction"]>
+  }, ExtArgs["result"]["paymentTransaction"]>
 
-  export type VnpayTransactionSelectScalar = {
+  export type PaymentTransactionSelectScalar = {
     id?: boolean
     orderId?: boolean
-    vnpayTxnRef?: boolean
-    vnpayTransactionNo?: boolean
+    provider?: boolean
+    invoiceNumber?: boolean
+    externalTxnId?: boolean
     amount?: boolean
-    bankCode?: boolean
-    responseCode?: boolean
     status?: boolean
-    secureHash?: boolean
     rawResponse?: boolean
     paymentDate?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type VnpayTransactionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orderId" | "vnpayTxnRef" | "vnpayTransactionNo" | "amount" | "bankCode" | "responseCode" | "status" | "secureHash" | "rawResponse" | "paymentDate" | "createdAt" | "updatedAt", ExtArgs["result"]["vnpayTransaction"]>
-  export type VnpayTransactionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type PaymentTransactionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orderId" | "provider" | "invoiceNumber" | "externalTxnId" | "amount" | "status" | "rawResponse" | "paymentDate" | "createdAt" | "updatedAt", ExtArgs["result"]["paymentTransaction"]>
+  export type PaymentTransactionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     order?: boolean | OrderDefaultArgs<ExtArgs>
   }
-  export type VnpayTransactionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type PaymentTransactionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     order?: boolean | OrderDefaultArgs<ExtArgs>
   }
-  export type VnpayTransactionIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type PaymentTransactionIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     order?: boolean | OrderDefaultArgs<ExtArgs>
   }
 
-  export type $VnpayTransactionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    name: "VnpayTransaction"
+  export type $PaymentTransactionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "PaymentTransaction"
     objects: {
       order: Prisma.$OrderPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
       id: bigint
       orderId: bigint
-      vnpayTxnRef: string
-      vnpayTransactionNo: string | null
+      provider: string
+      invoiceNumber: string
+      externalTxnId: string | null
       amount: Prisma.Decimal
-      bankCode: string | null
-      responseCode: string | null
       status: string
-      secureHash: string | null
       rawResponse: Prisma.JsonValue | null
       paymentDate: Date | null
       createdAt: Date
       updatedAt: Date
-    }, ExtArgs["result"]["vnpayTransaction"]>
+    }, ExtArgs["result"]["paymentTransaction"]>
     composites: {}
   }
 
-  type VnpayTransactionGetPayload<S extends boolean | null | undefined | VnpayTransactionDefaultArgs> = $Result.GetResult<Prisma.$VnpayTransactionPayload, S>
+  type PaymentTransactionGetPayload<S extends boolean | null | undefined | PaymentTransactionDefaultArgs> = $Result.GetResult<Prisma.$PaymentTransactionPayload, S>
 
-  type VnpayTransactionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
-    Omit<VnpayTransactionFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
-      select?: VnpayTransactionCountAggregateInputType | true
+  type PaymentTransactionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<PaymentTransactionFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: PaymentTransactionCountAggregateInputType | true
     }
 
-  export interface VnpayTransactionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
-    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['VnpayTransaction'], meta: { name: 'VnpayTransaction' } }
+  export interface PaymentTransactionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['PaymentTransaction'], meta: { name: 'PaymentTransaction' } }
     /**
-     * Find zero or one VnpayTransaction that matches the filter.
-     * @param {VnpayTransactionFindUniqueArgs} args - Arguments to find a VnpayTransaction
+     * Find zero or one PaymentTransaction that matches the filter.
+     * @param {PaymentTransactionFindUniqueArgs} args - Arguments to find a PaymentTransaction
      * @example
-     * // Get one VnpayTransaction
-     * const vnpayTransaction = await prisma.vnpayTransaction.findUnique({
+     * // Get one PaymentTransaction
+     * const paymentTransaction = await prisma.paymentTransaction.findUnique({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findUnique<T extends VnpayTransactionFindUniqueArgs>(args: SelectSubset<T, VnpayTransactionFindUniqueArgs<ExtArgs>>): Prisma__VnpayTransactionClient<$Result.GetResult<Prisma.$VnpayTransactionPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    findUnique<T extends PaymentTransactionFindUniqueArgs>(args: SelectSubset<T, PaymentTransactionFindUniqueArgs<ExtArgs>>): Prisma__PaymentTransactionClient<$Result.GetResult<Prisma.$PaymentTransactionPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Find one VnpayTransaction that matches the filter or throw an error with `error.code='P2025'`
+     * Find one PaymentTransaction that matches the filter or throw an error with `error.code='P2025'`
      * if no matches were found.
-     * @param {VnpayTransactionFindUniqueOrThrowArgs} args - Arguments to find a VnpayTransaction
+     * @param {PaymentTransactionFindUniqueOrThrowArgs} args - Arguments to find a PaymentTransaction
      * @example
-     * // Get one VnpayTransaction
-     * const vnpayTransaction = await prisma.vnpayTransaction.findUniqueOrThrow({
+     * // Get one PaymentTransaction
+     * const paymentTransaction = await prisma.paymentTransaction.findUniqueOrThrow({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findUniqueOrThrow<T extends VnpayTransactionFindUniqueOrThrowArgs>(args: SelectSubset<T, VnpayTransactionFindUniqueOrThrowArgs<ExtArgs>>): Prisma__VnpayTransactionClient<$Result.GetResult<Prisma.$VnpayTransactionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    findUniqueOrThrow<T extends PaymentTransactionFindUniqueOrThrowArgs>(args: SelectSubset<T, PaymentTransactionFindUniqueOrThrowArgs<ExtArgs>>): Prisma__PaymentTransactionClient<$Result.GetResult<Prisma.$PaymentTransactionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Find the first VnpayTransaction that matches the filter.
+     * Find the first PaymentTransaction that matches the filter.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {VnpayTransactionFindFirstArgs} args - Arguments to find a VnpayTransaction
+     * @param {PaymentTransactionFindFirstArgs} args - Arguments to find a PaymentTransaction
      * @example
-     * // Get one VnpayTransaction
-     * const vnpayTransaction = await prisma.vnpayTransaction.findFirst({
+     * // Get one PaymentTransaction
+     * const paymentTransaction = await prisma.paymentTransaction.findFirst({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findFirst<T extends VnpayTransactionFindFirstArgs>(args?: SelectSubset<T, VnpayTransactionFindFirstArgs<ExtArgs>>): Prisma__VnpayTransactionClient<$Result.GetResult<Prisma.$VnpayTransactionPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    findFirst<T extends PaymentTransactionFindFirstArgs>(args?: SelectSubset<T, PaymentTransactionFindFirstArgs<ExtArgs>>): Prisma__PaymentTransactionClient<$Result.GetResult<Prisma.$PaymentTransactionPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Find the first VnpayTransaction that matches the filter or
+     * Find the first PaymentTransaction that matches the filter or
      * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {VnpayTransactionFindFirstOrThrowArgs} args - Arguments to find a VnpayTransaction
+     * @param {PaymentTransactionFindFirstOrThrowArgs} args - Arguments to find a PaymentTransaction
      * @example
-     * // Get one VnpayTransaction
-     * const vnpayTransaction = await prisma.vnpayTransaction.findFirstOrThrow({
+     * // Get one PaymentTransaction
+     * const paymentTransaction = await prisma.paymentTransaction.findFirstOrThrow({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findFirstOrThrow<T extends VnpayTransactionFindFirstOrThrowArgs>(args?: SelectSubset<T, VnpayTransactionFindFirstOrThrowArgs<ExtArgs>>): Prisma__VnpayTransactionClient<$Result.GetResult<Prisma.$VnpayTransactionPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    findFirstOrThrow<T extends PaymentTransactionFindFirstOrThrowArgs>(args?: SelectSubset<T, PaymentTransactionFindFirstOrThrowArgs<ExtArgs>>): Prisma__PaymentTransactionClient<$Result.GetResult<Prisma.$PaymentTransactionPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Find zero or more VnpayTransactions that matches the filter.
+     * Find zero or more PaymentTransactions that matches the filter.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {VnpayTransactionFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @param {PaymentTransactionFindManyArgs} args - Arguments to filter and select certain fields only.
      * @example
-     * // Get all VnpayTransactions
-     * const vnpayTransactions = await prisma.vnpayTransaction.findMany()
+     * // Get all PaymentTransactions
+     * const paymentTransactions = await prisma.paymentTransaction.findMany()
      * 
-     * // Get first 10 VnpayTransactions
-     * const vnpayTransactions = await prisma.vnpayTransaction.findMany({ take: 10 })
+     * // Get first 10 PaymentTransactions
+     * const paymentTransactions = await prisma.paymentTransaction.findMany({ take: 10 })
      * 
      * // Only select the `id`
-     * const vnpayTransactionWithIdOnly = await prisma.vnpayTransaction.findMany({ select: { id: true } })
+     * const paymentTransactionWithIdOnly = await prisma.paymentTransaction.findMany({ select: { id: true } })
      * 
      */
-    findMany<T extends VnpayTransactionFindManyArgs>(args?: SelectSubset<T, VnpayTransactionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$VnpayTransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+    findMany<T extends PaymentTransactionFindManyArgs>(args?: SelectSubset<T, PaymentTransactionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PaymentTransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
     /**
-     * Create a VnpayTransaction.
-     * @param {VnpayTransactionCreateArgs} args - Arguments to create a VnpayTransaction.
+     * Create a PaymentTransaction.
+     * @param {PaymentTransactionCreateArgs} args - Arguments to create a PaymentTransaction.
      * @example
-     * // Create one VnpayTransaction
-     * const VnpayTransaction = await prisma.vnpayTransaction.create({
+     * // Create one PaymentTransaction
+     * const PaymentTransaction = await prisma.paymentTransaction.create({
      *   data: {
-     *     // ... data to create a VnpayTransaction
+     *     // ... data to create a PaymentTransaction
      *   }
      * })
      * 
      */
-    create<T extends VnpayTransactionCreateArgs>(args: SelectSubset<T, VnpayTransactionCreateArgs<ExtArgs>>): Prisma__VnpayTransactionClient<$Result.GetResult<Prisma.$VnpayTransactionPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    create<T extends PaymentTransactionCreateArgs>(args: SelectSubset<T, PaymentTransactionCreateArgs<ExtArgs>>): Prisma__PaymentTransactionClient<$Result.GetResult<Prisma.$PaymentTransactionPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Create many VnpayTransactions.
-     * @param {VnpayTransactionCreateManyArgs} args - Arguments to create many VnpayTransactions.
+     * Create many PaymentTransactions.
+     * @param {PaymentTransactionCreateManyArgs} args - Arguments to create many PaymentTransactions.
      * @example
-     * // Create many VnpayTransactions
-     * const vnpayTransaction = await prisma.vnpayTransaction.createMany({
+     * // Create many PaymentTransactions
+     * const paymentTransaction = await prisma.paymentTransaction.createMany({
      *   data: [
      *     // ... provide data here
      *   ]
      * })
      *     
      */
-    createMany<T extends VnpayTransactionCreateManyArgs>(args?: SelectSubset<T, VnpayTransactionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+    createMany<T extends PaymentTransactionCreateManyArgs>(args?: SelectSubset<T, PaymentTransactionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Create many VnpayTransactions and returns the data saved in the database.
-     * @param {VnpayTransactionCreateManyAndReturnArgs} args - Arguments to create many VnpayTransactions.
+     * Create many PaymentTransactions and returns the data saved in the database.
+     * @param {PaymentTransactionCreateManyAndReturnArgs} args - Arguments to create many PaymentTransactions.
      * @example
-     * // Create many VnpayTransactions
-     * const vnpayTransaction = await prisma.vnpayTransaction.createManyAndReturn({
+     * // Create many PaymentTransactions
+     * const paymentTransaction = await prisma.paymentTransaction.createManyAndReturn({
      *   data: [
      *     // ... provide data here
      *   ]
      * })
      * 
-     * // Create many VnpayTransactions and only return the `id`
-     * const vnpayTransactionWithIdOnly = await prisma.vnpayTransaction.createManyAndReturn({
+     * // Create many PaymentTransactions and only return the `id`
+     * const paymentTransactionWithIdOnly = await prisma.paymentTransaction.createManyAndReturn({
      *   select: { id: true },
      *   data: [
      *     // ... provide data here
@@ -21447,28 +21475,28 @@ export namespace Prisma {
      * Read more here: https://pris.ly/d/null-undefined
      * 
      */
-    createManyAndReturn<T extends VnpayTransactionCreateManyAndReturnArgs>(args?: SelectSubset<T, VnpayTransactionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$VnpayTransactionPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+    createManyAndReturn<T extends PaymentTransactionCreateManyAndReturnArgs>(args?: SelectSubset<T, PaymentTransactionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PaymentTransactionPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
     /**
-     * Delete a VnpayTransaction.
-     * @param {VnpayTransactionDeleteArgs} args - Arguments to delete one VnpayTransaction.
+     * Delete a PaymentTransaction.
+     * @param {PaymentTransactionDeleteArgs} args - Arguments to delete one PaymentTransaction.
      * @example
-     * // Delete one VnpayTransaction
-     * const VnpayTransaction = await prisma.vnpayTransaction.delete({
+     * // Delete one PaymentTransaction
+     * const PaymentTransaction = await prisma.paymentTransaction.delete({
      *   where: {
-     *     // ... filter to delete one VnpayTransaction
+     *     // ... filter to delete one PaymentTransaction
      *   }
      * })
      * 
      */
-    delete<T extends VnpayTransactionDeleteArgs>(args: SelectSubset<T, VnpayTransactionDeleteArgs<ExtArgs>>): Prisma__VnpayTransactionClient<$Result.GetResult<Prisma.$VnpayTransactionPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    delete<T extends PaymentTransactionDeleteArgs>(args: SelectSubset<T, PaymentTransactionDeleteArgs<ExtArgs>>): Prisma__PaymentTransactionClient<$Result.GetResult<Prisma.$PaymentTransactionPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Update one VnpayTransaction.
-     * @param {VnpayTransactionUpdateArgs} args - Arguments to update one VnpayTransaction.
+     * Update one PaymentTransaction.
+     * @param {PaymentTransactionUpdateArgs} args - Arguments to update one PaymentTransaction.
      * @example
-     * // Update one VnpayTransaction
-     * const vnpayTransaction = await prisma.vnpayTransaction.update({
+     * // Update one PaymentTransaction
+     * const paymentTransaction = await prisma.paymentTransaction.update({
      *   where: {
      *     // ... provide filter here
      *   },
@@ -21478,30 +21506,30 @@ export namespace Prisma {
      * })
      * 
      */
-    update<T extends VnpayTransactionUpdateArgs>(args: SelectSubset<T, VnpayTransactionUpdateArgs<ExtArgs>>): Prisma__VnpayTransactionClient<$Result.GetResult<Prisma.$VnpayTransactionPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    update<T extends PaymentTransactionUpdateArgs>(args: SelectSubset<T, PaymentTransactionUpdateArgs<ExtArgs>>): Prisma__PaymentTransactionClient<$Result.GetResult<Prisma.$PaymentTransactionPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Delete zero or more VnpayTransactions.
-     * @param {VnpayTransactionDeleteManyArgs} args - Arguments to filter VnpayTransactions to delete.
+     * Delete zero or more PaymentTransactions.
+     * @param {PaymentTransactionDeleteManyArgs} args - Arguments to filter PaymentTransactions to delete.
      * @example
-     * // Delete a few VnpayTransactions
-     * const { count } = await prisma.vnpayTransaction.deleteMany({
+     * // Delete a few PaymentTransactions
+     * const { count } = await prisma.paymentTransaction.deleteMany({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      * 
      */
-    deleteMany<T extends VnpayTransactionDeleteManyArgs>(args?: SelectSubset<T, VnpayTransactionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+    deleteMany<T extends PaymentTransactionDeleteManyArgs>(args?: SelectSubset<T, PaymentTransactionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Update zero or more VnpayTransactions.
+     * Update zero or more PaymentTransactions.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {VnpayTransactionUpdateManyArgs} args - Arguments to update one or more rows.
+     * @param {PaymentTransactionUpdateManyArgs} args - Arguments to update one or more rows.
      * @example
-     * // Update many VnpayTransactions
-     * const vnpayTransaction = await prisma.vnpayTransaction.updateMany({
+     * // Update many PaymentTransactions
+     * const paymentTransaction = await prisma.paymentTransaction.updateMany({
      *   where: {
      *     // ... provide filter here
      *   },
@@ -21511,14 +21539,14 @@ export namespace Prisma {
      * })
      * 
      */
-    updateMany<T extends VnpayTransactionUpdateManyArgs>(args: SelectSubset<T, VnpayTransactionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+    updateMany<T extends PaymentTransactionUpdateManyArgs>(args: SelectSubset<T, PaymentTransactionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Update zero or more VnpayTransactions and returns the data updated in the database.
-     * @param {VnpayTransactionUpdateManyAndReturnArgs} args - Arguments to update many VnpayTransactions.
+     * Update zero or more PaymentTransactions and returns the data updated in the database.
+     * @param {PaymentTransactionUpdateManyAndReturnArgs} args - Arguments to update many PaymentTransactions.
      * @example
-     * // Update many VnpayTransactions
-     * const vnpayTransaction = await prisma.vnpayTransaction.updateManyAndReturn({
+     * // Update many PaymentTransactions
+     * const paymentTransaction = await prisma.paymentTransaction.updateManyAndReturn({
      *   where: {
      *     // ... provide filter here
      *   },
@@ -21527,8 +21555,8 @@ export namespace Prisma {
      *   ]
      * })
      * 
-     * // Update zero or more VnpayTransactions and only return the `id`
-     * const vnpayTransactionWithIdOnly = await prisma.vnpayTransaction.updateManyAndReturn({
+     * // Update zero or more PaymentTransactions and only return the `id`
+     * const paymentTransactionWithIdOnly = await prisma.paymentTransaction.updateManyAndReturn({
      *   select: { id: true },
      *   where: {
      *     // ... provide filter here
@@ -21541,56 +21569,56 @@ export namespace Prisma {
      * Read more here: https://pris.ly/d/null-undefined
      * 
      */
-    updateManyAndReturn<T extends VnpayTransactionUpdateManyAndReturnArgs>(args: SelectSubset<T, VnpayTransactionUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$VnpayTransactionPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+    updateManyAndReturn<T extends PaymentTransactionUpdateManyAndReturnArgs>(args: SelectSubset<T, PaymentTransactionUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PaymentTransactionPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
     /**
-     * Create or update one VnpayTransaction.
-     * @param {VnpayTransactionUpsertArgs} args - Arguments to update or create a VnpayTransaction.
+     * Create or update one PaymentTransaction.
+     * @param {PaymentTransactionUpsertArgs} args - Arguments to update or create a PaymentTransaction.
      * @example
-     * // Update or create a VnpayTransaction
-     * const vnpayTransaction = await prisma.vnpayTransaction.upsert({
+     * // Update or create a PaymentTransaction
+     * const paymentTransaction = await prisma.paymentTransaction.upsert({
      *   create: {
-     *     // ... data to create a VnpayTransaction
+     *     // ... data to create a PaymentTransaction
      *   },
      *   update: {
      *     // ... in case it already exists, update
      *   },
      *   where: {
-     *     // ... the filter for the VnpayTransaction we want to update
+     *     // ... the filter for the PaymentTransaction we want to update
      *   }
      * })
      */
-    upsert<T extends VnpayTransactionUpsertArgs>(args: SelectSubset<T, VnpayTransactionUpsertArgs<ExtArgs>>): Prisma__VnpayTransactionClient<$Result.GetResult<Prisma.$VnpayTransactionPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    upsert<T extends PaymentTransactionUpsertArgs>(args: SelectSubset<T, PaymentTransactionUpsertArgs<ExtArgs>>): Prisma__PaymentTransactionClient<$Result.GetResult<Prisma.$PaymentTransactionPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
 
     /**
-     * Count the number of VnpayTransactions.
+     * Count the number of PaymentTransactions.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {VnpayTransactionCountArgs} args - Arguments to filter VnpayTransactions to count.
+     * @param {PaymentTransactionCountArgs} args - Arguments to filter PaymentTransactions to count.
      * @example
-     * // Count the number of VnpayTransactions
-     * const count = await prisma.vnpayTransaction.count({
+     * // Count the number of PaymentTransactions
+     * const count = await prisma.paymentTransaction.count({
      *   where: {
-     *     // ... the filter for the VnpayTransactions we want to count
+     *     // ... the filter for the PaymentTransactions we want to count
      *   }
      * })
     **/
-    count<T extends VnpayTransactionCountArgs>(
-      args?: Subset<T, VnpayTransactionCountArgs>,
+    count<T extends PaymentTransactionCountArgs>(
+      args?: Subset<T, PaymentTransactionCountArgs>,
     ): Prisma.PrismaPromise<
       T extends $Utils.Record<'select', any>
         ? T['select'] extends true
           ? number
-          : GetScalarType<T['select'], VnpayTransactionCountAggregateOutputType>
+          : GetScalarType<T['select'], PaymentTransactionCountAggregateOutputType>
         : number
     >
 
     /**
-     * Allows you to perform aggregations operations on a VnpayTransaction.
+     * Allows you to perform aggregations operations on a PaymentTransaction.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {VnpayTransactionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @param {PaymentTransactionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
      * @example
      * // Ordered by age ascending
      * // Where email contains prisma.io
@@ -21610,13 +21638,13 @@ export namespace Prisma {
      *   take: 10,
      * })
     **/
-    aggregate<T extends VnpayTransactionAggregateArgs>(args: Subset<T, VnpayTransactionAggregateArgs>): Prisma.PrismaPromise<GetVnpayTransactionAggregateType<T>>
+    aggregate<T extends PaymentTransactionAggregateArgs>(args: Subset<T, PaymentTransactionAggregateArgs>): Prisma.PrismaPromise<GetPaymentTransactionAggregateType<T>>
 
     /**
-     * Group by VnpayTransaction.
+     * Group by PaymentTransaction.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {VnpayTransactionGroupByArgs} args - Group by arguments.
+     * @param {PaymentTransactionGroupByArgs} args - Group by arguments.
      * @example
      * // Group by city, order by createdAt, get count
      * const result = await prisma.user.groupBy({
@@ -21631,14 +21659,14 @@ export namespace Prisma {
      * 
     **/
     groupBy<
-      T extends VnpayTransactionGroupByArgs,
+      T extends PaymentTransactionGroupByArgs,
       HasSelectOrTake extends Or<
         Extends<'skip', Keys<T>>,
         Extends<'take', Keys<T>>
       >,
       OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: VnpayTransactionGroupByArgs['orderBy'] }
-        : { orderBy?: VnpayTransactionGroupByArgs['orderBy'] },
+        ? { orderBy: PaymentTransactionGroupByArgs['orderBy'] }
+        : { orderBy?: PaymentTransactionGroupByArgs['orderBy'] },
       OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
       ByFields extends MaybeTupleToUnion<T['by']>,
       ByValid extends Has<ByFields, OrderFields>,
@@ -21687,20 +21715,20 @@ export namespace Prisma {
             ? never
             : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
         }[OrderFields]
-    >(args: SubsetIntersection<T, VnpayTransactionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetVnpayTransactionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+    >(args: SubsetIntersection<T, PaymentTransactionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPaymentTransactionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
   /**
-   * Fields of the VnpayTransaction model
+   * Fields of the PaymentTransaction model
    */
-  readonly fields: VnpayTransactionFieldRefs;
+  readonly fields: PaymentTransactionFieldRefs;
   }
 
   /**
-   * The delegate class that acts as a "Promise-like" for VnpayTransaction.
+   * The delegate class that acts as a "Promise-like" for PaymentTransaction.
    * Why is this prefixed with `Prisma__`?
    * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
-  export interface Prisma__VnpayTransactionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+  export interface Prisma__PaymentTransactionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     order<T extends OrderDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OrderDefaultArgs<ExtArgs>>): Prisma__OrderClient<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
@@ -21729,438 +21757,436 @@ export namespace Prisma {
 
 
   /**
-   * Fields of the VnpayTransaction model
+   * Fields of the PaymentTransaction model
    */
-  interface VnpayTransactionFieldRefs {
-    readonly id: FieldRef<"VnpayTransaction", 'BigInt'>
-    readonly orderId: FieldRef<"VnpayTransaction", 'BigInt'>
-    readonly vnpayTxnRef: FieldRef<"VnpayTransaction", 'String'>
-    readonly vnpayTransactionNo: FieldRef<"VnpayTransaction", 'String'>
-    readonly amount: FieldRef<"VnpayTransaction", 'Decimal'>
-    readonly bankCode: FieldRef<"VnpayTransaction", 'String'>
-    readonly responseCode: FieldRef<"VnpayTransaction", 'String'>
-    readonly status: FieldRef<"VnpayTransaction", 'String'>
-    readonly secureHash: FieldRef<"VnpayTransaction", 'String'>
-    readonly rawResponse: FieldRef<"VnpayTransaction", 'Json'>
-    readonly paymentDate: FieldRef<"VnpayTransaction", 'DateTime'>
-    readonly createdAt: FieldRef<"VnpayTransaction", 'DateTime'>
-    readonly updatedAt: FieldRef<"VnpayTransaction", 'DateTime'>
+  interface PaymentTransactionFieldRefs {
+    readonly id: FieldRef<"PaymentTransaction", 'BigInt'>
+    readonly orderId: FieldRef<"PaymentTransaction", 'BigInt'>
+    readonly provider: FieldRef<"PaymentTransaction", 'String'>
+    readonly invoiceNumber: FieldRef<"PaymentTransaction", 'String'>
+    readonly externalTxnId: FieldRef<"PaymentTransaction", 'String'>
+    readonly amount: FieldRef<"PaymentTransaction", 'Decimal'>
+    readonly status: FieldRef<"PaymentTransaction", 'String'>
+    readonly rawResponse: FieldRef<"PaymentTransaction", 'Json'>
+    readonly paymentDate: FieldRef<"PaymentTransaction", 'DateTime'>
+    readonly createdAt: FieldRef<"PaymentTransaction", 'DateTime'>
+    readonly updatedAt: FieldRef<"PaymentTransaction", 'DateTime'>
   }
     
 
   // Custom InputTypes
   /**
-   * VnpayTransaction findUnique
+   * PaymentTransaction findUnique
    */
-  export type VnpayTransactionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type PaymentTransactionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the VnpayTransaction
+     * Select specific fields to fetch from the PaymentTransaction
      */
-    select?: VnpayTransactionSelect<ExtArgs> | null
+    select?: PaymentTransactionSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the VnpayTransaction
+     * Omit specific fields from the PaymentTransaction
      */
-    omit?: VnpayTransactionOmit<ExtArgs> | null
+    omit?: PaymentTransactionOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: VnpayTransactionInclude<ExtArgs> | null
+    include?: PaymentTransactionInclude<ExtArgs> | null
     /**
-     * Filter, which VnpayTransaction to fetch.
+     * Filter, which PaymentTransaction to fetch.
      */
-    where: VnpayTransactionWhereUniqueInput
+    where: PaymentTransactionWhereUniqueInput
   }
 
   /**
-   * VnpayTransaction findUniqueOrThrow
+   * PaymentTransaction findUniqueOrThrow
    */
-  export type VnpayTransactionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type PaymentTransactionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the VnpayTransaction
+     * Select specific fields to fetch from the PaymentTransaction
      */
-    select?: VnpayTransactionSelect<ExtArgs> | null
+    select?: PaymentTransactionSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the VnpayTransaction
+     * Omit specific fields from the PaymentTransaction
      */
-    omit?: VnpayTransactionOmit<ExtArgs> | null
+    omit?: PaymentTransactionOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: VnpayTransactionInclude<ExtArgs> | null
+    include?: PaymentTransactionInclude<ExtArgs> | null
     /**
-     * Filter, which VnpayTransaction to fetch.
+     * Filter, which PaymentTransaction to fetch.
      */
-    where: VnpayTransactionWhereUniqueInput
+    where: PaymentTransactionWhereUniqueInput
   }
 
   /**
-   * VnpayTransaction findFirst
+   * PaymentTransaction findFirst
    */
-  export type VnpayTransactionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type PaymentTransactionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the VnpayTransaction
+     * Select specific fields to fetch from the PaymentTransaction
      */
-    select?: VnpayTransactionSelect<ExtArgs> | null
+    select?: PaymentTransactionSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the VnpayTransaction
+     * Omit specific fields from the PaymentTransaction
      */
-    omit?: VnpayTransactionOmit<ExtArgs> | null
+    omit?: PaymentTransactionOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: VnpayTransactionInclude<ExtArgs> | null
+    include?: PaymentTransactionInclude<ExtArgs> | null
     /**
-     * Filter, which VnpayTransaction to fetch.
+     * Filter, which PaymentTransaction to fetch.
      */
-    where?: VnpayTransactionWhereInput
+    where?: PaymentTransactionWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of VnpayTransactions to fetch.
+     * Determine the order of PaymentTransactions to fetch.
      */
-    orderBy?: VnpayTransactionOrderByWithRelationInput | VnpayTransactionOrderByWithRelationInput[]
+    orderBy?: PaymentTransactionOrderByWithRelationInput | PaymentTransactionOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for searching for VnpayTransactions.
+     * Sets the position for searching for PaymentTransactions.
      */
-    cursor?: VnpayTransactionWhereUniqueInput
+    cursor?: PaymentTransactionWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` VnpayTransactions from the position of the cursor.
+     * Take `±n` PaymentTransactions from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` VnpayTransactions.
+     * Skip the first `n` PaymentTransactions.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
-     * Filter by unique combinations of VnpayTransactions.
+     * Filter by unique combinations of PaymentTransactions.
      */
-    distinct?: VnpayTransactionScalarFieldEnum | VnpayTransactionScalarFieldEnum[]
+    distinct?: PaymentTransactionScalarFieldEnum | PaymentTransactionScalarFieldEnum[]
   }
 
   /**
-   * VnpayTransaction findFirstOrThrow
+   * PaymentTransaction findFirstOrThrow
    */
-  export type VnpayTransactionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type PaymentTransactionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the VnpayTransaction
+     * Select specific fields to fetch from the PaymentTransaction
      */
-    select?: VnpayTransactionSelect<ExtArgs> | null
+    select?: PaymentTransactionSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the VnpayTransaction
+     * Omit specific fields from the PaymentTransaction
      */
-    omit?: VnpayTransactionOmit<ExtArgs> | null
+    omit?: PaymentTransactionOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: VnpayTransactionInclude<ExtArgs> | null
+    include?: PaymentTransactionInclude<ExtArgs> | null
     /**
-     * Filter, which VnpayTransaction to fetch.
+     * Filter, which PaymentTransaction to fetch.
      */
-    where?: VnpayTransactionWhereInput
+    where?: PaymentTransactionWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of VnpayTransactions to fetch.
+     * Determine the order of PaymentTransactions to fetch.
      */
-    orderBy?: VnpayTransactionOrderByWithRelationInput | VnpayTransactionOrderByWithRelationInput[]
+    orderBy?: PaymentTransactionOrderByWithRelationInput | PaymentTransactionOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for searching for VnpayTransactions.
+     * Sets the position for searching for PaymentTransactions.
      */
-    cursor?: VnpayTransactionWhereUniqueInput
+    cursor?: PaymentTransactionWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` VnpayTransactions from the position of the cursor.
+     * Take `±n` PaymentTransactions from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` VnpayTransactions.
+     * Skip the first `n` PaymentTransactions.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
-     * Filter by unique combinations of VnpayTransactions.
+     * Filter by unique combinations of PaymentTransactions.
      */
-    distinct?: VnpayTransactionScalarFieldEnum | VnpayTransactionScalarFieldEnum[]
+    distinct?: PaymentTransactionScalarFieldEnum | PaymentTransactionScalarFieldEnum[]
   }
 
   /**
-   * VnpayTransaction findMany
+   * PaymentTransaction findMany
    */
-  export type VnpayTransactionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type PaymentTransactionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the VnpayTransaction
+     * Select specific fields to fetch from the PaymentTransaction
      */
-    select?: VnpayTransactionSelect<ExtArgs> | null
+    select?: PaymentTransactionSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the VnpayTransaction
+     * Omit specific fields from the PaymentTransaction
      */
-    omit?: VnpayTransactionOmit<ExtArgs> | null
+    omit?: PaymentTransactionOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: VnpayTransactionInclude<ExtArgs> | null
+    include?: PaymentTransactionInclude<ExtArgs> | null
     /**
-     * Filter, which VnpayTransactions to fetch.
+     * Filter, which PaymentTransactions to fetch.
      */
-    where?: VnpayTransactionWhereInput
+    where?: PaymentTransactionWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of VnpayTransactions to fetch.
+     * Determine the order of PaymentTransactions to fetch.
      */
-    orderBy?: VnpayTransactionOrderByWithRelationInput | VnpayTransactionOrderByWithRelationInput[]
+    orderBy?: PaymentTransactionOrderByWithRelationInput | PaymentTransactionOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for listing VnpayTransactions.
+     * Sets the position for listing PaymentTransactions.
      */
-    cursor?: VnpayTransactionWhereUniqueInput
+    cursor?: PaymentTransactionWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` VnpayTransactions from the position of the cursor.
+     * Take `±n` PaymentTransactions from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` VnpayTransactions.
+     * Skip the first `n` PaymentTransactions.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
-     * Filter by unique combinations of VnpayTransactions.
+     * Filter by unique combinations of PaymentTransactions.
      */
-    distinct?: VnpayTransactionScalarFieldEnum | VnpayTransactionScalarFieldEnum[]
+    distinct?: PaymentTransactionScalarFieldEnum | PaymentTransactionScalarFieldEnum[]
   }
 
   /**
-   * VnpayTransaction create
+   * PaymentTransaction create
    */
-  export type VnpayTransactionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type PaymentTransactionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the VnpayTransaction
+     * Select specific fields to fetch from the PaymentTransaction
      */
-    select?: VnpayTransactionSelect<ExtArgs> | null
+    select?: PaymentTransactionSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the VnpayTransaction
+     * Omit specific fields from the PaymentTransaction
      */
-    omit?: VnpayTransactionOmit<ExtArgs> | null
+    omit?: PaymentTransactionOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: VnpayTransactionInclude<ExtArgs> | null
+    include?: PaymentTransactionInclude<ExtArgs> | null
     /**
-     * The data needed to create a VnpayTransaction.
+     * The data needed to create a PaymentTransaction.
      */
-    data: XOR<VnpayTransactionCreateInput, VnpayTransactionUncheckedCreateInput>
+    data: XOR<PaymentTransactionCreateInput, PaymentTransactionUncheckedCreateInput>
   }
 
   /**
-   * VnpayTransaction createMany
+   * PaymentTransaction createMany
    */
-  export type VnpayTransactionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type PaymentTransactionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * The data used to create many VnpayTransactions.
+     * The data used to create many PaymentTransactions.
      */
-    data: VnpayTransactionCreateManyInput | VnpayTransactionCreateManyInput[]
+    data: PaymentTransactionCreateManyInput | PaymentTransactionCreateManyInput[]
     skipDuplicates?: boolean
   }
 
   /**
-   * VnpayTransaction createManyAndReturn
+   * PaymentTransaction createManyAndReturn
    */
-  export type VnpayTransactionCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type PaymentTransactionCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the VnpayTransaction
+     * Select specific fields to fetch from the PaymentTransaction
      */
-    select?: VnpayTransactionSelectCreateManyAndReturn<ExtArgs> | null
+    select?: PaymentTransactionSelectCreateManyAndReturn<ExtArgs> | null
     /**
-     * Omit specific fields from the VnpayTransaction
+     * Omit specific fields from the PaymentTransaction
      */
-    omit?: VnpayTransactionOmit<ExtArgs> | null
+    omit?: PaymentTransactionOmit<ExtArgs> | null
     /**
-     * The data used to create many VnpayTransactions.
+     * The data used to create many PaymentTransactions.
      */
-    data: VnpayTransactionCreateManyInput | VnpayTransactionCreateManyInput[]
+    data: PaymentTransactionCreateManyInput | PaymentTransactionCreateManyInput[]
     skipDuplicates?: boolean
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: VnpayTransactionIncludeCreateManyAndReturn<ExtArgs> | null
+    include?: PaymentTransactionIncludeCreateManyAndReturn<ExtArgs> | null
   }
 
   /**
-   * VnpayTransaction update
+   * PaymentTransaction update
    */
-  export type VnpayTransactionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type PaymentTransactionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the VnpayTransaction
+     * Select specific fields to fetch from the PaymentTransaction
      */
-    select?: VnpayTransactionSelect<ExtArgs> | null
+    select?: PaymentTransactionSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the VnpayTransaction
+     * Omit specific fields from the PaymentTransaction
      */
-    omit?: VnpayTransactionOmit<ExtArgs> | null
+    omit?: PaymentTransactionOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: VnpayTransactionInclude<ExtArgs> | null
+    include?: PaymentTransactionInclude<ExtArgs> | null
     /**
-     * The data needed to update a VnpayTransaction.
+     * The data needed to update a PaymentTransaction.
      */
-    data: XOR<VnpayTransactionUpdateInput, VnpayTransactionUncheckedUpdateInput>
+    data: XOR<PaymentTransactionUpdateInput, PaymentTransactionUncheckedUpdateInput>
     /**
-     * Choose, which VnpayTransaction to update.
+     * Choose, which PaymentTransaction to update.
      */
-    where: VnpayTransactionWhereUniqueInput
+    where: PaymentTransactionWhereUniqueInput
   }
 
   /**
-   * VnpayTransaction updateMany
+   * PaymentTransaction updateMany
    */
-  export type VnpayTransactionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type PaymentTransactionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * The data used to update VnpayTransactions.
+     * The data used to update PaymentTransactions.
      */
-    data: XOR<VnpayTransactionUpdateManyMutationInput, VnpayTransactionUncheckedUpdateManyInput>
+    data: XOR<PaymentTransactionUpdateManyMutationInput, PaymentTransactionUncheckedUpdateManyInput>
     /**
-     * Filter which VnpayTransactions to update
+     * Filter which PaymentTransactions to update
      */
-    where?: VnpayTransactionWhereInput
+    where?: PaymentTransactionWhereInput
     /**
-     * Limit how many VnpayTransactions to update.
+     * Limit how many PaymentTransactions to update.
      */
     limit?: number
   }
 
   /**
-   * VnpayTransaction updateManyAndReturn
+   * PaymentTransaction updateManyAndReturn
    */
-  export type VnpayTransactionUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type PaymentTransactionUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the VnpayTransaction
+     * Select specific fields to fetch from the PaymentTransaction
      */
-    select?: VnpayTransactionSelectUpdateManyAndReturn<ExtArgs> | null
+    select?: PaymentTransactionSelectUpdateManyAndReturn<ExtArgs> | null
     /**
-     * Omit specific fields from the VnpayTransaction
+     * Omit specific fields from the PaymentTransaction
      */
-    omit?: VnpayTransactionOmit<ExtArgs> | null
+    omit?: PaymentTransactionOmit<ExtArgs> | null
     /**
-     * The data used to update VnpayTransactions.
+     * The data used to update PaymentTransactions.
      */
-    data: XOR<VnpayTransactionUpdateManyMutationInput, VnpayTransactionUncheckedUpdateManyInput>
+    data: XOR<PaymentTransactionUpdateManyMutationInput, PaymentTransactionUncheckedUpdateManyInput>
     /**
-     * Filter which VnpayTransactions to update
+     * Filter which PaymentTransactions to update
      */
-    where?: VnpayTransactionWhereInput
+    where?: PaymentTransactionWhereInput
     /**
-     * Limit how many VnpayTransactions to update.
+     * Limit how many PaymentTransactions to update.
      */
     limit?: number
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: VnpayTransactionIncludeUpdateManyAndReturn<ExtArgs> | null
+    include?: PaymentTransactionIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
-   * VnpayTransaction upsert
+   * PaymentTransaction upsert
    */
-  export type VnpayTransactionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type PaymentTransactionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the VnpayTransaction
+     * Select specific fields to fetch from the PaymentTransaction
      */
-    select?: VnpayTransactionSelect<ExtArgs> | null
+    select?: PaymentTransactionSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the VnpayTransaction
+     * Omit specific fields from the PaymentTransaction
      */
-    omit?: VnpayTransactionOmit<ExtArgs> | null
+    omit?: PaymentTransactionOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: VnpayTransactionInclude<ExtArgs> | null
+    include?: PaymentTransactionInclude<ExtArgs> | null
     /**
-     * The filter to search for the VnpayTransaction to update in case it exists.
+     * The filter to search for the PaymentTransaction to update in case it exists.
      */
-    where: VnpayTransactionWhereUniqueInput
+    where: PaymentTransactionWhereUniqueInput
     /**
-     * In case the VnpayTransaction found by the `where` argument doesn't exist, create a new VnpayTransaction with this data.
+     * In case the PaymentTransaction found by the `where` argument doesn't exist, create a new PaymentTransaction with this data.
      */
-    create: XOR<VnpayTransactionCreateInput, VnpayTransactionUncheckedCreateInput>
+    create: XOR<PaymentTransactionCreateInput, PaymentTransactionUncheckedCreateInput>
     /**
-     * In case the VnpayTransaction was found with the provided `where` argument, update it with this data.
+     * In case the PaymentTransaction was found with the provided `where` argument, update it with this data.
      */
-    update: XOR<VnpayTransactionUpdateInput, VnpayTransactionUncheckedUpdateInput>
+    update: XOR<PaymentTransactionUpdateInput, PaymentTransactionUncheckedUpdateInput>
   }
 
   /**
-   * VnpayTransaction delete
+   * PaymentTransaction delete
    */
-  export type VnpayTransactionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type PaymentTransactionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the VnpayTransaction
+     * Select specific fields to fetch from the PaymentTransaction
      */
-    select?: VnpayTransactionSelect<ExtArgs> | null
+    select?: PaymentTransactionSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the VnpayTransaction
+     * Omit specific fields from the PaymentTransaction
      */
-    omit?: VnpayTransactionOmit<ExtArgs> | null
+    omit?: PaymentTransactionOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: VnpayTransactionInclude<ExtArgs> | null
+    include?: PaymentTransactionInclude<ExtArgs> | null
     /**
-     * Filter which VnpayTransaction to delete.
+     * Filter which PaymentTransaction to delete.
      */
-    where: VnpayTransactionWhereUniqueInput
+    where: PaymentTransactionWhereUniqueInput
   }
 
   /**
-   * VnpayTransaction deleteMany
+   * PaymentTransaction deleteMany
    */
-  export type VnpayTransactionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type PaymentTransactionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Filter which VnpayTransactions to delete
+     * Filter which PaymentTransactions to delete
      */
-    where?: VnpayTransactionWhereInput
+    where?: PaymentTransactionWhereInput
     /**
-     * Limit how many VnpayTransactions to delete.
+     * Limit how many PaymentTransactions to delete.
      */
     limit?: number
   }
 
   /**
-   * VnpayTransaction without action
+   * PaymentTransaction without action
    */
-  export type VnpayTransactionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type PaymentTransactionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the VnpayTransaction
+     * Select specific fields to fetch from the PaymentTransaction
      */
-    select?: VnpayTransactionSelect<ExtArgs> | null
+    select?: PaymentTransactionSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the VnpayTransaction
+     * Omit specific fields from the PaymentTransaction
      */
-    omit?: VnpayTransactionOmit<ExtArgs> | null
+    omit?: PaymentTransactionOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: VnpayTransactionInclude<ExtArgs> | null
+    include?: PaymentTransactionInclude<ExtArgs> | null
   }
 
 
@@ -24429,8 +24455,12 @@ export namespace Prisma {
   export const UserScalarFieldEnum: {
     id: 'id',
     username: 'username',
+    fullName: 'fullName',
     email: 'email',
+    phone: 'phone',
     passwordHash: 'passwordHash',
+    googleId: 'googleId',
+    authProvider: 'authProvider',
     role: 'role',
     isActive: 'isActive',
     createdAt: 'createdAt',
@@ -24649,23 +24679,21 @@ export namespace Prisma {
   export type OrderItemScalarFieldEnum = (typeof OrderItemScalarFieldEnum)[keyof typeof OrderItemScalarFieldEnum]
 
 
-  export const VnpayTransactionScalarFieldEnum: {
+  export const PaymentTransactionScalarFieldEnum: {
     id: 'id',
     orderId: 'orderId',
-    vnpayTxnRef: 'vnpayTxnRef',
-    vnpayTransactionNo: 'vnpayTransactionNo',
+    provider: 'provider',
+    invoiceNumber: 'invoiceNumber',
+    externalTxnId: 'externalTxnId',
     amount: 'amount',
-    bankCode: 'bankCode',
-    responseCode: 'responseCode',
     status: 'status',
-    secureHash: 'secureHash',
     rawResponse: 'rawResponse',
     paymentDate: 'paymentDate',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
 
-  export type VnpayTransactionScalarFieldEnum = (typeof VnpayTransactionScalarFieldEnum)[keyof typeof VnpayTransactionScalarFieldEnum]
+  export type PaymentTransactionScalarFieldEnum = (typeof PaymentTransactionScalarFieldEnum)[keyof typeof PaymentTransactionScalarFieldEnum]
 
 
   export const SavedBuildScalarFieldEnum: {
@@ -24850,8 +24878,12 @@ export namespace Prisma {
     NOT?: UserWhereInput | UserWhereInput[]
     id?: BigIntFilter<"User"> | bigint | number
     username?: StringFilter<"User"> | string
+    fullName?: StringFilter<"User"> | string
     email?: StringFilter<"User"> | string
-    passwordHash?: StringFilter<"User"> | string
+    phone?: StringNullableFilter<"User"> | string | null
+    passwordHash?: StringNullableFilter<"User"> | string | null
+    googleId?: StringNullableFilter<"User"> | string | null
+    authProvider?: StringFilter<"User"> | string
     role?: StringFilter<"User"> | string
     isActive?: BoolFilter<"User"> | boolean
     createdAt?: DateTimeFilter<"User"> | Date | string
@@ -24869,8 +24901,12 @@ export namespace Prisma {
   export type UserOrderByWithRelationInput = {
     id?: SortOrder
     username?: SortOrder
+    fullName?: SortOrder
     email?: SortOrder
-    passwordHash?: SortOrder
+    phone?: SortOrderInput | SortOrder
+    passwordHash?: SortOrderInput | SortOrder
+    googleId?: SortOrderInput | SortOrder
+    authProvider?: SortOrder
     role?: SortOrder
     isActive?: SortOrder
     createdAt?: SortOrder
@@ -24889,10 +24925,14 @@ export namespace Prisma {
     id?: bigint | number
     username?: string
     email?: string
+    phone?: string
+    googleId?: string
     AND?: UserWhereInput | UserWhereInput[]
     OR?: UserWhereInput[]
     NOT?: UserWhereInput | UserWhereInput[]
-    passwordHash?: StringFilter<"User"> | string
+    fullName?: StringFilter<"User"> | string
+    passwordHash?: StringNullableFilter<"User"> | string | null
+    authProvider?: StringFilter<"User"> | string
     role?: StringFilter<"User"> | string
     isActive?: BoolFilter<"User"> | boolean
     createdAt?: DateTimeFilter<"User"> | Date | string
@@ -24905,13 +24945,17 @@ export namespace Prisma {
     orders?: OrderListRelationFilter
     savedBuilds?: SavedBuildListRelationFilter
     passwordResetTokens?: PasswordResetTokenListRelationFilter
-  }, "id" | "username" | "email">
+  }, "id" | "username" | "email" | "phone" | "googleId">
 
   export type UserOrderByWithAggregationInput = {
     id?: SortOrder
     username?: SortOrder
+    fullName?: SortOrder
     email?: SortOrder
-    passwordHash?: SortOrder
+    phone?: SortOrderInput | SortOrder
+    passwordHash?: SortOrderInput | SortOrder
+    googleId?: SortOrderInput | SortOrder
+    authProvider?: SortOrder
     role?: SortOrder
     isActive?: SortOrder
     createdAt?: SortOrder
@@ -24929,8 +24973,12 @@ export namespace Prisma {
     NOT?: UserScalarWhereWithAggregatesInput | UserScalarWhereWithAggregatesInput[]
     id?: BigIntWithAggregatesFilter<"User"> | bigint | number
     username?: StringWithAggregatesFilter<"User"> | string
+    fullName?: StringWithAggregatesFilter<"User"> | string
     email?: StringWithAggregatesFilter<"User"> | string
-    passwordHash?: StringWithAggregatesFilter<"User"> | string
+    phone?: StringNullableWithAggregatesFilter<"User"> | string | null
+    passwordHash?: StringNullableWithAggregatesFilter<"User"> | string | null
+    googleId?: StringNullableWithAggregatesFilter<"User"> | string | null
+    authProvider?: StringWithAggregatesFilter<"User"> | string
     role?: StringWithAggregatesFilter<"User"> | string
     isActive?: BoolWithAggregatesFilter<"User"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
@@ -25919,7 +25967,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Order"> | Date | string
     user?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     items?: OrderItemListRelationFilter
-    vnpayTxn?: XOR<VnpayTransactionNullableScalarRelationFilter, VnpayTransactionWhereInput> | null
+    paymentTxn?: XOR<PaymentTransactionNullableScalarRelationFilter, PaymentTransactionWhereInput> | null
     ratings?: ProductRatingListRelationFilter
   }
 
@@ -25938,7 +25986,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     user?: UserOrderByWithRelationInput
     items?: OrderItemOrderByRelationAggregateInput
-    vnpayTxn?: VnpayTransactionOrderByWithRelationInput
+    paymentTxn?: PaymentTransactionOrderByWithRelationInput
     ratings?: ProductRatingOrderByRelationAggregateInput
   }
 
@@ -25960,7 +26008,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Order"> | Date | string
     user?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     items?: OrderItemListRelationFilter
-    vnpayTxn?: XOR<VnpayTransactionNullableScalarRelationFilter, VnpayTransactionWhereInput> | null
+    paymentTxn?: XOR<PaymentTransactionNullableScalarRelationFilter, PaymentTransactionWhereInput> | null
     ratings?: ProductRatingListRelationFilter
   }, "id">
 
@@ -26082,36 +26130,32 @@ export namespace Prisma {
     subtotal?: DecimalWithAggregatesFilter<"OrderItem"> | Decimal | DecimalJsLike | number | string
   }
 
-  export type VnpayTransactionWhereInput = {
-    AND?: VnpayTransactionWhereInput | VnpayTransactionWhereInput[]
-    OR?: VnpayTransactionWhereInput[]
-    NOT?: VnpayTransactionWhereInput | VnpayTransactionWhereInput[]
-    id?: BigIntFilter<"VnpayTransaction"> | bigint | number
-    orderId?: BigIntFilter<"VnpayTransaction"> | bigint | number
-    vnpayTxnRef?: StringFilter<"VnpayTransaction"> | string
-    vnpayTransactionNo?: StringNullableFilter<"VnpayTransaction"> | string | null
-    amount?: DecimalFilter<"VnpayTransaction"> | Decimal | DecimalJsLike | number | string
-    bankCode?: StringNullableFilter<"VnpayTransaction"> | string | null
-    responseCode?: StringNullableFilter<"VnpayTransaction"> | string | null
-    status?: StringFilter<"VnpayTransaction"> | string
-    secureHash?: StringNullableFilter<"VnpayTransaction"> | string | null
-    rawResponse?: JsonNullableFilter<"VnpayTransaction">
-    paymentDate?: DateTimeNullableFilter<"VnpayTransaction"> | Date | string | null
-    createdAt?: DateTimeFilter<"VnpayTransaction"> | Date | string
-    updatedAt?: DateTimeFilter<"VnpayTransaction"> | Date | string
+  export type PaymentTransactionWhereInput = {
+    AND?: PaymentTransactionWhereInput | PaymentTransactionWhereInput[]
+    OR?: PaymentTransactionWhereInput[]
+    NOT?: PaymentTransactionWhereInput | PaymentTransactionWhereInput[]
+    id?: BigIntFilter<"PaymentTransaction"> | bigint | number
+    orderId?: BigIntFilter<"PaymentTransaction"> | bigint | number
+    provider?: StringFilter<"PaymentTransaction"> | string
+    invoiceNumber?: StringFilter<"PaymentTransaction"> | string
+    externalTxnId?: StringNullableFilter<"PaymentTransaction"> | string | null
+    amount?: DecimalFilter<"PaymentTransaction"> | Decimal | DecimalJsLike | number | string
+    status?: StringFilter<"PaymentTransaction"> | string
+    rawResponse?: JsonNullableFilter<"PaymentTransaction">
+    paymentDate?: DateTimeNullableFilter<"PaymentTransaction"> | Date | string | null
+    createdAt?: DateTimeFilter<"PaymentTransaction"> | Date | string
+    updatedAt?: DateTimeFilter<"PaymentTransaction"> | Date | string
     order?: XOR<OrderScalarRelationFilter, OrderWhereInput>
   }
 
-  export type VnpayTransactionOrderByWithRelationInput = {
+  export type PaymentTransactionOrderByWithRelationInput = {
     id?: SortOrder
     orderId?: SortOrder
-    vnpayTxnRef?: SortOrder
-    vnpayTransactionNo?: SortOrderInput | SortOrder
+    provider?: SortOrder
+    invoiceNumber?: SortOrder
+    externalTxnId?: SortOrderInput | SortOrder
     amount?: SortOrder
-    bankCode?: SortOrderInput | SortOrder
-    responseCode?: SortOrderInput | SortOrder
     status?: SortOrder
-    secureHash?: SortOrderInput | SortOrder
     rawResponse?: SortOrderInput | SortOrder
     paymentDate?: SortOrderInput | SortOrder
     createdAt?: SortOrder
@@ -26119,64 +26163,58 @@ export namespace Prisma {
     order?: OrderOrderByWithRelationInput
   }
 
-  export type VnpayTransactionWhereUniqueInput = Prisma.AtLeast<{
+  export type PaymentTransactionWhereUniqueInput = Prisma.AtLeast<{
     id?: bigint | number
     orderId?: bigint | number
-    vnpayTxnRef?: string
-    AND?: VnpayTransactionWhereInput | VnpayTransactionWhereInput[]
-    OR?: VnpayTransactionWhereInput[]
-    NOT?: VnpayTransactionWhereInput | VnpayTransactionWhereInput[]
-    vnpayTransactionNo?: StringNullableFilter<"VnpayTransaction"> | string | null
-    amount?: DecimalFilter<"VnpayTransaction"> | Decimal | DecimalJsLike | number | string
-    bankCode?: StringNullableFilter<"VnpayTransaction"> | string | null
-    responseCode?: StringNullableFilter<"VnpayTransaction"> | string | null
-    status?: StringFilter<"VnpayTransaction"> | string
-    secureHash?: StringNullableFilter<"VnpayTransaction"> | string | null
-    rawResponse?: JsonNullableFilter<"VnpayTransaction">
-    paymentDate?: DateTimeNullableFilter<"VnpayTransaction"> | Date | string | null
-    createdAt?: DateTimeFilter<"VnpayTransaction"> | Date | string
-    updatedAt?: DateTimeFilter<"VnpayTransaction"> | Date | string
+    invoiceNumber?: string
+    AND?: PaymentTransactionWhereInput | PaymentTransactionWhereInput[]
+    OR?: PaymentTransactionWhereInput[]
+    NOT?: PaymentTransactionWhereInput | PaymentTransactionWhereInput[]
+    provider?: StringFilter<"PaymentTransaction"> | string
+    externalTxnId?: StringNullableFilter<"PaymentTransaction"> | string | null
+    amount?: DecimalFilter<"PaymentTransaction"> | Decimal | DecimalJsLike | number | string
+    status?: StringFilter<"PaymentTransaction"> | string
+    rawResponse?: JsonNullableFilter<"PaymentTransaction">
+    paymentDate?: DateTimeNullableFilter<"PaymentTransaction"> | Date | string | null
+    createdAt?: DateTimeFilter<"PaymentTransaction"> | Date | string
+    updatedAt?: DateTimeFilter<"PaymentTransaction"> | Date | string
     order?: XOR<OrderScalarRelationFilter, OrderWhereInput>
-  }, "id" | "orderId" | "vnpayTxnRef">
+  }, "id" | "orderId" | "invoiceNumber">
 
-  export type VnpayTransactionOrderByWithAggregationInput = {
+  export type PaymentTransactionOrderByWithAggregationInput = {
     id?: SortOrder
     orderId?: SortOrder
-    vnpayTxnRef?: SortOrder
-    vnpayTransactionNo?: SortOrderInput | SortOrder
+    provider?: SortOrder
+    invoiceNumber?: SortOrder
+    externalTxnId?: SortOrderInput | SortOrder
     amount?: SortOrder
-    bankCode?: SortOrderInput | SortOrder
-    responseCode?: SortOrderInput | SortOrder
     status?: SortOrder
-    secureHash?: SortOrderInput | SortOrder
     rawResponse?: SortOrderInput | SortOrder
     paymentDate?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    _count?: VnpayTransactionCountOrderByAggregateInput
-    _avg?: VnpayTransactionAvgOrderByAggregateInput
-    _max?: VnpayTransactionMaxOrderByAggregateInput
-    _min?: VnpayTransactionMinOrderByAggregateInput
-    _sum?: VnpayTransactionSumOrderByAggregateInput
+    _count?: PaymentTransactionCountOrderByAggregateInput
+    _avg?: PaymentTransactionAvgOrderByAggregateInput
+    _max?: PaymentTransactionMaxOrderByAggregateInput
+    _min?: PaymentTransactionMinOrderByAggregateInput
+    _sum?: PaymentTransactionSumOrderByAggregateInput
   }
 
-  export type VnpayTransactionScalarWhereWithAggregatesInput = {
-    AND?: VnpayTransactionScalarWhereWithAggregatesInput | VnpayTransactionScalarWhereWithAggregatesInput[]
-    OR?: VnpayTransactionScalarWhereWithAggregatesInput[]
-    NOT?: VnpayTransactionScalarWhereWithAggregatesInput | VnpayTransactionScalarWhereWithAggregatesInput[]
-    id?: BigIntWithAggregatesFilter<"VnpayTransaction"> | bigint | number
-    orderId?: BigIntWithAggregatesFilter<"VnpayTransaction"> | bigint | number
-    vnpayTxnRef?: StringWithAggregatesFilter<"VnpayTransaction"> | string
-    vnpayTransactionNo?: StringNullableWithAggregatesFilter<"VnpayTransaction"> | string | null
-    amount?: DecimalWithAggregatesFilter<"VnpayTransaction"> | Decimal | DecimalJsLike | number | string
-    bankCode?: StringNullableWithAggregatesFilter<"VnpayTransaction"> | string | null
-    responseCode?: StringNullableWithAggregatesFilter<"VnpayTransaction"> | string | null
-    status?: StringWithAggregatesFilter<"VnpayTransaction"> | string
-    secureHash?: StringNullableWithAggregatesFilter<"VnpayTransaction"> | string | null
-    rawResponse?: JsonNullableWithAggregatesFilter<"VnpayTransaction">
-    paymentDate?: DateTimeNullableWithAggregatesFilter<"VnpayTransaction"> | Date | string | null
-    createdAt?: DateTimeWithAggregatesFilter<"VnpayTransaction"> | Date | string
-    updatedAt?: DateTimeWithAggregatesFilter<"VnpayTransaction"> | Date | string
+  export type PaymentTransactionScalarWhereWithAggregatesInput = {
+    AND?: PaymentTransactionScalarWhereWithAggregatesInput | PaymentTransactionScalarWhereWithAggregatesInput[]
+    OR?: PaymentTransactionScalarWhereWithAggregatesInput[]
+    NOT?: PaymentTransactionScalarWhereWithAggregatesInput | PaymentTransactionScalarWhereWithAggregatesInput[]
+    id?: BigIntWithAggregatesFilter<"PaymentTransaction"> | bigint | number
+    orderId?: BigIntWithAggregatesFilter<"PaymentTransaction"> | bigint | number
+    provider?: StringWithAggregatesFilter<"PaymentTransaction"> | string
+    invoiceNumber?: StringWithAggregatesFilter<"PaymentTransaction"> | string
+    externalTxnId?: StringNullableWithAggregatesFilter<"PaymentTransaction"> | string | null
+    amount?: DecimalWithAggregatesFilter<"PaymentTransaction"> | Decimal | DecimalJsLike | number | string
+    status?: StringWithAggregatesFilter<"PaymentTransaction"> | string
+    rawResponse?: JsonNullableWithAggregatesFilter<"PaymentTransaction">
+    paymentDate?: DateTimeNullableWithAggregatesFilter<"PaymentTransaction"> | Date | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"PaymentTransaction"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"PaymentTransaction"> | Date | string
   }
 
   export type SavedBuildWhereInput = {
@@ -26302,8 +26340,12 @@ export namespace Prisma {
   export type UserCreateInput = {
     id?: bigint | number
     username: string
+    fullName: string
     email: string
-    passwordHash: string
+    phone?: string | null
+    passwordHash?: string | null
+    googleId?: string | null
+    authProvider?: string
     role?: string
     isActive?: boolean
     createdAt?: Date | string
@@ -26321,8 +26363,12 @@ export namespace Prisma {
   export type UserUncheckedCreateInput = {
     id?: bigint | number
     username: string
+    fullName: string
     email: string
-    passwordHash: string
+    phone?: string | null
+    passwordHash?: string | null
+    googleId?: string | null
+    authProvider?: string
     role?: string
     isActive?: boolean
     createdAt?: Date | string
@@ -26340,8 +26386,12 @@ export namespace Prisma {
   export type UserUpdateInput = {
     id?: BigIntFieldUpdateOperationsInput | bigint | number
     username?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
-    passwordHash?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    googleId?: NullableStringFieldUpdateOperationsInput | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -26359,8 +26409,12 @@ export namespace Prisma {
   export type UserUncheckedUpdateInput = {
     id?: BigIntFieldUpdateOperationsInput | bigint | number
     username?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
-    passwordHash?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    googleId?: NullableStringFieldUpdateOperationsInput | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -26378,8 +26432,12 @@ export namespace Prisma {
   export type UserCreateManyInput = {
     id?: bigint | number
     username: string
+    fullName: string
     email: string
-    passwordHash: string
+    phone?: string | null
+    passwordHash?: string | null
+    googleId?: string | null
+    authProvider?: string
     role?: string
     isActive?: boolean
     createdAt?: Date | string
@@ -26389,8 +26447,12 @@ export namespace Prisma {
   export type UserUpdateManyMutationInput = {
     id?: BigIntFieldUpdateOperationsInput | bigint | number
     username?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
-    passwordHash?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    googleId?: NullableStringFieldUpdateOperationsInput | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -26400,8 +26462,12 @@ export namespace Prisma {
   export type UserUncheckedUpdateManyInput = {
     id?: BigIntFieldUpdateOperationsInput | bigint | number
     username?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
-    passwordHash?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    googleId?: NullableStringFieldUpdateOperationsInput | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -27436,7 +27502,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     user?: UserCreateNestedOneWithoutOrdersInput
     items?: OrderItemCreateNestedManyWithoutOrderInput
-    vnpayTxn?: VnpayTransactionCreateNestedOneWithoutOrderInput
+    paymentTxn?: PaymentTransactionCreateNestedOneWithoutOrderInput
     ratings?: ProductRatingCreateNestedManyWithoutOrderInput
   }
 
@@ -27454,7 +27520,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     items?: OrderItemUncheckedCreateNestedManyWithoutOrderInput
-    vnpayTxn?: VnpayTransactionUncheckedCreateNestedOneWithoutOrderInput
+    paymentTxn?: PaymentTransactionUncheckedCreateNestedOneWithoutOrderInput
     ratings?: ProductRatingUncheckedCreateNestedManyWithoutOrderInput
   }
 
@@ -27472,7 +27538,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneWithoutOrdersNestedInput
     items?: OrderItemUpdateManyWithoutOrderNestedInput
-    vnpayTxn?: VnpayTransactionUpdateOneWithoutOrderNestedInput
+    paymentTxn?: PaymentTransactionUpdateOneWithoutOrderNestedInput
     ratings?: ProductRatingUpdateManyWithoutOrderNestedInput
   }
 
@@ -27490,7 +27556,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     items?: OrderItemUncheckedUpdateManyWithoutOrderNestedInput
-    vnpayTxn?: VnpayTransactionUncheckedUpdateOneWithoutOrderNestedInput
+    paymentTxn?: PaymentTransactionUncheckedUpdateOneWithoutOrderNestedInput
     ratings?: ProductRatingUncheckedUpdateManyWithoutOrderNestedInput
   }
 
@@ -27620,111 +27686,97 @@ export namespace Prisma {
     subtotal?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
   }
 
-  export type VnpayTransactionCreateInput = {
+  export type PaymentTransactionCreateInput = {
     id?: bigint | number
-    vnpayTxnRef: string
-    vnpayTransactionNo?: string | null
+    provider?: string
+    invoiceNumber: string
+    externalTxnId?: string | null
     amount: Decimal | DecimalJsLike | number | string
-    bankCode?: string | null
-    responseCode?: string | null
     status?: string
-    secureHash?: string | null
     rawResponse?: NullableJsonNullValueInput | InputJsonValue
     paymentDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    order: OrderCreateNestedOneWithoutVnpayTxnInput
+    order: OrderCreateNestedOneWithoutPaymentTxnInput
   }
 
-  export type VnpayTransactionUncheckedCreateInput = {
+  export type PaymentTransactionUncheckedCreateInput = {
     id?: bigint | number
     orderId: bigint | number
-    vnpayTxnRef: string
-    vnpayTransactionNo?: string | null
+    provider?: string
+    invoiceNumber: string
+    externalTxnId?: string | null
     amount: Decimal | DecimalJsLike | number | string
-    bankCode?: string | null
-    responseCode?: string | null
     status?: string
-    secureHash?: string | null
     rawResponse?: NullableJsonNullValueInput | InputJsonValue
     paymentDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
 
-  export type VnpayTransactionUpdateInput = {
+  export type PaymentTransactionUpdateInput = {
     id?: BigIntFieldUpdateOperationsInput | bigint | number
-    vnpayTxnRef?: StringFieldUpdateOperationsInput | string
-    vnpayTransactionNo?: NullableStringFieldUpdateOperationsInput | string | null
+    provider?: StringFieldUpdateOperationsInput | string
+    invoiceNumber?: StringFieldUpdateOperationsInput | string
+    externalTxnId?: NullableStringFieldUpdateOperationsInput | string | null
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
-    bankCode?: NullableStringFieldUpdateOperationsInput | string | null
-    responseCode?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
-    secureHash?: NullableStringFieldUpdateOperationsInput | string | null
     rawResponse?: NullableJsonNullValueInput | InputJsonValue
     paymentDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    order?: OrderUpdateOneRequiredWithoutVnpayTxnNestedInput
+    order?: OrderUpdateOneRequiredWithoutPaymentTxnNestedInput
   }
 
-  export type VnpayTransactionUncheckedUpdateInput = {
+  export type PaymentTransactionUncheckedUpdateInput = {
     id?: BigIntFieldUpdateOperationsInput | bigint | number
     orderId?: BigIntFieldUpdateOperationsInput | bigint | number
-    vnpayTxnRef?: StringFieldUpdateOperationsInput | string
-    vnpayTransactionNo?: NullableStringFieldUpdateOperationsInput | string | null
+    provider?: StringFieldUpdateOperationsInput | string
+    invoiceNumber?: StringFieldUpdateOperationsInput | string
+    externalTxnId?: NullableStringFieldUpdateOperationsInput | string | null
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
-    bankCode?: NullableStringFieldUpdateOperationsInput | string | null
-    responseCode?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
-    secureHash?: NullableStringFieldUpdateOperationsInput | string | null
     rawResponse?: NullableJsonNullValueInput | InputJsonValue
     paymentDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type VnpayTransactionCreateManyInput = {
+  export type PaymentTransactionCreateManyInput = {
     id?: bigint | number
     orderId: bigint | number
-    vnpayTxnRef: string
-    vnpayTransactionNo?: string | null
+    provider?: string
+    invoiceNumber: string
+    externalTxnId?: string | null
     amount: Decimal | DecimalJsLike | number | string
-    bankCode?: string | null
-    responseCode?: string | null
     status?: string
-    secureHash?: string | null
     rawResponse?: NullableJsonNullValueInput | InputJsonValue
     paymentDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
 
-  export type VnpayTransactionUpdateManyMutationInput = {
+  export type PaymentTransactionUpdateManyMutationInput = {
     id?: BigIntFieldUpdateOperationsInput | bigint | number
-    vnpayTxnRef?: StringFieldUpdateOperationsInput | string
-    vnpayTransactionNo?: NullableStringFieldUpdateOperationsInput | string | null
+    provider?: StringFieldUpdateOperationsInput | string
+    invoiceNumber?: StringFieldUpdateOperationsInput | string
+    externalTxnId?: NullableStringFieldUpdateOperationsInput | string | null
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
-    bankCode?: NullableStringFieldUpdateOperationsInput | string | null
-    responseCode?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
-    secureHash?: NullableStringFieldUpdateOperationsInput | string | null
     rawResponse?: NullableJsonNullValueInput | InputJsonValue
     paymentDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type VnpayTransactionUncheckedUpdateManyInput = {
+  export type PaymentTransactionUncheckedUpdateManyInput = {
     id?: BigIntFieldUpdateOperationsInput | bigint | number
     orderId?: BigIntFieldUpdateOperationsInput | bigint | number
-    vnpayTxnRef?: StringFieldUpdateOperationsInput | string
-    vnpayTransactionNo?: NullableStringFieldUpdateOperationsInput | string | null
+    provider?: StringFieldUpdateOperationsInput | string
+    invoiceNumber?: StringFieldUpdateOperationsInput | string
+    externalTxnId?: NullableStringFieldUpdateOperationsInput | string | null
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
-    bankCode?: NullableStringFieldUpdateOperationsInput | string | null
-    responseCode?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
-    secureHash?: NullableStringFieldUpdateOperationsInput | string | null
     rawResponse?: NullableJsonNullValueInput | InputJsonValue
     paymentDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -27870,6 +27922,21 @@ export namespace Prisma {
     not?: NestedStringFilter<$PrismaModel> | string
   }
 
+  export type StringNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  }
+
   export type BoolFilter<$PrismaModel = never> = {
     equals?: boolean | BooleanFieldRefInput<$PrismaModel>
     not?: NestedBoolFilter<$PrismaModel> | boolean
@@ -27934,6 +28001,11 @@ export namespace Prisma {
     none?: PasswordResetTokenWhereInput
   }
 
+  export type SortOrderInput = {
+    sort: SortOrder
+    nulls?: NullsOrder
+  }
+
   export type UserAddressOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -27969,8 +28041,12 @@ export namespace Prisma {
   export type UserCountOrderByAggregateInput = {
     id?: SortOrder
     username?: SortOrder
+    fullName?: SortOrder
     email?: SortOrder
+    phone?: SortOrder
     passwordHash?: SortOrder
+    googleId?: SortOrder
+    authProvider?: SortOrder
     role?: SortOrder
     isActive?: SortOrder
     createdAt?: SortOrder
@@ -27984,8 +28060,12 @@ export namespace Prisma {
   export type UserMaxOrderByAggregateInput = {
     id?: SortOrder
     username?: SortOrder
+    fullName?: SortOrder
     email?: SortOrder
+    phone?: SortOrder
     passwordHash?: SortOrder
+    googleId?: SortOrder
+    authProvider?: SortOrder
     role?: SortOrder
     isActive?: SortOrder
     createdAt?: SortOrder
@@ -27995,8 +28075,12 @@ export namespace Prisma {
   export type UserMinOrderByAggregateInput = {
     id?: SortOrder
     username?: SortOrder
+    fullName?: SortOrder
     email?: SortOrder
+    phone?: SortOrder
     passwordHash?: SortOrder
+    googleId?: SortOrder
+    authProvider?: SortOrder
     role?: SortOrder
     isActive?: SortOrder
     createdAt?: SortOrder
@@ -28039,6 +28123,24 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedStringFilter<$PrismaModel>
     _max?: NestedStringFilter<$PrismaModel>
+  }
+
+  export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedStringNullableFilter<$PrismaModel>
+    _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
   export type BoolWithAggregatesFilter<$PrismaModel = never> = {
@@ -28102,26 +28204,6 @@ export namespace Prisma {
     userId?: SortOrder
   }
 
-  export type StringNullableFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    mode?: QueryMode
-    not?: NestedStringNullableFilter<$PrismaModel> | string | null
-  }
-
-  export type SortOrderInput = {
-    sort: SortOrder
-    nulls?: NullsOrder
-  }
-
   export type UserAddressCountOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
@@ -28169,24 +28251,6 @@ export namespace Prisma {
   export type UserAddressSumOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
-  }
-
-  export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    mode?: QueryMode
-    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedStringNullableFilter<$PrismaModel>
-    _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
   export type BigIntNullableFilter<$PrismaModel = never> = {
@@ -28981,9 +29045,9 @@ export namespace Prisma {
     isNot?: UserWhereInput | null
   }
 
-  export type VnpayTransactionNullableScalarRelationFilter = {
-    is?: VnpayTransactionWhereInput | null
-    isNot?: VnpayTransactionWhereInput | null
+  export type PaymentTransactionNullableScalarRelationFilter = {
+    is?: PaymentTransactionWhereInput | null
+    isNot?: PaymentTransactionWhereInput | null
   }
 
   export type OrderCountOrderByAggregateInput = {
@@ -29120,59 +29184,53 @@ export namespace Prisma {
     not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
   }
 
-  export type VnpayTransactionCountOrderByAggregateInput = {
+  export type PaymentTransactionCountOrderByAggregateInput = {
     id?: SortOrder
     orderId?: SortOrder
-    vnpayTxnRef?: SortOrder
-    vnpayTransactionNo?: SortOrder
+    provider?: SortOrder
+    invoiceNumber?: SortOrder
+    externalTxnId?: SortOrder
     amount?: SortOrder
-    bankCode?: SortOrder
-    responseCode?: SortOrder
     status?: SortOrder
-    secureHash?: SortOrder
     rawResponse?: SortOrder
     paymentDate?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
-  export type VnpayTransactionAvgOrderByAggregateInput = {
+  export type PaymentTransactionAvgOrderByAggregateInput = {
     id?: SortOrder
     orderId?: SortOrder
     amount?: SortOrder
   }
 
-  export type VnpayTransactionMaxOrderByAggregateInput = {
+  export type PaymentTransactionMaxOrderByAggregateInput = {
     id?: SortOrder
     orderId?: SortOrder
-    vnpayTxnRef?: SortOrder
-    vnpayTransactionNo?: SortOrder
+    provider?: SortOrder
+    invoiceNumber?: SortOrder
+    externalTxnId?: SortOrder
     amount?: SortOrder
-    bankCode?: SortOrder
-    responseCode?: SortOrder
     status?: SortOrder
-    secureHash?: SortOrder
     paymentDate?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
-  export type VnpayTransactionMinOrderByAggregateInput = {
+  export type PaymentTransactionMinOrderByAggregateInput = {
     id?: SortOrder
     orderId?: SortOrder
-    vnpayTxnRef?: SortOrder
-    vnpayTransactionNo?: SortOrder
+    provider?: SortOrder
+    invoiceNumber?: SortOrder
+    externalTxnId?: SortOrder
     amount?: SortOrder
-    bankCode?: SortOrder
-    responseCode?: SortOrder
     status?: SortOrder
-    secureHash?: SortOrder
     paymentDate?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
-  export type VnpayTransactionSumOrderByAggregateInput = {
+  export type PaymentTransactionSumOrderByAggregateInput = {
     id?: SortOrder
     orderId?: SortOrder
     amount?: SortOrder
@@ -29391,6 +29449,10 @@ export namespace Prisma {
 
   export type StringFieldUpdateOperationsInput = {
     set?: string
+  }
+
+  export type NullableStringFieldUpdateOperationsInput = {
+    set?: string | null
   }
 
   export type BoolFieldUpdateOperationsInput = {
@@ -29643,10 +29705,6 @@ export namespace Prisma {
     create?: XOR<UserCreateWithoutAddressesInput, UserUncheckedCreateWithoutAddressesInput>
     connectOrCreate?: UserCreateOrConnectWithoutAddressesInput
     connect?: UserWhereUniqueInput
-  }
-
-  export type NullableStringFieldUpdateOperationsInput = {
-    set?: string | null
   }
 
   export type UserUpdateOneRequiredWithoutAddressesNestedInput = {
@@ -30497,10 +30555,10 @@ export namespace Prisma {
     connect?: OrderItemWhereUniqueInput | OrderItemWhereUniqueInput[]
   }
 
-  export type VnpayTransactionCreateNestedOneWithoutOrderInput = {
-    create?: XOR<VnpayTransactionCreateWithoutOrderInput, VnpayTransactionUncheckedCreateWithoutOrderInput>
-    connectOrCreate?: VnpayTransactionCreateOrConnectWithoutOrderInput
-    connect?: VnpayTransactionWhereUniqueInput
+  export type PaymentTransactionCreateNestedOneWithoutOrderInput = {
+    create?: XOR<PaymentTransactionCreateWithoutOrderInput, PaymentTransactionUncheckedCreateWithoutOrderInput>
+    connectOrCreate?: PaymentTransactionCreateOrConnectWithoutOrderInput
+    connect?: PaymentTransactionWhereUniqueInput
   }
 
   export type ProductRatingCreateNestedManyWithoutOrderInput = {
@@ -30517,10 +30575,10 @@ export namespace Prisma {
     connect?: OrderItemWhereUniqueInput | OrderItemWhereUniqueInput[]
   }
 
-  export type VnpayTransactionUncheckedCreateNestedOneWithoutOrderInput = {
-    create?: XOR<VnpayTransactionCreateWithoutOrderInput, VnpayTransactionUncheckedCreateWithoutOrderInput>
-    connectOrCreate?: VnpayTransactionCreateOrConnectWithoutOrderInput
-    connect?: VnpayTransactionWhereUniqueInput
+  export type PaymentTransactionUncheckedCreateNestedOneWithoutOrderInput = {
+    create?: XOR<PaymentTransactionCreateWithoutOrderInput, PaymentTransactionUncheckedCreateWithoutOrderInput>
+    connectOrCreate?: PaymentTransactionCreateOrConnectWithoutOrderInput
+    connect?: PaymentTransactionWhereUniqueInput
   }
 
   export type ProductRatingUncheckedCreateNestedManyWithoutOrderInput = {
@@ -30554,14 +30612,14 @@ export namespace Prisma {
     deleteMany?: OrderItemScalarWhereInput | OrderItemScalarWhereInput[]
   }
 
-  export type VnpayTransactionUpdateOneWithoutOrderNestedInput = {
-    create?: XOR<VnpayTransactionCreateWithoutOrderInput, VnpayTransactionUncheckedCreateWithoutOrderInput>
-    connectOrCreate?: VnpayTransactionCreateOrConnectWithoutOrderInput
-    upsert?: VnpayTransactionUpsertWithoutOrderInput
-    disconnect?: VnpayTransactionWhereInput | boolean
-    delete?: VnpayTransactionWhereInput | boolean
-    connect?: VnpayTransactionWhereUniqueInput
-    update?: XOR<XOR<VnpayTransactionUpdateToOneWithWhereWithoutOrderInput, VnpayTransactionUpdateWithoutOrderInput>, VnpayTransactionUncheckedUpdateWithoutOrderInput>
+  export type PaymentTransactionUpdateOneWithoutOrderNestedInput = {
+    create?: XOR<PaymentTransactionCreateWithoutOrderInput, PaymentTransactionUncheckedCreateWithoutOrderInput>
+    connectOrCreate?: PaymentTransactionCreateOrConnectWithoutOrderInput
+    upsert?: PaymentTransactionUpsertWithoutOrderInput
+    disconnect?: PaymentTransactionWhereInput | boolean
+    delete?: PaymentTransactionWhereInput | boolean
+    connect?: PaymentTransactionWhereUniqueInput
+    update?: XOR<XOR<PaymentTransactionUpdateToOneWithWhereWithoutOrderInput, PaymentTransactionUpdateWithoutOrderInput>, PaymentTransactionUncheckedUpdateWithoutOrderInput>
   }
 
   export type ProductRatingUpdateManyWithoutOrderNestedInput = {
@@ -30592,14 +30650,14 @@ export namespace Prisma {
     deleteMany?: OrderItemScalarWhereInput | OrderItemScalarWhereInput[]
   }
 
-  export type VnpayTransactionUncheckedUpdateOneWithoutOrderNestedInput = {
-    create?: XOR<VnpayTransactionCreateWithoutOrderInput, VnpayTransactionUncheckedCreateWithoutOrderInput>
-    connectOrCreate?: VnpayTransactionCreateOrConnectWithoutOrderInput
-    upsert?: VnpayTransactionUpsertWithoutOrderInput
-    disconnect?: VnpayTransactionWhereInput | boolean
-    delete?: VnpayTransactionWhereInput | boolean
-    connect?: VnpayTransactionWhereUniqueInput
-    update?: XOR<XOR<VnpayTransactionUpdateToOneWithWhereWithoutOrderInput, VnpayTransactionUpdateWithoutOrderInput>, VnpayTransactionUncheckedUpdateWithoutOrderInput>
+  export type PaymentTransactionUncheckedUpdateOneWithoutOrderNestedInput = {
+    create?: XOR<PaymentTransactionCreateWithoutOrderInput, PaymentTransactionUncheckedCreateWithoutOrderInput>
+    connectOrCreate?: PaymentTransactionCreateOrConnectWithoutOrderInput
+    upsert?: PaymentTransactionUpsertWithoutOrderInput
+    disconnect?: PaymentTransactionWhereInput | boolean
+    delete?: PaymentTransactionWhereInput | boolean
+    connect?: PaymentTransactionWhereUniqueInput
+    update?: XOR<XOR<PaymentTransactionUpdateToOneWithWhereWithoutOrderInput, PaymentTransactionUpdateWithoutOrderInput>, PaymentTransactionUncheckedUpdateWithoutOrderInput>
   }
 
   export type ProductRatingUncheckedUpdateManyWithoutOrderNestedInput = {
@@ -30646,9 +30704,9 @@ export namespace Prisma {
     update?: XOR<XOR<ProductUpdateToOneWithWhereWithoutOrderItemsInput, ProductUpdateWithoutOrderItemsInput>, ProductUncheckedUpdateWithoutOrderItemsInput>
   }
 
-  export type OrderCreateNestedOneWithoutVnpayTxnInput = {
-    create?: XOR<OrderCreateWithoutVnpayTxnInput, OrderUncheckedCreateWithoutVnpayTxnInput>
-    connectOrCreate?: OrderCreateOrConnectWithoutVnpayTxnInput
+  export type OrderCreateNestedOneWithoutPaymentTxnInput = {
+    create?: XOR<OrderCreateWithoutPaymentTxnInput, OrderUncheckedCreateWithoutPaymentTxnInput>
+    connectOrCreate?: OrderCreateOrConnectWithoutPaymentTxnInput
     connect?: OrderWhereUniqueInput
   }
 
@@ -30656,12 +30714,12 @@ export namespace Prisma {
     set?: Date | string | null
   }
 
-  export type OrderUpdateOneRequiredWithoutVnpayTxnNestedInput = {
-    create?: XOR<OrderCreateWithoutVnpayTxnInput, OrderUncheckedCreateWithoutVnpayTxnInput>
-    connectOrCreate?: OrderCreateOrConnectWithoutVnpayTxnInput
-    upsert?: OrderUpsertWithoutVnpayTxnInput
+  export type OrderUpdateOneRequiredWithoutPaymentTxnNestedInput = {
+    create?: XOR<OrderCreateWithoutPaymentTxnInput, OrderUncheckedCreateWithoutPaymentTxnInput>
+    connectOrCreate?: OrderCreateOrConnectWithoutPaymentTxnInput
+    upsert?: OrderUpsertWithoutPaymentTxnInput
     connect?: OrderWhereUniqueInput
-    update?: XOR<XOR<OrderUpdateToOneWithWhereWithoutVnpayTxnInput, OrderUpdateWithoutVnpayTxnInput>, OrderUncheckedUpdateWithoutVnpayTxnInput>
+    update?: XOR<XOR<OrderUpdateToOneWithWhereWithoutPaymentTxnInput, OrderUpdateWithoutPaymentTxnInput>, OrderUncheckedUpdateWithoutPaymentTxnInput>
   }
 
   export type UserCreateNestedOneWithoutSavedBuildsInput = {
@@ -30773,6 +30831,20 @@ export namespace Prisma {
     not?: NestedStringFilter<$PrismaModel> | string
   }
 
+  export type NestedStringNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  }
+
   export type NestedBoolFilter<$PrismaModel = never> = {
     equals?: boolean | BooleanFieldRefInput<$PrismaModel>
     not?: NestedBoolFilter<$PrismaModel> | boolean
@@ -30844,42 +30916,6 @@ export namespace Prisma {
     _max?: NestedStringFilter<$PrismaModel>
   }
 
-  export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedBoolFilter<$PrismaModel>
-    _max?: NestedBoolFilter<$PrismaModel>
-  }
-
-  export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeWithAggregatesFilter<$PrismaModel> | Date | string
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedDateTimeFilter<$PrismaModel>
-    _max?: NestedDateTimeFilter<$PrismaModel>
-  }
-
-  export type NestedStringNullableFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    not?: NestedStringNullableFilter<$PrismaModel> | string | null
-  }
-
   export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
     in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
@@ -30906,6 +30942,28 @@ export namespace Prisma {
     gt?: number | IntFieldRefInput<$PrismaModel>
     gte?: number | IntFieldRefInput<$PrismaModel>
     not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
+  }
+
+  export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeWithAggregatesFilter<$PrismaModel> | Date | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedDateTimeFilter<$PrismaModel>
+    _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
   export type NestedBigIntNullableFilter<$PrismaModel = never> = {
@@ -31239,7 +31297,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     items?: OrderItemCreateNestedManyWithoutOrderInput
-    vnpayTxn?: VnpayTransactionCreateNestedOneWithoutOrderInput
+    paymentTxn?: PaymentTransactionCreateNestedOneWithoutOrderInput
     ratings?: ProductRatingCreateNestedManyWithoutOrderInput
   }
 
@@ -31256,7 +31314,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     items?: OrderItemUncheckedCreateNestedManyWithoutOrderInput
-    vnpayTxn?: VnpayTransactionUncheckedCreateNestedOneWithoutOrderInput
+    paymentTxn?: PaymentTransactionUncheckedCreateNestedOneWithoutOrderInput
     ratings?: ProductRatingUncheckedCreateNestedManyWithoutOrderInput
   }
 
@@ -31561,8 +31619,12 @@ export namespace Prisma {
   export type UserCreateWithoutPasswordResetTokensInput = {
     id?: bigint | number
     username: string
+    fullName: string
     email: string
-    passwordHash: string
+    phone?: string | null
+    passwordHash?: string | null
+    googleId?: string | null
+    authProvider?: string
     role?: string
     isActive?: boolean
     createdAt?: Date | string
@@ -31579,8 +31641,12 @@ export namespace Prisma {
   export type UserUncheckedCreateWithoutPasswordResetTokensInput = {
     id?: bigint | number
     username: string
+    fullName: string
     email: string
-    passwordHash: string
+    phone?: string | null
+    passwordHash?: string | null
+    googleId?: string | null
+    authProvider?: string
     role?: string
     isActive?: boolean
     createdAt?: Date | string
@@ -31613,8 +31679,12 @@ export namespace Prisma {
   export type UserUpdateWithoutPasswordResetTokensInput = {
     id?: BigIntFieldUpdateOperationsInput | bigint | number
     username?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
-    passwordHash?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    googleId?: NullableStringFieldUpdateOperationsInput | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -31631,8 +31701,12 @@ export namespace Prisma {
   export type UserUncheckedUpdateWithoutPasswordResetTokensInput = {
     id?: BigIntFieldUpdateOperationsInput | bigint | number
     username?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
-    passwordHash?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    googleId?: NullableStringFieldUpdateOperationsInput | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -31649,8 +31723,12 @@ export namespace Prisma {
   export type UserCreateWithoutAddressesInput = {
     id?: bigint | number
     username: string
+    fullName: string
     email: string
-    passwordHash: string
+    phone?: string | null
+    passwordHash?: string | null
+    googleId?: string | null
+    authProvider?: string
     role?: string
     isActive?: boolean
     createdAt?: Date | string
@@ -31667,8 +31745,12 @@ export namespace Prisma {
   export type UserUncheckedCreateWithoutAddressesInput = {
     id?: bigint | number
     username: string
+    fullName: string
     email: string
-    passwordHash: string
+    phone?: string | null
+    passwordHash?: string | null
+    googleId?: string | null
+    authProvider?: string
     role?: string
     isActive?: boolean
     createdAt?: Date | string
@@ -31701,8 +31783,12 @@ export namespace Prisma {
   export type UserUpdateWithoutAddressesInput = {
     id?: BigIntFieldUpdateOperationsInput | bigint | number
     username?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
-    passwordHash?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    googleId?: NullableStringFieldUpdateOperationsInput | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -31719,8 +31805,12 @@ export namespace Prisma {
   export type UserUncheckedUpdateWithoutAddressesInput = {
     id?: BigIntFieldUpdateOperationsInput | bigint | number
     username?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
-    passwordHash?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    googleId?: NullableStringFieldUpdateOperationsInput | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -33002,8 +33092,12 @@ export namespace Prisma {
   export type UserCreateWithoutCartItemsInput = {
     id?: bigint | number
     username: string
+    fullName: string
     email: string
-    passwordHash: string
+    phone?: string | null
+    passwordHash?: string | null
+    googleId?: string | null
+    authProvider?: string
     role?: string
     isActive?: boolean
     createdAt?: Date | string
@@ -33020,8 +33114,12 @@ export namespace Prisma {
   export type UserUncheckedCreateWithoutCartItemsInput = {
     id?: bigint | number
     username: string
+    fullName: string
     email: string
-    passwordHash: string
+    phone?: string | null
+    passwordHash?: string | null
+    googleId?: string | null
+    authProvider?: string
     role?: string
     isActive?: boolean
     createdAt?: Date | string
@@ -33111,8 +33209,12 @@ export namespace Prisma {
   export type UserUpdateWithoutCartItemsInput = {
     id?: BigIntFieldUpdateOperationsInput | bigint | number
     username?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
-    passwordHash?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    googleId?: NullableStringFieldUpdateOperationsInput | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -33129,8 +33231,12 @@ export namespace Prisma {
   export type UserUncheckedUpdateWithoutCartItemsInput = {
     id?: BigIntFieldUpdateOperationsInput | bigint | number
     username?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
-    passwordHash?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    googleId?: NullableStringFieldUpdateOperationsInput | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -33210,8 +33316,12 @@ export namespace Prisma {
   export type UserCreateWithoutWishlistsInput = {
     id?: bigint | number
     username: string
+    fullName: string
     email: string
-    passwordHash: string
+    phone?: string | null
+    passwordHash?: string | null
+    googleId?: string | null
+    authProvider?: string
     role?: string
     isActive?: boolean
     createdAt?: Date | string
@@ -33228,8 +33338,12 @@ export namespace Prisma {
   export type UserUncheckedCreateWithoutWishlistsInput = {
     id?: bigint | number
     username: string
+    fullName: string
     email: string
-    passwordHash: string
+    phone?: string | null
+    passwordHash?: string | null
+    googleId?: string | null
+    authProvider?: string
     role?: string
     isActive?: boolean
     createdAt?: Date | string
@@ -33319,8 +33433,12 @@ export namespace Prisma {
   export type UserUpdateWithoutWishlistsInput = {
     id?: BigIntFieldUpdateOperationsInput | bigint | number
     username?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
-    passwordHash?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    googleId?: NullableStringFieldUpdateOperationsInput | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -33337,8 +33455,12 @@ export namespace Prisma {
   export type UserUncheckedUpdateWithoutWishlistsInput = {
     id?: BigIntFieldUpdateOperationsInput | bigint | number
     username?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
-    passwordHash?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    googleId?: NullableStringFieldUpdateOperationsInput | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -33418,8 +33540,12 @@ export namespace Prisma {
   export type UserCreateWithoutReviewsInput = {
     id?: bigint | number
     username: string
+    fullName: string
     email: string
-    passwordHash: string
+    phone?: string | null
+    passwordHash?: string | null
+    googleId?: string | null
+    authProvider?: string
     role?: string
     isActive?: boolean
     createdAt?: Date | string
@@ -33436,8 +33562,12 @@ export namespace Prisma {
   export type UserUncheckedCreateWithoutReviewsInput = {
     id?: bigint | number
     username: string
+    fullName: string
     email: string
-    passwordHash: string
+    phone?: string | null
+    passwordHash?: string | null
+    googleId?: string | null
+    authProvider?: string
     role?: string
     isActive?: boolean
     createdAt?: Date | string
@@ -33527,7 +33657,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     user?: UserCreateNestedOneWithoutOrdersInput
     items?: OrderItemCreateNestedManyWithoutOrderInput
-    vnpayTxn?: VnpayTransactionCreateNestedOneWithoutOrderInput
+    paymentTxn?: PaymentTransactionCreateNestedOneWithoutOrderInput
   }
 
   export type OrderUncheckedCreateWithoutRatingsInput = {
@@ -33544,7 +33674,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     items?: OrderItemUncheckedCreateNestedManyWithoutOrderInput
-    vnpayTxn?: VnpayTransactionUncheckedCreateNestedOneWithoutOrderInput
+    paymentTxn?: PaymentTransactionUncheckedCreateNestedOneWithoutOrderInput
   }
 
   export type OrderCreateOrConnectWithoutRatingsInput = {
@@ -33566,8 +33696,12 @@ export namespace Prisma {
   export type UserUpdateWithoutReviewsInput = {
     id?: BigIntFieldUpdateOperationsInput | bigint | number
     username?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
-    passwordHash?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    googleId?: NullableStringFieldUpdateOperationsInput | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -33584,8 +33718,12 @@ export namespace Prisma {
   export type UserUncheckedUpdateWithoutReviewsInput = {
     id?: BigIntFieldUpdateOperationsInput | bigint | number
     username?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
-    passwordHash?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    googleId?: NullableStringFieldUpdateOperationsInput | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -33687,7 +33825,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneWithoutOrdersNestedInput
     items?: OrderItemUpdateManyWithoutOrderNestedInput
-    vnpayTxn?: VnpayTransactionUpdateOneWithoutOrderNestedInput
+    paymentTxn?: PaymentTransactionUpdateOneWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateWithoutRatingsInput = {
@@ -33704,14 +33842,18 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     items?: OrderItemUncheckedUpdateManyWithoutOrderNestedInput
-    vnpayTxn?: VnpayTransactionUncheckedUpdateOneWithoutOrderNestedInput
+    paymentTxn?: PaymentTransactionUncheckedUpdateOneWithoutOrderNestedInput
   }
 
   export type UserCreateWithoutCommentsInput = {
     id?: bigint | number
     username: string
+    fullName: string
     email: string
-    passwordHash: string
+    phone?: string | null
+    passwordHash?: string | null
+    googleId?: string | null
+    authProvider?: string
     role?: string
     isActive?: boolean
     createdAt?: Date | string
@@ -33728,8 +33870,12 @@ export namespace Prisma {
   export type UserUncheckedCreateWithoutCommentsInput = {
     id?: bigint | number
     username: string
+    fullName: string
     email: string
-    passwordHash: string
+    phone?: string | null
+    passwordHash?: string | null
+    googleId?: string | null
+    authProvider?: string
     role?: string
     isActive?: boolean
     createdAt?: Date | string
@@ -33882,8 +34028,12 @@ export namespace Prisma {
   export type UserUpdateWithoutCommentsInput = {
     id?: BigIntFieldUpdateOperationsInput | bigint | number
     username?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
-    passwordHash?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    googleId?: NullableStringFieldUpdateOperationsInput | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -33900,8 +34050,12 @@ export namespace Prisma {
   export type UserUncheckedUpdateWithoutCommentsInput = {
     id?: BigIntFieldUpdateOperationsInput | bigint | number
     username?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
-    passwordHash?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    googleId?: NullableStringFieldUpdateOperationsInput | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -34032,8 +34186,12 @@ export namespace Prisma {
   export type UserCreateWithoutOrdersInput = {
     id?: bigint | number
     username: string
+    fullName: string
     email: string
-    passwordHash: string
+    phone?: string | null
+    passwordHash?: string | null
+    googleId?: string | null
+    authProvider?: string
     role?: string
     isActive?: boolean
     createdAt?: Date | string
@@ -34050,8 +34208,12 @@ export namespace Prisma {
   export type UserUncheckedCreateWithoutOrdersInput = {
     id?: bigint | number
     username: string
+    fullName: string
     email: string
-    passwordHash: string
+    phone?: string | null
+    passwordHash?: string | null
+    googleId?: string | null
+    authProvider?: string
     role?: string
     isActive?: boolean
     createdAt?: Date | string
@@ -34102,39 +34264,35 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type VnpayTransactionCreateWithoutOrderInput = {
+  export type PaymentTransactionCreateWithoutOrderInput = {
     id?: bigint | number
-    vnpayTxnRef: string
-    vnpayTransactionNo?: string | null
+    provider?: string
+    invoiceNumber: string
+    externalTxnId?: string | null
     amount: Decimal | DecimalJsLike | number | string
-    bankCode?: string | null
-    responseCode?: string | null
     status?: string
-    secureHash?: string | null
     rawResponse?: NullableJsonNullValueInput | InputJsonValue
     paymentDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
 
-  export type VnpayTransactionUncheckedCreateWithoutOrderInput = {
+  export type PaymentTransactionUncheckedCreateWithoutOrderInput = {
     id?: bigint | number
-    vnpayTxnRef: string
-    vnpayTransactionNo?: string | null
+    provider?: string
+    invoiceNumber: string
+    externalTxnId?: string | null
     amount: Decimal | DecimalJsLike | number | string
-    bankCode?: string | null
-    responseCode?: string | null
     status?: string
-    secureHash?: string | null
     rawResponse?: NullableJsonNullValueInput | InputJsonValue
     paymentDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
 
-  export type VnpayTransactionCreateOrConnectWithoutOrderInput = {
-    where: VnpayTransactionWhereUniqueInput
-    create: XOR<VnpayTransactionCreateWithoutOrderInput, VnpayTransactionUncheckedCreateWithoutOrderInput>
+  export type PaymentTransactionCreateOrConnectWithoutOrderInput = {
+    where: PaymentTransactionWhereUniqueInput
+    create: XOR<PaymentTransactionCreateWithoutOrderInput, PaymentTransactionUncheckedCreateWithoutOrderInput>
   }
 
   export type ProductRatingCreateWithoutOrderInput = {
@@ -34181,8 +34339,12 @@ export namespace Prisma {
   export type UserUpdateWithoutOrdersInput = {
     id?: BigIntFieldUpdateOperationsInput | bigint | number
     username?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
-    passwordHash?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    googleId?: NullableStringFieldUpdateOperationsInput | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -34199,8 +34361,12 @@ export namespace Prisma {
   export type UserUncheckedUpdateWithoutOrdersInput = {
     id?: BigIntFieldUpdateOperationsInput | bigint | number
     username?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
-    passwordHash?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    googleId?: NullableStringFieldUpdateOperationsInput | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -34230,41 +34396,37 @@ export namespace Prisma {
     data: XOR<OrderItemUpdateManyMutationInput, OrderItemUncheckedUpdateManyWithoutOrderInput>
   }
 
-  export type VnpayTransactionUpsertWithoutOrderInput = {
-    update: XOR<VnpayTransactionUpdateWithoutOrderInput, VnpayTransactionUncheckedUpdateWithoutOrderInput>
-    create: XOR<VnpayTransactionCreateWithoutOrderInput, VnpayTransactionUncheckedCreateWithoutOrderInput>
-    where?: VnpayTransactionWhereInput
+  export type PaymentTransactionUpsertWithoutOrderInput = {
+    update: XOR<PaymentTransactionUpdateWithoutOrderInput, PaymentTransactionUncheckedUpdateWithoutOrderInput>
+    create: XOR<PaymentTransactionCreateWithoutOrderInput, PaymentTransactionUncheckedCreateWithoutOrderInput>
+    where?: PaymentTransactionWhereInput
   }
 
-  export type VnpayTransactionUpdateToOneWithWhereWithoutOrderInput = {
-    where?: VnpayTransactionWhereInput
-    data: XOR<VnpayTransactionUpdateWithoutOrderInput, VnpayTransactionUncheckedUpdateWithoutOrderInput>
+  export type PaymentTransactionUpdateToOneWithWhereWithoutOrderInput = {
+    where?: PaymentTransactionWhereInput
+    data: XOR<PaymentTransactionUpdateWithoutOrderInput, PaymentTransactionUncheckedUpdateWithoutOrderInput>
   }
 
-  export type VnpayTransactionUpdateWithoutOrderInput = {
+  export type PaymentTransactionUpdateWithoutOrderInput = {
     id?: BigIntFieldUpdateOperationsInput | bigint | number
-    vnpayTxnRef?: StringFieldUpdateOperationsInput | string
-    vnpayTransactionNo?: NullableStringFieldUpdateOperationsInput | string | null
+    provider?: StringFieldUpdateOperationsInput | string
+    invoiceNumber?: StringFieldUpdateOperationsInput | string
+    externalTxnId?: NullableStringFieldUpdateOperationsInput | string | null
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
-    bankCode?: NullableStringFieldUpdateOperationsInput | string | null
-    responseCode?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
-    secureHash?: NullableStringFieldUpdateOperationsInput | string | null
     rawResponse?: NullableJsonNullValueInput | InputJsonValue
     paymentDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type VnpayTransactionUncheckedUpdateWithoutOrderInput = {
+  export type PaymentTransactionUncheckedUpdateWithoutOrderInput = {
     id?: BigIntFieldUpdateOperationsInput | bigint | number
-    vnpayTxnRef?: StringFieldUpdateOperationsInput | string
-    vnpayTransactionNo?: NullableStringFieldUpdateOperationsInput | string | null
+    provider?: StringFieldUpdateOperationsInput | string
+    invoiceNumber?: StringFieldUpdateOperationsInput | string
+    externalTxnId?: NullableStringFieldUpdateOperationsInput | string | null
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
-    bankCode?: NullableStringFieldUpdateOperationsInput | string | null
-    responseCode?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
-    secureHash?: NullableStringFieldUpdateOperationsInput | string | null
     rawResponse?: NullableJsonNullValueInput | InputJsonValue
     paymentDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -34300,7 +34462,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     user?: UserCreateNestedOneWithoutOrdersInput
-    vnpayTxn?: VnpayTransactionCreateNestedOneWithoutOrderInput
+    paymentTxn?: PaymentTransactionCreateNestedOneWithoutOrderInput
     ratings?: ProductRatingCreateNestedManyWithoutOrderInput
   }
 
@@ -34317,7 +34479,7 @@ export namespace Prisma {
     paymentStatus?: string
     createdAt?: Date | string
     updatedAt?: Date | string
-    vnpayTxn?: VnpayTransactionUncheckedCreateNestedOneWithoutOrderInput
+    paymentTxn?: PaymentTransactionUncheckedCreateNestedOneWithoutOrderInput
     ratings?: ProductRatingUncheckedCreateNestedManyWithoutOrderInput
   }
 
@@ -34407,7 +34569,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneWithoutOrdersNestedInput
-    vnpayTxn?: VnpayTransactionUpdateOneWithoutOrderNestedInput
+    paymentTxn?: PaymentTransactionUpdateOneWithoutOrderNestedInput
     ratings?: ProductRatingUpdateManyWithoutOrderNestedInput
   }
 
@@ -34424,7 +34586,7 @@ export namespace Prisma {
     paymentStatus?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    vnpayTxn?: VnpayTransactionUncheckedUpdateOneWithoutOrderNestedInput
+    paymentTxn?: PaymentTransactionUncheckedUpdateOneWithoutOrderNestedInput
     ratings?: ProductRatingUncheckedUpdateManyWithoutOrderNestedInput
   }
 
@@ -34491,7 +34653,7 @@ export namespace Prisma {
     savedBuildItems?: SavedBuildItemUncheckedUpdateManyWithoutProductNestedInput
   }
 
-  export type OrderCreateWithoutVnpayTxnInput = {
+  export type OrderCreateWithoutPaymentTxnInput = {
     id?: bigint | number
     totalAmount: Decimal | DecimalJsLike | number | string
     shippingFee?: Decimal | DecimalJsLike | number | string
@@ -34508,7 +34670,7 @@ export namespace Prisma {
     ratings?: ProductRatingCreateNestedManyWithoutOrderInput
   }
 
-  export type OrderUncheckedCreateWithoutVnpayTxnInput = {
+  export type OrderUncheckedCreateWithoutPaymentTxnInput = {
     id?: bigint | number
     userId?: bigint | number | null
     totalAmount: Decimal | DecimalJsLike | number | string
@@ -34525,23 +34687,23 @@ export namespace Prisma {
     ratings?: ProductRatingUncheckedCreateNestedManyWithoutOrderInput
   }
 
-  export type OrderCreateOrConnectWithoutVnpayTxnInput = {
+  export type OrderCreateOrConnectWithoutPaymentTxnInput = {
     where: OrderWhereUniqueInput
-    create: XOR<OrderCreateWithoutVnpayTxnInput, OrderUncheckedCreateWithoutVnpayTxnInput>
+    create: XOR<OrderCreateWithoutPaymentTxnInput, OrderUncheckedCreateWithoutPaymentTxnInput>
   }
 
-  export type OrderUpsertWithoutVnpayTxnInput = {
-    update: XOR<OrderUpdateWithoutVnpayTxnInput, OrderUncheckedUpdateWithoutVnpayTxnInput>
-    create: XOR<OrderCreateWithoutVnpayTxnInput, OrderUncheckedCreateWithoutVnpayTxnInput>
+  export type OrderUpsertWithoutPaymentTxnInput = {
+    update: XOR<OrderUpdateWithoutPaymentTxnInput, OrderUncheckedUpdateWithoutPaymentTxnInput>
+    create: XOR<OrderCreateWithoutPaymentTxnInput, OrderUncheckedCreateWithoutPaymentTxnInput>
     where?: OrderWhereInput
   }
 
-  export type OrderUpdateToOneWithWhereWithoutVnpayTxnInput = {
+  export type OrderUpdateToOneWithWhereWithoutPaymentTxnInput = {
     where?: OrderWhereInput
-    data: XOR<OrderUpdateWithoutVnpayTxnInput, OrderUncheckedUpdateWithoutVnpayTxnInput>
+    data: XOR<OrderUpdateWithoutPaymentTxnInput, OrderUncheckedUpdateWithoutPaymentTxnInput>
   }
 
-  export type OrderUpdateWithoutVnpayTxnInput = {
+  export type OrderUpdateWithoutPaymentTxnInput = {
     id?: BigIntFieldUpdateOperationsInput | bigint | number
     totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     shippingFee?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -34558,7 +34720,7 @@ export namespace Prisma {
     ratings?: ProductRatingUpdateManyWithoutOrderNestedInput
   }
 
-  export type OrderUncheckedUpdateWithoutVnpayTxnInput = {
+  export type OrderUncheckedUpdateWithoutPaymentTxnInput = {
     id?: BigIntFieldUpdateOperationsInput | bigint | number
     userId?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
     totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -34578,8 +34740,12 @@ export namespace Prisma {
   export type UserCreateWithoutSavedBuildsInput = {
     id?: bigint | number
     username: string
+    fullName: string
     email: string
-    passwordHash: string
+    phone?: string | null
+    passwordHash?: string | null
+    googleId?: string | null
+    authProvider?: string
     role?: string
     isActive?: boolean
     createdAt?: Date | string
@@ -34596,8 +34762,12 @@ export namespace Prisma {
   export type UserUncheckedCreateWithoutSavedBuildsInput = {
     id?: bigint | number
     username: string
+    fullName: string
     email: string
-    passwordHash: string
+    phone?: string | null
+    passwordHash?: string | null
+    googleId?: string | null
+    authProvider?: string
     role?: string
     isActive?: boolean
     createdAt?: Date | string
@@ -34652,8 +34822,12 @@ export namespace Prisma {
   export type UserUpdateWithoutSavedBuildsInput = {
     id?: BigIntFieldUpdateOperationsInput | bigint | number
     username?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
-    passwordHash?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    googleId?: NullableStringFieldUpdateOperationsInput | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -34670,8 +34844,12 @@ export namespace Prisma {
   export type UserUncheckedUpdateWithoutSavedBuildsInput = {
     id?: BigIntFieldUpdateOperationsInput | bigint | number
     username?: StringFieldUpdateOperationsInput | string
+    fullName?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
-    passwordHash?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    googleId?: NullableStringFieldUpdateOperationsInput | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -35105,7 +35283,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     items?: OrderItemUpdateManyWithoutOrderNestedInput
-    vnpayTxn?: VnpayTransactionUpdateOneWithoutOrderNestedInput
+    paymentTxn?: PaymentTransactionUpdateOneWithoutOrderNestedInput
     ratings?: ProductRatingUpdateManyWithoutOrderNestedInput
   }
 
@@ -35122,7 +35300,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     items?: OrderItemUncheckedUpdateManyWithoutOrderNestedInput
-    vnpayTxn?: VnpayTransactionUncheckedUpdateOneWithoutOrderNestedInput
+    paymentTxn?: PaymentTransactionUncheckedUpdateOneWithoutOrderNestedInput
     ratings?: ProductRatingUncheckedUpdateManyWithoutOrderNestedInput
   }
 

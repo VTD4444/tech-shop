@@ -4,5 +4,7 @@
   </NuxtLayout>
   <ClientOnly>
     <UiToast />
+    <UiConfirmDialog />
+    <UiPromptDialog />
   </ClientOnly>
 </template>

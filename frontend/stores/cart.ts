@@ -3,7 +3,7 @@ import { defineStore } from 'pinia';
 import { isApiUnavailableError } from '~/utils/api-error';
 import { useSystemStore } from '~/stores/system';
 
-const DEFAULT_SUMMARY = { subtotal: 0, tax: 0, taxRate: 0.1, shipping: 0, total: 0 };
+const DEFAULT_SUMMARY = { subtotal: 0, shipping: 0, total: 0 };
 
 export const useCartStore = defineStore('cart', () => {
   const items = ref<any[]>([]);
@@ -11,7 +11,6 @@ export const useCartStore = defineStore('cart', () => {
   const unavailable = ref(false);
   const totalItems = computed(() => items.value.reduce((s, i) => s + i.quantity, 0));
   const subtotal = computed(() => summary.value.subtotal);
-  const tax = computed(() => summary.value.tax);
   const totalPrice = computed(() => summary.value.total);
 
   function applyCartPayload(data: any) {
@@ -21,9 +20,7 @@ export const useCartStore = defineStore('cart', () => {
     } else if (Array.isArray(data)) {
       items.value = data;
       const sub = data.reduce((s, i) => s + Number(i.product?.price ?? 0) * i.quantity, 0);
-      const taxRate = 0.1;
-      const taxAmt = Math.round(sub * taxRate);
-      summary.value = { subtotal: sub, tax: taxAmt, taxRate, shipping: 0, total: sub + taxAmt };
+      summary.value = { subtotal: sub, shipping: 0, total: sub };
     } else {
       items.value = [];
       summary.value = { ...DEFAULT_SUMMARY };
@@ -54,7 +51,7 @@ export const useCartStore = defineStore('cart', () => {
       return true;
     } catch (error) {
       if (isApiUnavailableError(error)) {
-        useSystemStore().markDegraded('Cart is unavailable while the server is offline.');
+        useSystemStore().markDegraded('Giỏ hàng không khả dụng khi máy chủ ngoại tuyến.');
       }
       throw error;
     }
@@ -101,7 +98,6 @@ export const useCartStore = defineStore('cart', () => {
     unavailable,
     totalItems,
     subtotal,
-    tax,
     totalPrice,
     fetchCart,
     addItem,

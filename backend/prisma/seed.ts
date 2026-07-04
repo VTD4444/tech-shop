@@ -10,7 +10,7 @@ const prisma = new PrismaClient({ adapter });
 async function clearSeedData() {
   await prisma.savedBuildItem.deleteMany();
   await prisma.savedBuild.deleteMany();
-  await prisma.vnpayTransaction.deleteMany();
+  await prisma.paymentTransaction.deleteMany();
   await prisma.orderItem.deleteMany();
   await prisma.order.deleteMany();
   await prisma.cartItem.deleteMany();
@@ -67,18 +67,24 @@ async function main() {
   await prisma.user.create({
     data: {
       username: 'admin',
+      fullName: 'Quản trị viên',
       email: 'admin@techshop.com',
+      phone: '0900000001',
       passwordHash: await import('bcryptjs').then((b) => b.hash('admin123', 10)),
       role: 'admin',
+      authProvider: 'local',
     },
   });
 
   await prisma.user.create({
     data: {
       username: 'customer1',
+      fullName: 'Nguyễn Văn A',
       email: 'customer@test.com',
+      phone: '0900000002',
       passwordHash: await import('bcryptjs').then((b) => b.hash('customer123', 10)),
       role: 'customer',
+      authProvider: 'local',
     },
   });
 

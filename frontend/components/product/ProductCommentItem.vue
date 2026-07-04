@@ -38,9 +38,9 @@ async function submitReply() {
     replyText.value = '';
     showReply.value = false;
     emit('reply');
-    toast.success('Reply posted');
+    toast.success('Đã gửi trả lời');
   } catch {
-    toast.error('Could not post reply');
+    toast.error('Không thể gửi trả lời');
   } finally {
     submitting.value = false;
   }
@@ -60,9 +60,9 @@ async function saveEdit() {
     });
     editing.value = false;
     emit('updated');
-    toast.success('Updated');
+    toast.success('Đã cập nhật');
   } catch {
-    toast.error('Could not update');
+    toast.error('Không thể cập nhật');
   } finally {
     submitting.value = false;
   }
@@ -73,7 +73,7 @@ async function saveEdit() {
   <div :class="depth ? 'ml-6 mt-3 border-l-2 border-subtle pl-4' : ''">
     <div class="flex items-start justify-between gap-2">
       <div>
-        <span class="font-medium text-text-primary">{{ comment.user?.username }}</span>
+        <span class="font-medium text-text-primary">{{ comment.user?.fullName || comment.user?.username }}</span>
         <span class="text-text-muted text-sm ml-2">{{ formatDate(comment.createdAt) }}</span>
         <EditedLabel :is-edited="comment.isEdited" />
       </div>

@@ -38,54 +38,54 @@ watch(customSpecs, syncSpecs, { deep: true });
 
 <template>
   <UiCard padding="md" class="space-y-4">
-    <UiText as="h3" size="lg">Technical specifications</UiText>
+    <UiText as="h3" size="lg">Thông số kỹ thuật</UiText>
     <div class="grid grid-cols-2 gap-3">
       <div>
-        <UiText variant="muted" size="xs" class="mb-1 block">CPU brand</UiText>
+        <UiText variant="muted" size="xs" class="mb-1 block">Hãng CPU</UiText>
         <UiInput v-model="model.cpuBrand" />
       </div>
       <div>
-        <UiText variant="muted" size="xs" class="mb-1 block">CPU series</UiText>
+        <UiText variant="muted" size="xs" class="mb-1 block">Dòng CPU</UiText>
         <UiInput v-model="model.cpuSeries" />
       </div>
       <div>
-        <UiText variant="muted" size="xs" class="mb-1 block">CPU model</UiText>
+        <UiText variant="muted" size="xs" class="mb-1 block">Model CPU</UiText>
         <UiInput v-model="model.cpuModel" />
       </div>
       <div>
-        <UiText variant="muted" size="xs" class="mb-1 block">RAM (GB)</UiText>
+        <UiText variant="muted" size="xs" class="mb-1 block">Dung lượng RAM (GB)</UiText>
         <UiInput v-model="model.ramCapacity" type="number" />
       </div>
       <div>
-        <UiText variant="muted" size="xs" class="mb-1 block">RAM generation</UiText>
+        <UiText variant="muted" size="xs" class="mb-1 block">Thế hệ RAM</UiText>
         <UiInput v-model="model.ramGeneration" placeholder="DDR5" />
       </div>
       <div>
-        <UiText variant="muted" size="xs" class="mb-1 block">Storage (GB)</UiText>
+        <UiText variant="muted" size="xs" class="mb-1 block">Dung lượng lưu trữ (GB)</UiText>
         <UiInput v-model="model.storageCapacity" type="number" />
       </div>
       <div>
-        <UiText variant="muted" size="xs" class="mb-1 block">Storage type</UiText>
+        <UiText variant="muted" size="xs" class="mb-1 block">Loại lưu trữ</UiText>
         <UiInput v-model="model.storageType" placeholder="SSD" />
       </div>
       <div>
-        <UiText variant="muted" size="xs" class="mb-1 block">GPU model</UiText>
+        <UiText variant="muted" size="xs" class="mb-1 block">Model GPU</UiText>
         <UiInput v-model="model.gpuModel" />
       </div>
       <div>
-        <UiText variant="muted" size="xs" class="mb-1 block">Screen size (inch)</UiText>
+        <UiText variant="muted" size="xs" class="mb-1 block">Kích thước màn hình (inch)</UiText>
         <UiInput v-model="model.screenSize" type="number" step="0.1" />
       </div>
     </div>
 
     <div>
       <div class="flex items-center justify-between mb-2">
-        <UiText variant="muted" size="xs" uppercase>Custom specs (JSON)</UiText>
-        <UiButton type="button" variant="secondary" size="sm" @click="addRow">Add row</UiButton>
+        <UiText variant="muted" size="xs" uppercase>Thông số tùy chỉnh</UiText>
+        <UiButton type="button" variant="secondary" size="sm" @click="addRow">Thêm dòng</UiButton>
       </div>
       <div v-for="(row, i) in customSpecs" :key="i" class="flex gap-2 mb-2">
-        <UiInput v-model="row.key" placeholder="Key" class="flex-1" />
-        <UiInput v-model="row.value" placeholder="Value" class="flex-1" />
+        <UiInput v-model="row.key" placeholder="Tên trường" class="flex-1" />
+        <UiInput v-model="row.value" placeholder="Giá trị" class="flex-1" />
         <UiButton type="button" variant="secondary" size="sm" @click="removeRow(i)">×</UiButton>
       </div>
     </div>

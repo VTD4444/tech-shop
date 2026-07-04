@@ -14,7 +14,7 @@ const safeHtml = computed(() => {
 
 <template>
   <div v-if="safeHtml" class="prose prose-sm max-w-none text-text-primary product-long-description leading-relaxed" v-html="safeHtml" />
-  <p v-else class="text-text-muted text-sm">No detailed description available.</p>
+  <p v-else class="text-text-muted text-sm">Chưa có mô tả chi tiết.</p>
 </template>
 
 <style>

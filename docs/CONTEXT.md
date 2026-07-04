@@ -12,7 +12,7 @@
 | Database | PostgreSQL 16 + pgvector | 16-alpine |
 | AI Service | Python FastAPI + Gemini | FastAPI ^0.115 |
 | Auth | JWT (httpOnly cookie + Bearer) | — |
-| Payment | VNPay Sandbox (HMAC-SHA512) | — |
+| Payment | SePay Sandbox (HMAC-SHA256 form + IPN) | — |
 | Email | Resend | — |
 
 ## Cấu trúc thư mục
@@ -42,7 +42,7 @@ tech-shop/
 | Cart | `backend/src/modules/cart/` | Cart with stock validation |
 | Wishlist | `backend/src/modules/wishlist/` | Wishlist CRUD |
 | Orders | `backend/src/modules/orders/` | Checkout (atomic), history, cancel |
-| Payments | `backend/src/modules/payments/` | VNPay url gen, IPN, return |
+| Payments | `backend/src/modules/payments/` | SePay form init, IPN, status |
 | Mail | `backend/src/modules/mail/` | Resend — order + reset password emails |
 | PC Builder | `backend/src/modules/pc-builder/` | 6 compatibility rules engine |
 | Admin | `backend/src/modules/admin/` | Order mgmt, inventory, analytics |
@@ -61,7 +61,7 @@ tech-shop/
 | `/wishlist` | `pages/wishlist.vue` | Yes | Yes |
 | `/pc-builder` | `pages/pc-builder/index.vue` | No | Yes |
 | `/advisor` | `pages/advisor/index.vue` | No | ClientOnly (Recommend + Chat tabs) |
-| `/vnpay/return` | `pages/vnpay/return.vue` | No | Yes |
+| `/payments/return` | `pages/payments/return.vue` | No | Yes |
 | `/admin` | `pages/admin/index.vue` | Admin | No (SSR off) |
 | `/admin/orders` | `pages/admin/orders/index.vue` | Admin | No |
 | `/admin/products` | `pages/admin/products/index.vue` | Admin | No |
@@ -101,9 +101,9 @@ Frontend AI client: `$aiApi` + `useAdvisorChat` composable. Dev proxy: `NUXT_PUB
 1. **Auth**: httpOnly cookie (`Set-Cookie: access_token=...`), Nuxt `credentials: 'include'`
 2. **RBAC**: `admin` / `customer` middleware on routes; URLs unchanged (`/orders`, not `/customer/orders`)
 3. **Checkout atomicity**: `$transaction` + `SELECT ... FOR UPDATE` (sorted IDs to prevent deadlock)
-4. **Checkout payment**: Review order → **Pay with VNPay** (redirect) or **Pay Later** (pending order)
+4. **Checkout payment**: Review order → **Thanh toán bằng SePay** (form POST) or **Thanh toán sau** (pending order)
 5. **PC Builder rules**: Server-side NestJS service (6 rules) + `selectedIds` pre-filter in component picker
-6. **VNPAY**: HMAC-SHA512 signature, idempotent IPN handler; `VNPAY_RETURN_URL=http://localhost:3001/vnpay/return`
+6. **SePay**: HMAC-SHA256 form signature, idempotent IPN handler; callbacks → `/payments/return`
 7. **AI RAG**: FastAPI fetches live product data from NestJS → builds prompt → Gemini parses JSON
 8. **AI Chat**: SSE streaming with non-stream fallback; history in `localStorage` (50 messages)
 

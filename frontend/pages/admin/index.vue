@@ -13,10 +13,10 @@ const orders = ref<any[]>([]);
 const inventory = ref<any[]>([]);
 
 const statCards = computed(() => [
-  { label: 'Revenue (This Month)', value: formatPrice(summary.value.monthRevenue ?? 0), accent: true },
-  { label: 'Total Orders', value: summary.value.totalOrders ?? 0 },
-  { label: 'Active Products', value: summary.value.totalProducts ?? 0 },
-  { label: 'Customers', value: summary.value.totalUsers ?? 0 },
+  { label: 'Doanh thu (tháng này)', value: formatPrice(summary.value.monthRevenue ?? 0), accent: true },
+  { label: 'Tổng đơn hàng', value: summary.value.totalOrders ?? 0 },
+  { label: 'Sản phẩm đang bán', value: summary.value.totalProducts ?? 0 },
+  { label: 'Khách hàng', value: summary.value.totalUsers ?? 0 },
 ]);
 
 async function loadDashboard() {
@@ -31,13 +31,13 @@ async function loadDashboard() {
     orders.value = ordersRes.data ?? [];
     inventory.value = inventoryRes.data ?? inventoryRes;
   } catch (e: any) {
-    toast.error(e.data?.message || 'Failed to load dashboard');
+    toast.error(e.data?.message || 'Không tải được bảng điều khiển');
   }
 }
 
 async function updateStatus(orderId: string, status: string) {
   await $api(`/admin/orders/${orderId}/status?status=${status}`, { method: 'PATCH' });
-  toast.success('Order status updated');
+  toast.success('Đã cập nhật trạng thái đơn hàng');
   await loadDashboard();
 }
 
@@ -46,10 +46,10 @@ onMounted(loadDashboard);
 
 <template>
   <div>
-    <UiText as="h1" size="2xl" class="mb-2">Store Overview</UiText>
-    <UiText variant="muted" size="sm" class="mb-8">Monitor revenue, inventory, and transaction flow.</UiText>
+    <UiText as="h1" size="2xl" class="mb-2">Tổng quan cửa hàng</UiText>
+    <UiText variant="muted" size="sm" class="mb-8">Theo dõi doanh thu, tồn kho và luồng giao dịch.</UiText>
 
-    <div v-if="!auth.isAdmin" class="text-danger">Access denied. Admin role required.</div>
+    <div v-if="!auth.isAdmin" class="text-danger">Truy cập bị từ chối. Cần quyền quản trị viên.</div>
 
     <template v-else>
       <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-8">

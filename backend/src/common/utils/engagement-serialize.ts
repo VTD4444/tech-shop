@@ -4,8 +4,12 @@ export function isEdited(createdAt: Date, updatedAt: Date): boolean {
   return updatedAt.getTime() - createdAt.getTime() > 1000;
 }
 
-export function serializeRatingUser(user: { id: bigint; username: string }) {
-  return { id: toId(user.id)!, username: user.username };
+export function serializeRatingUser(user: { id: bigint; username: string; fullName?: string | null }) {
+  return {
+    id: toId(user.id)!,
+    username: user.username,
+    fullName: user.fullName ?? user.username,
+  };
 }
 
 export function serializeRating(r: {

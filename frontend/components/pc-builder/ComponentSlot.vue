@@ -25,11 +25,11 @@ defineEmits<{ select: []; remove: [] }>();
         <div class="min-w-0">
           <UiText size="xs" variant="muted" uppercase>{{ label }}</UiText>
           <p v-if="selected" class="text-sm text-text-primary truncate font-medium">{{ selected.product?.name }}</p>
-          <p v-else class="text-sm text-text-muted">Click to select</p>
+          <p v-else class="text-sm text-text-muted">Nhấn để chọn</p>
         </div>
       </div>
       <UiButton v-if="selected" variant="ghost" size="sm" class="!text-danger shrink-0" @click.stop="$emit('remove')">
-        Remove
+        Xóa
       </UiButton>
     </div>
   </UiCard>

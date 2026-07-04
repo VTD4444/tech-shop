@@ -21,7 +21,7 @@ if (addresses.value.length) selectedAddressId.value = addresses.value[0].id;
 
 async function createOrder() {
   if (!selectedAddressId.value) {
-    toast.error('Please select a shipping address');
+    toast.error('Vui lòng chọn địa chỉ giao hàng');
     return null;
   }
   const res: any = await $api('/orders/checkout', {
@@ -31,26 +31,17 @@ async function createOrder() {
   return res.data;
 }
 
-async function redirectToVNPay(orderId: string) {
-  const paymentRes: any = await $api(`/payments/vnpay/create-url?orderId=${orderId}`, {
-    method: 'POST',
-  });
-  const paymentUrl = paymentRes.data?.paymentUrl;
-  if (!paymentUrl) {
-    throw new Error('Payment URL not available');
-  }
-  window.location.href = paymentUrl;
-}
+const { redirectToSePay } = useSePayCheckout();
 
 async function placeOrderAndPay() {
   loading.value = true;
   try {
     const order = await createOrder();
     if (!order?.id) return;
-    toast.success('Order created! Redirecting to VNPay...');
-    await redirectToVNPay(order.id);
+    toast.success('Đã tạo đơn hàng! Đang chuyển đến SePay...');
+    await redirectToSePay(order.id);
   } catch (e: any) {
-    toast.error(e.data?.message || e.message || 'Checkout failed');
+    toast.error(e.data?.message || e.message || 'Thanh toán thất bại');
     loading.value = false;
   }
 }
@@ -60,10 +51,10 @@ async function placeOrderPayLater() {
   try {
     const order = await createOrder();
     if (!order?.id) return;
-    toast.success('Order placed! You can pay later from order details.');
+    toast.success('Đã đặt hàng! Bạn có thể thanh toán sau từ trang chi tiết đơn hàng.');
     await navigateTo(`/orders/${order.id}`);
   } catch (e: any) {
-    toast.error(e.data?.message || 'Checkout failed');
+    toast.error(e.data?.message || 'Thanh toán thất bại');
   } finally {
     payLaterLoading.value = false;
   }
@@ -72,17 +63,17 @@ async function placeOrderPayLater() {
 
 <template>
   <UiContainer class="py-8">
-    <UiText as="h1" size="2xl" class="mb-8">Checkout</UiText>
+    <UiText as="h1" size="2xl" class="mb-8">Thanh toán</UiText>
     <div class="grid lg:grid-cols-3 gap-8">
       <div class="lg:col-span-2 space-y-6">
         <UiCard padding="md">
-          <UiText as="h2" size="lg" class="mb-4">Review Order</UiText>
+          <UiText as="h2" size="lg" class="mb-4">Xem lại đơn hàng</UiText>
           <UiEmptyState
             v-if="!cartStore.items.length"
-            title="Cart is empty"
-            description="Add items before checkout."
+            title="Giỏ hàng trống"
+            description="Hãy thêm sản phẩm trước khi thanh toán."
           >
-            <template #action><UiButton to="/products" variant="primary">Browse Products</UiButton></template>
+            <template #action><UiButton to="/products" variant="primary">Xem sản phẩm</UiButton></template>
           </UiEmptyState>
           <div v-else class="divide-y divide-subtle">
             <div
@@ -98,7 +89,7 @@ async function placeOrderPayLater() {
                 />
                 <div class="min-w-0">
                   <p class="font-medium text-text-primary truncate">{{ item.product.name }}</p>
-                  <p class="text-sm text-text-muted">Qty: {{ item.quantity }}</p>
+                  <p class="text-sm text-text-muted">SL: {{ item.quantity }}</p>
                 </div>
               </div>
               <span class="font-semibold text-text-primary shrink-0 ml-2">
@@ -109,9 +100,9 @@ async function placeOrderPayLater() {
         </UiCard>
 
         <UiCard padding="md">
-          <UiText as="h2" size="lg" class="mb-4">Shipping Address</UiText>
-          <UiEmptyState v-if="!addresses.length" title="No addresses" description="Add an address in your profile first.">
-            <template #action><UiButton to="/profile" variant="secondary">Go to Profile</UiButton></template>
+          <UiText as="h2" size="lg" class="mb-4">Địa chỉ giao hàng</UiText>
+          <UiEmptyState v-if="!addresses.length" title="Chưa có địa chỉ" description="Hãy thêm địa chỉ trong hồ sơ của bạn trước.">
+            <template #action><UiButton to="/profile" variant="secondary">Đến hồ sơ</UiButton></template>
           </UiEmptyState>
           <div v-else class="space-y-2">
             <label
@@ -130,33 +121,25 @@ async function placeOrderPayLater() {
         </UiCard>
 
         <UiCard padding="md">
-          <UiText as="h2" size="lg" class="mb-4">Order Note</UiText>
-          <UiInput v-model="note" placeholder="Optional note for your order..." />
+          <UiText as="h2" size="lg" class="mb-4">Ghi chú đơn hàng</UiText>
+          <UiInput v-model="note" placeholder="Ghi chú tùy chọn cho đơn hàng..." />
         </UiCard>
 
         <UiCard padding="md">
-          <UiText as="h2" size="lg" class="mb-2">Payment</UiText>
-          <UiText variant="muted" size="sm">You will be redirected to VNPay Sandbox to complete payment.</UiText>
+          <UiText as="h2" size="lg" class="mb-2">Thanh toán</UiText>
+          <UiText variant="muted" size="sm">Bạn sẽ được chuyển đến SePay để hoàn tất thanh toán.</UiText>
         </UiCard>
       </div>
 
       <UiCard padding="md" class="h-fit">
-        <UiText as="h2" size="lg" class="mb-4">Order Summary</UiText>
+        <UiText as="h2" size="lg" class="mb-4">Tóm tắt đơn hàng</UiText>
         <div v-for="item in cartStore.items" :key="item.productId" class="flex justify-between text-sm py-2 border-b border-subtle">
           <span class="text-text-muted truncate mr-2">{{ item.product.name }} × {{ item.quantity }}</span>
           <span class="text-text-primary shrink-0">{{ formatPrice(item.product.price * item.quantity) }}</span>
         </div>
         <div class="space-y-2 text-sm border-t border-subtle pt-4 mt-4">
-          <div class="flex justify-between">
-            <span class="text-text-muted">Subtotal</span>
-            <span>{{ formatPrice(cartStore.subtotal) }}</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-text-muted">Tax (10%)</span>
-            <span>{{ formatPrice(cartStore.tax) }}</span>
-          </div>
           <div class="flex justify-between font-semibold text-base pt-2">
-            <UiText size="lg">Total</UiText>
+            <UiText size="lg">Tổng cộng</UiText>
             <UiText variant="accent" size="xl" class="font-bold">{{ formatPrice(cartStore.totalPrice) }}</UiText>
           </div>
         </div>
@@ -168,7 +151,7 @@ async function placeOrderPayLater() {
           :disabled="!cartStore.items.length || payLaterLoading"
           @click="placeOrderAndPay"
         >
-          Pay with VNPay
+          Thanh toán bằng SePay
         </UiButton>
         <UiButton
           variant="secondary"
@@ -178,7 +161,7 @@ async function placeOrderPayLater() {
           :disabled="!cartStore.items.length || loading"
           @click="placeOrderPayLater"
         >
-          Pay Later
+          Thanh toán sau
         </UiButton>
       </UiCard>
     </div>

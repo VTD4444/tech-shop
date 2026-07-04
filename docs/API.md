@@ -20,8 +20,14 @@ Auth: JWT via `Authorization: Bearer <token>` or `httpOnly` cookie `access_token
 
 ### `POST /auth/register`
 ```json
-{ "username": "john", "email": "john@test.com", "password": "123456" }
-// Returns: { user }
+{
+  "fullName": "Nguyen Van A",
+  "email": "john@test.com",
+  "phone": "0901234567",
+  "password": "123456",
+  "confirmPassword": "123456"
+}
+// Returns: { user: { id, username, fullName, email, phone, role } }
 // Sets httpOnly cookies: access_token (15m), refresh_token (7d)
 ```
 
@@ -32,6 +38,12 @@ Auth: JWT via `Authorization: Bearer <token>` or `httpOnly` cookie `access_token
 // Sets httpOnly cookies: access_token, refresh_token
 // Frontend sends credentials: 'include' on all API calls
 ```
+
+### `GET /auth/google`
+Redirects to Google OAuth consent screen. On success, callback sets cookies and redirects to `FRONTEND_URL/?auth=google`.
+
+### `GET /auth/google/callback`
+Google OAuth callback (handled by backend). Requires `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_CALLBACK_URL` in `backend/.env`.
 
 ### `POST /auth/refresh`
 ```json
@@ -50,7 +62,7 @@ Clears cookies.
 ### `GET /users/profile` [Auth]
 ### `PATCH /users/profile` [Auth]
 ```json
-{ "username": "new_name", "email": "new@email.com" }
+{ "fullName": "Nguyen Van A", "email": "new@email.com", "phone": "0901234567" }
 ```
 
 ### `GET /users/addresses` [Auth]
@@ -127,10 +139,9 @@ Returns items plus pricing summary:
 ```json
 {
   "items": [ { "productId": "1", "quantity": 2, "product": { ... } } ],
-  "summary": { "subtotal": 1000000, "tax": 100000, "taxRate": 0.1, "shipping": 0, "total": 1100000 }
+  "summary": { "subtotal": 1000000, "shipping": 0, "total": 1000000 }
 }
 ```
-Tax rate defaults to `0.1` (10%); override with `CART_TAX_RATE` in `backend/.env`.
 ### `POST /cart` [Auth] — `{ "productId": "1", "quantity": 2 }`
 ### `PATCH /cart/:productId` [Auth] — `{ "quantity": 3 }`
 ### `DELETE /cart/:productId` [Auth]
@@ -155,18 +166,21 @@ Tax rate defaults to `0.1` (10%); override with `CART_TAX_RATE` in `backend/.env
 Atomic transaction: locks product rows → validates stock → deducts → creates order → clears cart.
 
 ### `GET /orders` [Auth] — Paginated history
-### `GET /orders/:id` [Auth] — Detail with items + VNPAY status
+### `GET /orders/:id` [Auth] — Detail with items + payment transaction status
 ### `PATCH /orders/:id/cancel` [Auth] — Only if status = 'pending'
 
 ---
 
-## Payments (VNPAY)
+## Payments (SePay)
 
-### `POST /payments/vnpay/create-url?orderId=1` [Auth]
-Returns: `{ paymentUrl: "https://sandbox.vnpayment.vn/...", txnRef: "..." }`
+### `POST /payments/sepay/init?orderId=1` [Auth]
+Returns: `{ actionUrl, fields, invoiceNumber }` — frontend POSTs `fields` to `actionUrl`.
 
-### `GET /payments/vnpay/return?` — Browser redirect endpoint, verifies HMAC
-### `POST /payments/vnpay/ipn?` — Server-to-server Instant Payment Notification
+### `GET /payments/sepay/status?invoice=TS-1-...` [Public]
+Read-only payment status from DB (used by `/payments/return`).
+
+### `POST /payments/sepay/ipn` [Public]
+Server-to-server Instant Payment Notification. Body JSON (`ORDER_PAID`). Responds `{"success": true}`.
 
 ---
 

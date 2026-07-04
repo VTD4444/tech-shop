@@ -123,8 +123,12 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
 exports.Prisma.UserScalarFieldEnum = {
   id: 'id',
   username: 'username',
+  fullName: 'fullName',
   email: 'email',
+  phone: 'phone',
   passwordHash: 'passwordHash',
+  googleId: 'googleId',
+  authProvider: 'authProvider',
   role: 'role',
   isActive: 'isActive',
   createdAt: 'createdAt',
@@ -298,16 +302,14 @@ exports.Prisma.OrderItemScalarFieldEnum = {
   subtotal: 'subtotal'
 };
 
-exports.Prisma.VnpayTransactionScalarFieldEnum = {
+exports.Prisma.PaymentTransactionScalarFieldEnum = {
   id: 'id',
   orderId: 'orderId',
-  vnpayTxnRef: 'vnpayTxnRef',
-  vnpayTransactionNo: 'vnpayTransactionNo',
+  provider: 'provider',
+  invoiceNumber: 'invoiceNumber',
+  externalTxnId: 'externalTxnId',
   amount: 'amount',
-  bankCode: 'bankCode',
-  responseCode: 'responseCode',
   status: 'status',
-  secureHash: 'secureHash',
   rawResponse: 'rawResponse',
   paymentDate: 'paymentDate',
   createdAt: 'createdAt',
@@ -373,7 +375,7 @@ exports.Prisma.ModelName = {
   ProductComment: 'ProductComment',
   Order: 'Order',
   OrderItem: 'OrderItem',
-  VnpayTransaction: 'VnpayTransaction',
+  PaymentTransaction: 'PaymentTransaction',
   SavedBuild: 'SavedBuild',
   SavedBuildItem: 'SavedBuildItem'
 };

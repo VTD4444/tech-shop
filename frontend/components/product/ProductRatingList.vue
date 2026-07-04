@@ -16,7 +16,7 @@ function formatDate(d: string) {
     <div v-for="r in ratings" :key="r.id" class="border-b border-subtle pb-4 last:border-0">
       <div class="flex items-start justify-between gap-2">
         <div>
-          <span class="font-medium text-text-primary">{{ r.user?.username }}</span>
+          <span class="font-medium text-text-primary">{{ r.user?.fullName || r.user?.username }}</span>
           <span class="text-text-muted text-sm ml-2">{{ formatDate(r.createdAt) }}</span>
           <EditedLabel :is-edited="r.isEdited" class="mt-0.5" />
         </div>

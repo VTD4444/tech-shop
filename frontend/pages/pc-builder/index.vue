@@ -5,6 +5,8 @@ import { useCartStore } from '~/stores/cart';
 import { usePcBuilderStore } from '~/stores/pcBuilder';
 import { useFormatPrice } from '~/composables/useFormatPrice';
 import { useToast } from '~/composables/useToast';
+import { useConfirmDialog } from '~/composables/useConfirmDialog';
+import { usePromptDialog } from '~/composables/usePromptDialog';
 
 const route = useRoute();
 const router = useRouter();
@@ -13,6 +15,8 @@ const authStore = useAuthStore();
 const cartStore = useCartStore();
 const { formatPrice } = useFormatPrice();
 const toast = useToast();
+const confirmDialog = useConfirmDialog();
+const promptDialog = usePromptDialog();
 
 const {
   selectedComponents,
@@ -32,13 +36,13 @@ const addingToCart = ref(false);
 
 const componentTypes = [
   { label: 'CPU', value: 'CPU' },
-  { label: 'Mainboard', value: 'MAINBOARD' },
+  { label: 'Bo mạch chủ', value: 'MAINBOARD' },
   { label: 'RAM', value: 'RAM' },
   { label: 'VGA / GPU', value: 'VGA' },
-  { label: 'Storage', value: 'STORAGE' },
-  { label: 'PSU', value: 'PSU' },
-  { label: 'Case', value: 'CASE' },
-  { label: 'Cooler', value: 'COOLER' },
+  { label: 'Ổ cứng', value: 'STORAGE' },
+  { label: 'Nguồn', value: 'PSU' },
+  { label: 'Vỏ máy', value: 'CASE' },
+  { label: 'Tản nhiệt', value: 'COOLER' },
 ];
 
 function typeLabel(type: string) {
@@ -80,7 +84,7 @@ function removeComponent(type: string) {
 
 async function validateBuild() {
   if (selectedCount.value === 0) {
-    toast.info('Select at least one component');
+    toast.info('Hãy chọn ít nhất một linh kiện');
     return;
   }
   await pcBuilderStore.validateBuild();
@@ -88,24 +92,30 @@ async function validateBuild() {
 
 async function saveCurrentBuild() {
   if (!authStore.isAuthenticated) {
-    toast.info('Please log in to save your build');
+    toast.info('Vui lòng đăng nhập để lưu cấu hình');
     navigateTo('/login?redirect=/pc-builder');
     return;
   }
   if (selectedCount.value === 0) return;
-  const name = prompt('Build name:', 'My Build');
+  const name = await promptDialog.prompt({
+    title: 'Lưu cấu hình',
+    message: 'Đặt tên cho cấu hình PC của bạn',
+    defaultValue: 'Cấu hình của tôi',
+    placeholder: 'Tên cấu hình',
+    confirmLabel: 'Lưu',
+  });
   if (!name) return;
   saving.value = true;
   try {
     await pcBuilderStore.validateBuild();
     if (validationResult.value && !validationResult.value.compatible) {
-      toast.error('Fix compatibility issues before saving');
+      toast.error('Hãy sửa lỗi tương thích trước khi lưu');
       return;
     }
     await pcBuilderStore.saveBuild(name);
-    toast.success('Build saved!');
+    toast.success('Đã lưu cấu hình!');
   } catch (e: any) {
-    toast.error(e?.data?.message || 'Failed to save build');
+    toast.error(e?.data?.message || 'Không thể lưu cấu hình');
   } finally {
     saving.value = false;
   }
@@ -114,25 +124,26 @@ async function saveCurrentBuild() {
 async function loadBuild(build: any) {
   try {
     await pcBuilderStore.loadSavedBuild(build);
-    toast.success(`Loaded "${build.name}"`);
+    toast.success(`Đã tải "${build.name}"`);
   } catch {
-    toast.error('Could not load build');
+    toast.error('Không thể tải cấu hình');
   }
 }
 
 async function removeSavedBuild(buildId: string) {
-  if (!confirm('Delete this saved build?')) return;
+  const ok = await confirmDialog.confirm('Xóa cấu hình đã lưu này?');
+  if (!ok) return;
   try {
     await pcBuilderStore.deleteBuild(buildId);
-    toast.info('Build deleted');
+    toast.info('Đã xóa cấu hình');
   } catch {
-    toast.error('Failed to delete build');
+    toast.error('Không thể xóa cấu hình');
   }
 }
 
 async function addBuildToCart() {
   if (!authStore.isAuthenticated) {
-    toast.info('Please log in to add to cart');
+    toast.info('Vui lòng đăng nhập để thêm vào giỏ hàng');
     navigateTo('/login?redirect=/pc-builder');
     return;
   }
@@ -141,14 +152,14 @@ async function addBuildToCart() {
   try {
     await pcBuilderStore.validateBuild();
     if (validationResult.value && !validationResult.value.compatible) {
-      toast.error('Fix compatibility issues before adding to cart');
+      toast.error('Hãy sửa lỗi tương thích trước khi thêm vào giỏ hàng');
       return;
     }
     await pcBuilderStore.addBuildToCart();
-    toast.success('All components added to cart');
+    toast.success('Đã thêm tất cả linh kiện vào giỏ hàng');
     navigateTo('/cart');
   } catch (e: any) {
-    toast.error(e?.data?.message || 'Failed to add to cart');
+    toast.error(e?.data?.message || 'Không thể thêm vào giỏ hàng');
   } finally {
     addingToCart.value = false;
   }
@@ -159,10 +170,10 @@ async function applyAddFromQuery() {
   if (!slug || typeof slug !== 'string') return;
   try {
     const component = await pcBuilderStore.addProductBySlug(slug);
-    toast.success(`Added ${component.product?.name} to build`);
+    toast.success(`Đã thêm ${component.product?.name} vào cấu hình`);
     await router.replace({ path: '/pc-builder', query: {} });
   } catch {
-    toast.error('This product cannot be added to a PC build');
+    toast.error('Sản phẩm này không thể thêm vào cấu hình PC');
     await router.replace({ path: '/pc-builder', query: {} });
   }
 }
@@ -181,9 +192,9 @@ onMounted(async () => {
 
 <template>
   <UiContainer class="py-8">
-    <UiText as="h1" size="2xl" class="mb-2">PC Builder</UiText>
+    <UiText as="h1" size="2xl" class="mb-2">Xây dựng PC</UiText>
     <UiText variant="muted" class="mb-8">
-      Select components, validate compatibility, save your build, or add everything to cart.
+      Chọn linh kiện, kiểm tra tương thích, lưu cấu hình hoặc thêm tất cả vào giỏ hàng.
     </UiText>
 
     <div class="grid lg:grid-cols-3 gap-8">
@@ -205,12 +216,12 @@ onMounted(async () => {
       </div>
 
       <UiCard glass padding="md" class="h-fit sticky top-24 space-y-4">
-        <UiText as="h2" size="lg">Build Summary</UiText>
+        <UiText as="h2" size="lg">Tóm tắt cấu hình</UiText>
 
         <UiEmptyState
           v-if="selectedCount === 0"
-          title="No components yet"
-          description="Pick parts from the slots or use Add to Build on a product page."
+          title="Chưa có linh kiện"
+          description="Chọn linh kiện từ các ô hoặc dùng Thêm vào cấu hình trên trang sản phẩm."
         />
 
         <template v-else>
@@ -226,7 +237,7 @@ onMounted(async () => {
         </template>
 
         <UiButton variant="primary" block :disabled="selectedCount === 0" @click="validateBuild">
-          Validate Build
+          Kiểm tra tương thích
         </UiButton>
 
         <div v-if="validationResult" class="space-y-2">
@@ -239,7 +250,7 @@ onMounted(async () => {
             {{ issue.message }}
           </div>
           <p v-if="validationResult.compatible" class="text-accent font-semibold text-sm">
-            Build is compatible!
+            Cấu hình tương thích!
           </p>
         </div>
 
@@ -251,7 +262,7 @@ onMounted(async () => {
           :disabled="validationResult && !validationResult.compatible"
           @click="addBuildToCart"
         >
-          Add Build to Cart
+          Thêm cấu hình vào giỏ
         </UiButton>
 
         <UiButton
@@ -261,7 +272,7 @@ onMounted(async () => {
           :loading="saving"
           @click="saveCurrentBuild"
         >
-          Save Build
+          Lưu cấu hình
         </UiButton>
 
         <UiButton
@@ -271,11 +282,11 @@ onMounted(async () => {
           class="!text-danger"
           @click="pcBuilderStore.clearBuild()"
         >
-          Clear Build
+          Xóa cấu hình
         </UiButton>
 
         <div v-if="authStore.isAuthenticated && builds.length" class="pt-4 border-t border-subtle">
-          <UiText as="h3" size="sm" class="mb-3 uppercase tracking-wide">Saved Builds</UiText>
+          <UiText as="h3" size="sm" class="mb-3 uppercase tracking-wide">Cấu hình đã lưu</UiText>
           <div class="space-y-2 max-h-48 overflow-y-auto">
             <div
               v-for="build in builds"
@@ -291,7 +302,7 @@ onMounted(async () => {
                 class="text-xs text-danger shrink-0 hover:underline"
                 @click="removeSavedBuild(build.id)"
               >
-                Delete
+                Xóa
               </button>
             </div>
           </div>
@@ -299,12 +310,12 @@ onMounted(async () => {
       </UiCard>
     </div>
 
-    <UiModal :open="showSelector" :title="`Select ${typeLabel(selectedType)}`" @close="showSelector = false">
+    <UiModal :open="showSelector" :title="`Chọn ${typeLabel(selectedType)}`" @close="showSelector = false">
       <div class="flex items-center justify-between mb-3">
-        <UiText variant="muted" size="xs">Only compatible parts shown by default</UiText>
-        <UiCheckbox v-model="showIncompatible" label="Show incompatible" />
+        <UiText variant="muted" size="xs">Mặc định chỉ hiển thị linh kiện tương thích</UiText>
+        <UiCheckbox v-model="showIncompatible" label="Hiện linh kiện không tương thích" />
       </div>
-      <UiEmptyState v-if="!visibleComponents.length" title="No components" description="No compatible components for this slot. Try showing incompatible parts or change your selection." />
+      <UiEmptyState v-if="!visibleComponents.length" title="Không có linh kiện" description="Không có linh kiện tương thích cho vị trí này. Hãy thử hiện linh kiện không tương thích hoặc thay đổi lựa chọn." />
       <div v-else class="space-y-2 max-h-[50vh] overflow-y-auto">
         <UiCard
           v-for="comp in visibleComponents"

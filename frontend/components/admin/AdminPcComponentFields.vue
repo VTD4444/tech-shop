@@ -26,18 +26,18 @@ function patch(key: string, value: string | number) {
 <template>
   <div v-if="enabled" class="space-y-4 rounded-lg border border-accent/30 bg-accent-muted/10 p-4">
     <div>
-      <UiText as="h3" size="sm" class="font-semibold mb-1">PC Builder compatibility specs</UiText>
+      <UiText as="h3" size="sm" class="font-semibold mb-1">Thông số tương thích PC Builder</UiText>
       <UiText variant="muted" size="xs">
         Nhập thông số kỹ thuật để PC Builder tự kiểm tra tương thích. Lấy từ datasheet nhà sản xuất.
       </UiText>
     </div>
 
     <div>
-      <UiText variant="muted" size="xs" uppercase class="mb-1 block">Component type *</UiText>
+      <UiText variant="muted" size="xs" uppercase class="mb-1 block">Loại linh kiện *</UiText>
       <UiSelect
         :model-value="modelValue.componentType"
         :options="typeOptions"
-        placeholder="Select type…"
+        placeholder="Chọn loại…"
         @update:model-value="patch('componentType', $event)"
       />
     </div>

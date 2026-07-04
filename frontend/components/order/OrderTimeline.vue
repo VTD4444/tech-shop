@@ -16,11 +16,11 @@ const steps = computed(() => {
   const delivered = o.status === 'completed';
 
   return [
-    { key: 'created', label: 'Created', done: true, date: o.createdAt },
-    { key: 'paid', label: 'Paid', done: paid, date: paid ? o.updatedAt : null },
-    { key: 'processing', label: 'Processing', done: processing || shipping || delivered, date: null },
-    { key: 'shipping', label: 'Shipping', done: shipping || delivered, date: null },
-    { key: 'delivered', label: 'Delivered', done: delivered, date: delivered ? o.updatedAt : null },
+    { key: 'created', label: 'Đã tạo', done: true, date: o.createdAt },
+    { key: 'paid', label: 'Đã thanh toán', done: paid, date: paid ? o.updatedAt : null },
+    { key: 'processing', label: 'Đang xử lý', done: processing || shipping || delivered, date: null },
+    { key: 'shipping', label: 'Đang giao', done: shipping || delivered, date: null },
+    { key: 'delivered', label: 'Đã giao', done: delivered, date: delivered ? o.updatedAt : null },
   ];
 });
 </script>

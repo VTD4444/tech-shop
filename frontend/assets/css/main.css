@@ -9,6 +9,46 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --scrollbar-thumb: color-mix(in srgb, var(--color-text-muted) 55%, transparent);
+    --scrollbar-thumb-hover: color-mix(in srgb, var(--color-accent) 70%, transparent);
+    --scrollbar-track: transparent;
+  }
+
+  html {
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+  }
+
+  html::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  html::-webkit-scrollbar-track {
+    background: var(--scrollbar-track);
+  }
+
+  html::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: 9999px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+
+  html::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover);
+  }
+
+  @media (max-width: 767px) {
+    html {
+      scrollbar-width: none;
+    }
+
+    html::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
   body {
     @apply bg-surface-0 text-text-muted antialiased font-sans;
   }
@@ -25,5 +65,42 @@
 
   .text-gradient-accent {
     @apply bg-gradient-to-r from-accent to-accent-hover bg-clip-text text-transparent;
+  }
+
+  /* Cuộn ngang: ẩn trên mobile, thanh mảnh trên desktop */
+  .scrollbar-horizontal {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-horizontal::-webkit-scrollbar {
+    display: none;
+  }
+
+  @media (min-width: 768px) {
+    .scrollbar-horizontal {
+      scrollbar-width: thin;
+      scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+    }
+
+    .scrollbar-horizontal::-webkit-scrollbar {
+      display: block;
+      height: 5px;
+    }
+
+    .scrollbar-horizontal::-webkit-scrollbar-track {
+      margin-inline: 0.25rem;
+      background: var(--scrollbar-track);
+      border-radius: 9999px;
+    }
+
+    .scrollbar-horizontal::-webkit-scrollbar-thumb {
+      background: var(--scrollbar-thumb);
+      border-radius: 9999px;
+    }
+
+    .scrollbar-horizontal:hover::-webkit-scrollbar-thumb {
+      background: var(--scrollbar-thumb-hover);
+    }
   }
 }

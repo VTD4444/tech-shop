@@ -3,6 +3,7 @@ definePageMeta({ layout: 'admin', middleware: ['auth', 'admin'] });
 
 const { $api } = useNuxtApp();
 const toast = useToast();
+const confirmDialog = useConfirmDialog();
 const categories = ref<any[]>([]);
 const name = ref('');
 const slug = ref('');
@@ -12,7 +13,7 @@ categories.value = res.data || [];
 
 async function create() {
   await $api('/categories', { method: 'POST', body: { name: name.value, slug: slug.value } });
-  toast.success('Category created');
+  toast.success('Đã tạo danh mục');
   name.value = '';
   slug.value = '';
   const r: any = await $api('/categories');
@@ -20,34 +21,35 @@ async function create() {
 }
 
 async function remove(id: string) {
-  if (!confirm('Delete category?')) return;
+  const ok = await confirmDialog.confirm('Xóa danh mục này?');
+  if (!ok) return;
   await $api(`/categories/${id}`, { method: 'DELETE' });
   categories.value = categories.value.filter((c) => c.id !== id);
-  toast.info('Category deleted');
+  toast.info('Đã xóa danh mục');
 }
 </script>
 
 <template>
   <div>
-    <UiText as="h1" size="2xl" class="mb-6">Categories</UiText>
+    <UiText as="h1" size="2xl" class="mb-6">Danh mục</UiText>
     <UiCard padding="md" class="mb-6">
       <form class="flex flex-wrap gap-2" @submit.prevent="create">
-        <UiInput v-model="name" placeholder="Name" required class="flex-1 min-w-[120px]" />
-        <UiInput v-model="slug" placeholder="slug" required class="w-40" />
-        <UiButton type="submit" variant="primary" size="sm">Add</UiButton>
+        <UiInput v-model="name" placeholder="Tên" required class="flex-1 min-w-[120px]" />
+        <UiInput v-model="slug" placeholder="đường dẫn" required class="w-40" />
+        <UiButton type="submit" variant="primary" size="sm">Thêm</UiButton>
       </form>
     </UiCard>
     <UiTable>
       <template #head>
-        <UiTableHead>Name</UiTableHead>
-        <UiTableHead>Slug</UiTableHead>
-        <UiTableHead align="right">Actions</UiTableHead>
+        <UiTableHead>Tên</UiTableHead>
+        <UiTableHead>Đường dẫn</UiTableHead>
+        <UiTableHead align="right">Thao tác</UiTableHead>
       </template>
       <UiTableRow v-for="c in categories" :key="c.id">
         <UiTableCell>{{ c.name }}</UiTableCell>
         <UiTableCell><span class="text-text-muted">/{{ c.slug }}</span></UiTableCell>
         <UiTableCell align="right">
-          <UiButton variant="ghost" size="sm" class="!text-danger" @click="remove(c.id)">Delete</UiButton>
+          <UiButton variant="ghost" size="sm" class="!text-danger" @click="remove(c.id)">Xóa</UiButton>
         </UiTableCell>
       </UiTableRow>
     </UiTable>

@@ -48,12 +48,12 @@ onBeforeUnmount(() => editor.value?.destroy());
 <template>
   <div class="border border-subtle rounded-lg overflow-hidden">
     <div class="flex items-center gap-2 border-b border-subtle bg-surface-2 px-3 py-2">
-      <button type="button" class="text-xs px-2 py-1 rounded" :class="!preview ? 'bg-accent text-white' : 'text-text-muted'" @click="preview = false">Edit</button>
-      <button type="button" class="text-xs px-2 py-1 rounded" :class="preview ? 'bg-accent text-white' : 'text-text-muted'" @click="preview = true">Preview</button>
+      <button type="button" class="text-xs px-2 py-1 rounded" :class="!preview ? 'bg-accent text-white' : 'text-text-muted'" @click="preview = false">Sửa</button>
+      <button type="button" class="text-xs px-2 py-1 rounded" :class="preview ? 'bg-accent text-white' : 'text-text-muted'" @click="preview = true">Xem trước</button>
       <template v-if="!preview">
         <button type="button" class="text-xs text-text-muted hover:text-accent" @click="editor?.chain().focus().toggleBold().run()">B</button>
         <button type="button" class="text-xs text-text-muted hover:text-accent italic" @click="editor?.chain().focus().toggleItalic().run()">I</button>
-        <button type="button" class="text-xs text-text-muted hover:text-accent" :disabled="uploading" @click="onImagePick">Image</button>
+        <button type="button" class="text-xs text-text-muted hover:text-accent" :disabled="uploading" @click="onImagePick">Ảnh</button>
       </template>
       <span class="ml-auto text-xs text-text-muted">{{ (model || '').length }} / 50000</span>
     </div>

@@ -20,19 +20,19 @@ async function decrement(item: any) {
 
 <template>
   <UiContainer size="narrow" class="py-8">
-    <UiText as="h1" size="2xl" class="mb-8">Shopping Cart</UiText>
+    <UiText as="h1" size="2xl" class="mb-8">Giỏ hàng</UiText>
     <p
       v-if="cartStore.unavailable"
       class="mb-6 text-sm text-warning bg-warning/10 border border-warning/20 rounded-lg px-4 py-3"
     >
-      Cart could not be loaded because the server is temporarily unavailable.
+      Không thể tải giỏ hàng vì máy chủ tạm thời không khả dụng.
     </p>
     <UiEmptyState
       v-if="cartStore.items.length === 0"
-      title="Your cart is empty"
-      description="Browse our catalog and add components to your build."
+      title="Giỏ hàng trống"
+      description="Hãy xem danh mục và thêm linh kiện vào cấu hình của bạn."
     >
-      <template #action><UiButton to="/products" variant="primary">Continue Shopping</UiButton></template>
+      <template #action><UiButton to="/products" variant="primary">Tiếp tục mua sắm</UiButton></template>
     </UiEmptyState>
     <template v-else>
       <UiCard v-for="item in cartStore.items" :key="item.productId" padding="md" class="mb-4">
@@ -57,20 +57,12 @@ async function decrement(item: any) {
       </UiCard>
       <UiCard padding="lg" class="text-right">
         <div class="space-y-2 text-sm mb-4">
-          <div class="flex justify-between">
-            <span class="text-text-muted">Subtotal</span>
-            <span class="text-text-primary">{{ formatPrice(cartStore.subtotal) }}</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-text-muted">Tax (10%)</span>
-            <span class="text-text-primary">{{ formatPrice(cartStore.tax) }}</span>
-          </div>
           <div class="flex justify-between pt-2 border-t border-subtle font-semibold">
-            <span class="text-text-primary">Total</span>
+            <span class="text-text-primary">Tổng cộng</span>
             <UiText variant="accent" size="xl" class="font-bold">{{ formatPrice(cartStore.totalPrice) }}</UiText>
           </div>
         </div>
-        <UiButton to="/checkout" variant="primary" size="lg">Proceed to Checkout</UiButton>
+        <UiButton to="/checkout" variant="primary" size="lg">Tiến hành thanh toán</UiButton>
       </UiCard>
     </template>
   </UiContainer>
