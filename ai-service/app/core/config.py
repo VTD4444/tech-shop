@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     gemini_model: str = "gemini-3.5-flash"
     database_url: str = "postgresql://techshop:techshop_pass@localhost:5432/techshop"
     backend_api_url: str = "http://localhost:3000/api/v1"
+    frontend_url: str = "http://localhost:3001"
 
     model_config = SettingsConfigDict(env_file=str(ENV_FILE))
 

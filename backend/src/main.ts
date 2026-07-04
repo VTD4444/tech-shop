@@ -24,8 +24,12 @@ async function bootstrap() {
   app.setGlobalPrefix('api/v1');
   app.use(helmet());
   app.use(cookieParser());
+  const frontendOrigin = (process.env.FRONTEND_URL || 'http://localhost:3001').replace(
+    /\/+$/,
+    '',
+  );
   app.enableCors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:3001',
+    origin: frontendOrigin,
     credentials: true,
   });
 
