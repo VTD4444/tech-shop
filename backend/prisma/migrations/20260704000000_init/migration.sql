@@ -1,3 +1,6 @@
+-- Squashed baseline: full schema from prisma/schema.prisma (deploy with `npx prisma migrate deploy`).
+-- Replaces historical migrations through 20260703 (auth refactor, product detail, SePay, etc.).
+
 -- CreateSchema
 CREATE SCHEMA IF NOT EXISTS "public";
 
@@ -5,8 +8,12 @@ CREATE SCHEMA IF NOT EXISTS "public";
 CREATE TABLE "users" (
     "id" BIGSERIAL NOT NULL,
     "username" TEXT NOT NULL,
+    "full_name" TEXT NOT NULL,
     "email" TEXT NOT NULL,
-    "password_hash" TEXT NOT NULL,
+    "phone" TEXT,
+    "password_hash" TEXT,
+    "google_id" TEXT,
+    "auth_provider" TEXT NOT NULL DEFAULT 'local',
     "role" TEXT NOT NULL DEFAULT 'customer',
     "is_active" BOOLEAN NOT NULL DEFAULT true,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -74,6 +81,7 @@ CREATE TABLE "products" (
     "stock_quantity" INTEGER NOT NULL DEFAULT 0,
     "image_url" TEXT,
     "description" TEXT,
+    "long_description" TEXT,
     "is_pc_component" BOOLEAN NOT NULL DEFAULT false,
     "ai_tags" TEXT[],
     "status" TEXT NOT NULL DEFAULT 'active',
@@ -162,15 +170,32 @@ CREATE TABLE "wishlists" (
 );
 
 -- CreateTable
-CREATE TABLE "product_reviews" (
+CREATE TABLE "product_ratings" (
     "id" BIGSERIAL NOT NULL,
-    "user_id" BIGINT,
+    "user_id" BIGINT NOT NULL,
     "product_id" BIGINT NOT NULL,
+    "order_id" BIGINT,
     "rating" INTEGER NOT NULL,
-    "comment" TEXT,
+    "images" TEXT[] DEFAULT ARRAY[]::TEXT[],
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "product_reviews_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "product_ratings_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "product_comments" (
+    "id" BIGSERIAL NOT NULL,
+    "user_id" BIGINT NOT NULL,
+    "product_id" BIGINT NOT NULL,
+    "parent_id" BIGINT,
+    "content" TEXT NOT NULL,
+    "images" TEXT[] DEFAULT ARRAY[]::TEXT[],
+    "status" TEXT NOT NULL DEFAULT 'active',
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "product_comments_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -207,22 +232,20 @@ CREATE TABLE "order_items" (
 );
 
 -- CreateTable
-CREATE TABLE "vnpay_transactions" (
+CREATE TABLE "payment_transactions" (
     "id" BIGSERIAL NOT NULL,
     "order_id" BIGINT NOT NULL,
-    "vnpay_txn_ref" TEXT NOT NULL,
-    "vnpay_transaction_no" TEXT,
+    "provider" TEXT NOT NULL DEFAULT 'sepay',
+    "invoice_number" TEXT NOT NULL,
+    "external_txn_id" TEXT,
     "amount" DECIMAL(12,2) NOT NULL,
-    "bank_code" TEXT,
-    "response_code" TEXT,
     "status" TEXT NOT NULL DEFAULT 'processing',
-    "secure_hash" TEXT,
     "raw_response" JSONB,
     "payment_date" TIMESTAMP(3),
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "vnpay_transactions_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "payment_transactions_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -252,6 +275,12 @@ CREATE UNIQUE INDEX "users_username_key" ON "users"("username");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "users_phone_key" ON "users"("phone");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "users_google_id_key" ON "users"("google_id");
 
 -- CreateIndex
 CREATE INDEX "idx_users_email" ON "users"("email");
@@ -344,6 +373,24 @@ CREATE UNIQUE INDEX "cart_items_user_id_product_id_key" ON "cart_items"("user_id
 CREATE UNIQUE INDEX "wishlists_user_id_product_id_key" ON "wishlists"("user_id", "product_id");
 
 -- CreateIndex
+CREATE INDEX "idx_product_ratings_user_product" ON "product_ratings"("user_id", "product_id");
+
+-- CreateIndex
+CREATE INDEX "idx_product_ratings_product_created" ON "product_ratings"("product_id", "created_at");
+
+-- CreateIndex
+CREATE INDEX "idx_product_ratings_product_rating" ON "product_ratings"("product_id", "rating");
+
+-- CreateIndex
+CREATE INDEX "idx_product_comments_product_created" ON "product_comments"("product_id", "created_at");
+
+-- CreateIndex
+CREATE INDEX "idx_product_comments_parent" ON "product_comments"("parent_id");
+
+-- CreateIndex
+CREATE INDEX "idx_product_comments_product_status" ON "product_comments"("product_id", "status");
+
+-- CreateIndex
 CREATE INDEX "idx_orders_user_id" ON "orders"("user_id");
 
 -- CreateIndex
@@ -359,10 +406,10 @@ CREATE INDEX "idx_order_items_order_id" ON "order_items"("order_id");
 CREATE INDEX "idx_order_items_product_id" ON "order_items"("product_id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "vnpay_transactions_order_id_key" ON "vnpay_transactions"("order_id");
+CREATE UNIQUE INDEX "payment_transactions_order_id_key" ON "payment_transactions"("order_id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "vnpay_transactions_vnpay_txn_ref_key" ON "vnpay_transactions"("vnpay_txn_ref");
+CREATE UNIQUE INDEX "payment_transactions_invoice_number_key" ON "payment_transactions"("invoice_number");
 
 -- AddForeignKey
 ALTER TABLE "password_reset_tokens" ADD CONSTRAINT "password_reset_tokens_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -401,10 +448,22 @@ ALTER TABLE "wishlists" ADD CONSTRAINT "wishlists_user_id_fkey" FOREIGN KEY ("us
 ALTER TABLE "wishlists" ADD CONSTRAINT "wishlists_product_id_fkey" FOREIGN KEY ("product_id") REFERENCES "products"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "product_reviews" ADD CONSTRAINT "product_reviews_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "product_ratings" ADD CONSTRAINT "product_ratings_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "product_reviews" ADD CONSTRAINT "product_reviews_product_id_fkey" FOREIGN KEY ("product_id") REFERENCES "products"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "product_ratings" ADD CONSTRAINT "product_ratings_product_id_fkey" FOREIGN KEY ("product_id") REFERENCES "products"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "product_ratings" ADD CONSTRAINT "product_ratings_order_id_fkey" FOREIGN KEY ("order_id") REFERENCES "orders"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "product_comments" ADD CONSTRAINT "product_comments_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "product_comments" ADD CONSTRAINT "product_comments_product_id_fkey" FOREIGN KEY ("product_id") REFERENCES "products"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "product_comments" ADD CONSTRAINT "product_comments_parent_id_fkey" FOREIGN KEY ("parent_id") REFERENCES "product_comments"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "orders" ADD CONSTRAINT "orders_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -416,7 +475,7 @@ ALTER TABLE "order_items" ADD CONSTRAINT "order_items_order_id_fkey" FOREIGN KEY
 ALTER TABLE "order_items" ADD CONSTRAINT "order_items_product_id_fkey" FOREIGN KEY ("product_id") REFERENCES "products"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "vnpay_transactions" ADD CONSTRAINT "vnpay_transactions_order_id_fkey" FOREIGN KEY ("order_id") REFERENCES "orders"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "payment_transactions" ADD CONSTRAINT "payment_transactions_order_id_fkey" FOREIGN KEY ("order_id") REFERENCES "orders"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "saved_builds" ADD CONSTRAINT "saved_builds_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
