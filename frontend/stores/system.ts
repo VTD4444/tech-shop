@@ -18,29 +18,11 @@ export const useSystemStore = defineStore('system', () => {
     lastCheckedAt.value = new Date().toISOString();
   }
 
-  async function checkBackendHealth() {
-    try {
-      const { $api } = useNuxtApp();
-      const result: any = await $api('/health', { timeout: 5000 });
-      const health = result?.data ?? result;
-      if (health?.database === 'connected') {
-        markHealthy();
-        return true;
-      }
-      markDegraded('Máy chủ đang chạy nhưng cơ sở dữ liệu có thể đang ngoại tuyến.');
-      return false;
-    } catch {
-      markDegraded();
-      return false;
-    }
-  }
-
   return {
     apiDegraded,
     degradedMessage,
     lastCheckedAt,
     markDegraded,
     markHealthy,
-    checkBackendHealth,
   };
 });

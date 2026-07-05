@@ -65,6 +65,7 @@ export class PaymentsService {
       order_description: `Thanh toan don hang #${orderId}`,
       order_invoice_number: invoiceNumber,
       customer_id: userId,
+      payment_method: process.env.SEPAY_PAYMENT_METHOD || 'BANK_TRANSFER',
       success_url: appendInvoiceToUrl(successBase, invoiceNumber),
       error_url: appendInvoiceToUrl(errorBase, invoiceNumber),
       cancel_url: appendInvoiceToUrl(cancelBase, invoiceNumber),

@@ -1,6 +1,21 @@
 import * as crypto from 'crypto';
 
-/** Field order must match SePay docs — do not sort alphabetically. */
+export const SEPAY_FORM_FIELD_ORDER = [
+  'merchant',
+  'currency',
+  'order_amount',
+  'operation',
+  'order_description',
+  'order_invoice_number',
+  'customer_id',
+  'payment_method',
+  'success_url',
+  'error_url',
+  'cancel_url',
+  'signature',
+] as const;
+
+/** Field order for HMAC signature — do not sort alphabetically. */
 export const SEPAY_SIGNED_FIELDS = [
   'order_amount',
   'merchant',

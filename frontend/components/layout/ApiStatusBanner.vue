@@ -15,14 +15,14 @@ watch(apiDegraded, (degraded) => {
 async function retry() {
   retrying.value = true;
   try {
-    await systemStore.checkBackendHealth();
+    const productStore = useProductStore();
+    await Promise.all([
+      productStore.fetchCategories(),
+      productStore.fetchBrands(),
+      productStore.fetchProducts({ limit: 20 }),
+    ]);
     if (!systemStore.apiDegraded) {
-      const productStore = useProductStore();
-      await Promise.all([
-        productStore.fetchCategories(),
-        productStore.fetchBrands(),
-        productStore.fetchProducts({ limit: 20 }),
-      ]);
+      dismissed.value = true;
     }
   } finally {
     retrying.value = false;

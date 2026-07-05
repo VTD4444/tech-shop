@@ -1,3 +1,5 @@
+import { SEPAY_FORM_FIELD_ORDER } from '~/utils/sepay-fields';
+
 export function useSePayCheckout() {
   const { $api } = useNuxtApp();
 
@@ -17,11 +19,13 @@ export function useSePayCheckout() {
     form.action = actionUrl;
     form.style.display = 'none';
 
-    for (const [name, value] of Object.entries(fields)) {
+    for (const name of SEPAY_FORM_FIELD_ORDER) {
+      const value = fields[name];
+      if (value == null) continue;
       const input = document.createElement('input');
       input.type = 'hidden';
       input.name = name;
-      input.value = value ?? '';
+      input.value = value;
       form.appendChild(input);
     }
 
