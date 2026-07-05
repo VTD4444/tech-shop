@@ -151,7 +151,7 @@ async function placeOrderPayLater() {
           :disabled="!cartStore.items.length || payLaterLoading"
           @click="placeOrderAndPay"
         >
-          Thanh toán bằng SePay
+          Thanh toán
         </UiButton>
         <UiButton
           variant="secondary"

@@ -1,14 +1,17 @@
 <script setup lang="ts">
-import { CheckCircle, XCircle, Clock } from 'lucide-vue-next';
+import { CircleCheck, CircleX, Clock } from 'lucide-vue-next';
+
+definePageMeta({ ssr: false });
 
 const route = useRoute();
 const { $api } = useNuxtApp();
 
+type PaymentView = 'success' | 'pending' | 'cancel' | 'error' | 'failed';
+
 const loading = ref(true);
-const paid = ref(false);
+const view = ref<PaymentView>('failed');
 const message = ref('');
 const orderId = ref('');
-const pendingIpn = ref(false);
 const redirectStatus = (route.query.status as string) || '';
 const invoiceFromQuery =
   (route.query.invoice as string) ||
@@ -47,61 +50,80 @@ async function abandonIfNeeded() {
   }
 }
 
-try {
-  if (redirectStatus === 'cancel') {
-    if (invoice) {
-      const data: any = await $api(
-        `/payments/sepay/status?invoice=${encodeURIComponent(invoice)}`,
-      );
-      orderId.value = data.data?.orderId || '';
-      await abandonIfNeeded();
-    }
-    message.value =
-      'Bạn đã hủy thanh toán. Đơn hàng vẫn chờ thanh toán — bạn có thể thanh toán lại bất cứ lúc nào.';
-  } else if (redirectStatus === 'error') {
-    if (invoice) {
-      const data: any = await $api(
-        `/payments/sepay/status?invoice=${encodeURIComponent(invoice)}`,
-      );
-      orderId.value = data.data?.orderId || '';
-      await abandonIfNeeded();
-    }
-    message.value = 'Thanh toán thất bại hoặc bị từ chối. Bạn có thể thử thanh toán lại.';
-  } else if (invoice) {
-    const data: any = await $api(
-      `/payments/sepay/status?invoice=${encodeURIComponent(invoice)}`,
-    );
-    paid.value = data.data?.paid || false;
-    message.value = data.data?.message || '';
-    orderId.value = data.data?.orderId || '';
+async function fetchPaymentStatus() {
+  const data: any = await $api(
+    `/payments/sepay/status?invoice=${encodeURIComponent(invoice)}`,
+  );
+  orderId.value = data.data?.orderId || '';
+  return data.data ?? {};
+}
 
-    if (paid.value) {
+try {
+  if (invoice) {
+    const status = await fetchPaymentStatus();
+
+    if (status.paid) {
+      view.value = 'success';
       message.value = 'Cảm ơn bạn! Đơn hàng đã được thanh toán thành công.';
-    } else if (
-      redirectStatus === 'success' &&
-      data.data?.txnStatus === 'processing'
-    ) {
-      pendingIpn.value = true;
+    } else if (redirectStatus === 'cancel') {
+      await abandonIfNeeded();
+      view.value = 'cancel';
+      message.value =
+        'Bạn đã hủy thanh toán. Đơn hàng vẫn chờ thanh toán — bạn có thể thanh toán lại bất cứ lúc nào.';
+    } else if (redirectStatus === 'error') {
+      await abandonIfNeeded();
+      view.value = 'error';
+      message.value = 'Thanh toán thất bại hoặc bị từ chối. Bạn có thể thử thanh toán lại.';
+    } else if (redirectStatus === 'success' && status.txnStatus === 'processing') {
+      view.value = 'pending';
       message.value = pendingPaymentMessage();
-    } else if (data.data?.txnStatus === 'failed') {
+    } else if (status.txnStatus === 'failed') {
+      view.value = 'failed';
       message.value = 'Thanh toán không thành công. Bạn có thể thử thanh toán lại.';
+    } else {
+      view.value = 'failed';
+      message.value = status.message || 'Thanh toán chưa hoàn tất.';
     }
+  } else if (redirectStatus === 'cancel') {
+    view.value = 'cancel';
+    message.value =
+      'Bạn đã hủy thanh toán. Vui lòng kiểm tra trạng thái đơn hàng.';
+  } else if (redirectStatus === 'error') {
+    view.value = 'error';
+    message.value = 'Thanh toán thất bại hoặc bị từ chối.';
   } else if (redirectStatus === 'success') {
-    message.value = 'Thiếu mã hóa đơn thanh toán. Vui lòng kiểm tra trạng thái trong trang đơn hàng.';
+    view.value = 'pending';
+    message.value =
+      'Thiếu mã hóa đơn thanh toán. Vui lòng kiểm tra trạng thái trong trang đơn hàng.';
   } else {
+    view.value = 'failed';
     message.value = 'Thiếu mã hóa đơn thanh toán.';
   }
 } catch {
-  paid.value = false;
   if (redirectStatus === 'cancel') {
+    view.value = 'cancel';
     message.value =
       'Bạn đã hủy thanh toán. Vui lòng kiểm tra trạng thái đơn hàng.';
   } else {
+    view.value = 'failed';
     message.value = 'Xác minh thanh toán thất bại';
   }
 } finally {
   loading.value = false;
 }
+
+const pageTitle = computed(() => {
+  switch (view.value) {
+    case 'success':
+      return 'Thanh toán thành công!';
+    case 'pending':
+      return 'Đang xác nhận thanh toán';
+    case 'cancel':
+      return 'Đã hủy thanh toán';
+    default:
+      return 'Thanh toán chưa hoàn tất';
+  }
+});
 </script>
 
 <template>
@@ -110,37 +132,31 @@ try {
       <UiSkeleton class="w-16 h-16 rounded-full mx-auto mb-4" />
       <UiSkeleton class="h-8 w-48 mx-auto" />
     </div>
-    <UiCard v-else-if="paid" padding="lg" class="text-center">
-      <CheckCircle class="w-16 h-16 text-accent mx-auto mb-4" />
-      <UiText as="h1" size="2xl" class="mb-2">Thanh toán thành công!</UiText>
-      <UiText variant="muted" class="mb-6">{{ message }}</UiText>
-      <div class="flex flex-col sm:flex-row gap-3 justify-center">
-        <UiButton v-if="orderId" :to="`/orders/${orderId}`" variant="primary">
-          Xem đơn hàng #{{ orderId }}
-        </UiButton>
-        <UiButton to="/orders" variant="secondary">Tất cả đơn hàng</UiButton>
-      </div>
-    </UiCard>
-    <UiCard v-else-if="pendingIpn" padding="lg" class="text-center">
-      <Clock class="w-16 h-16 text-warning mx-auto mb-4" />
-      <UiText as="h1" size="2xl" class="mb-2">Đang xác nhận thanh toán</UiText>
-      <UiText variant="muted" class="mb-6">{{ message }}</UiText>
-      <div class="flex flex-col sm:flex-row gap-3 justify-center">
-        <UiButton v-if="orderId" :to="`/orders/${orderId}`" variant="primary">
-          Xem đơn hàng #{{ orderId }}
-        </UiButton>
-        <UiButton to="/orders" variant="secondary">Tất cả đơn hàng</UiButton>
-      </div>
-    </UiCard>
     <UiCard v-else padding="lg" class="text-center">
-      <XCircle class="w-16 h-16 text-danger mx-auto mb-4" />
-      <UiText as="h1" size="2xl" class="mb-2">
-        {{ redirectStatus === 'cancel' ? 'Đã hủy thanh toán' : 'Thanh toán chưa hoàn tất' }}
-      </UiText>
+      <CircleCheck
+        v-if="view === 'success'"
+        class="w-16 h-16 text-emerald-500 mx-auto mb-4"
+        aria-hidden="true"
+      />
+      <Clock
+        v-else-if="view === 'pending'"
+        class="w-16 h-16 text-warning mx-auto mb-4"
+        aria-hidden="true"
+      />
+      <CircleX
+        v-else
+        class="w-16 h-16 text-danger mx-auto mb-4"
+        aria-hidden="true"
+      />
+      <UiText as="h1" size="2xl" class="mb-2">{{ pageTitle }}</UiText>
       <UiText variant="muted" class="mb-6">{{ message }}</UiText>
       <div class="flex flex-col sm:flex-row gap-3 justify-center">
         <UiButton v-if="orderId" :to="`/orders/${orderId}`" variant="primary">
-          Thanh toán lại · Đơn #{{ orderId }}
+          {{
+            view === 'success'
+              ? `Xem đơn hàng #${orderId}`
+              : `Thanh toán lại · Đơn #${orderId}`
+          }}
         </UiButton>
         <UiButton to="/orders" variant="secondary">Tất cả đơn hàng</UiButton>
       </div>

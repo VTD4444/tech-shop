@@ -3,10 +3,7 @@ definePageMeta({ layout: 'admin', middleware: ['auth', 'admin'] });
 
 const { $api } = useNuxtApp();
 const { formatPrice } = useFormatPrice();
-const statusLabels: Record<string, string> = {
-  active: 'Đang bán',
-  discontinued: 'Ngừng kinh doanh',
-};
+const products = ref<any[]>([]);
 const loading = ref(true);
 
 try {
@@ -15,6 +12,11 @@ try {
 } finally {
   loading.value = false;
 }
+
+const statusLabels: Record<string, string> = {
+  active: 'Đang bán',
+  discontinued: 'Ngừng kinh doanh',
+};
 </script>
 
 <template>

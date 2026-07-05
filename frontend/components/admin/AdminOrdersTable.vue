@@ -27,10 +27,16 @@ const statusOptions = [
         <UiTableHead>Trạng thái</UiTableHead>
         <UiTableHead align="right">Số tiền</UiTableHead>
         <UiTableHead align="right">Thanh toán</UiTableHead>
+        <UiTableHead align="right">Chi tiết</UiTableHead>
       </template>
       <UiTableRow v-for="order in orders" :key="order.id">
         <UiTableCell>
-          <span class="text-accent font-mono text-xs">#{{ order.id }}</span>
+          <NuxtLink
+            :to="`/admin/orders/${order.id}`"
+            class="text-accent font-mono text-xs hover:underline"
+          >
+            #{{ order.id }}
+          </NuxtLink>
         </UiTableCell>
         <UiTableCell>
           <span class="text-text-muted text-sm">{{ order.user?.email || order.customerName }}</span>
@@ -48,6 +54,14 @@ const statusOptions = [
         </UiTableCell>
         <UiTableCell align="right">
           <PaymentStatusBadge :status="order.paymentStatus" />
+        </UiTableCell>
+        <UiTableCell align="right">
+          <NuxtLink
+            :to="`/admin/orders/${order.id}`"
+            class="text-accent text-sm hover:underline"
+          >
+            Xem
+          </NuxtLink>
         </UiTableCell>
       </UiTableRow>
     </UiTable>
