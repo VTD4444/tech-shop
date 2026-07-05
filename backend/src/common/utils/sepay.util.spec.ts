@@ -3,6 +3,8 @@ import {
   buildSepaySignData,
   signSepayCheckoutFields,
   appendInvoiceToUrl,
+  resolveSepayCallbackBase,
+  assertSepayCheckoutReady,
 } from './sepay.util';
 
 describe('sepay.util', () => {
@@ -93,5 +95,31 @@ describe('sepay.util', () => {
     );
     expect(url).toContain('status=success');
     expect(url).toContain('invoice=TS-1-99');
+  });
+
+  it('resolveSepayCallbackBase prefers FRONTEND_URL when env unset', () => {
+    const prev = process.env.FRONTEND_URL;
+    process.env.FRONTEND_URL = 'https://shop.example.com';
+    delete process.env.SEPAY_SUCCESS_URL;
+    expect(resolveSepayCallbackBase('SEPAY_SUCCESS_URL', '/payments/return?status=success')).toBe(
+      'https://shop.example.com/payments/return?status=success',
+    );
+    process.env.FRONTEND_URL = prev;
+  });
+
+  it('assertSepayCheckoutReady rejects sandbox merchant on production checkout', () => {
+    const prevEnv = process.env.SEPAY_ENV;
+    const prevUrl = process.env.SEPAY_CHECKOUT_URL;
+    process.env.SEPAY_ENV = 'production';
+    delete process.env.SEPAY_CHECKOUT_URL;
+    expect(() =>
+      assertSepayCheckoutReady('SP-TEST-ABC', 'spsk_test_xyz', {
+        success: 'https://shop.example.com/payments/return?status=success',
+        error: 'https://shop.example.com/payments/return?status=error',
+        cancel: 'https://shop.example.com/payments/return?status=cancel',
+      }),
+    ).toThrow(/sandbox/i);
+    process.env.SEPAY_ENV = prevEnv;
+    process.env.SEPAY_CHECKOUT_URL = prevUrl;
   });
 });

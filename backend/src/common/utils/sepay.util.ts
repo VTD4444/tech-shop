@@ -60,6 +60,76 @@ export function getSepayCheckoutUrl(): string {
   return 'https://pay-sandbox.sepay.vn/v1/checkout/init';
 }
 
+export function isSepayProductionCheckout(): boolean {
+  const url = getSepayCheckoutUrl();
+  return url.includes('pay.sepay.vn') && !url.includes('sandbox');
+}
+
+export function resolveSepayCallbackBase(
+  envKey: 'SEPAY_SUCCESS_URL' | 'SEPAY_ERROR_URL' | 'SEPAY_CANCEL_URL',
+  path: string,
+): string {
+  const explicit = process.env[envKey];
+  if (explicit) return explicit;
+
+  const frontend = (process.env.FRONTEND_URL || '').replace(/\/+$/, '');
+  if (frontend) return `${frontend}${path}`;
+
+  return `http://localhost:3001${path}`;
+}
+
+/** Fail fast with a clear message before redirecting the user to SePay. */
+export function assertSepayCheckoutReady(
+  merchantId: string,
+  secretKey: string,
+  callbacks: { success: string; error: string; cancel: string },
+): void {
+  const production = isSepayProductionCheckout();
+  const sandboxMerchant =
+    merchantId.toUpperCase().includes('TEST') || secretKey.startsWith('spsk_test');
+
+  if (production && sandboxMerchant) {
+    throw new Error(
+      'SePay production đang dùng merchant/secret sandbox (SP-TEST / spsk_test). ' +
+        'Vào my.sepay.vn → bật Production → cập nhật SEPAY_MERCHANT_ID và SEPAY_SECRET_KEY trên Render.',
+    );
+  }
+
+  if (!production && !sandboxMerchant && merchantId && secretKey) {
+    throw new Error(
+      'Merchant production không được dùng với checkout sandbox. ' +
+        'Đặt SEPAY_ENV=production và SEPAY_CHECKOUT_URL=https://pay.sepay.vn/v1/checkout/init.',
+    );
+  }
+
+  for (const [label, raw] of [
+    ['SEPAY_SUCCESS_URL', callbacks.success],
+    ['SEPAY_ERROR_URL', callbacks.error],
+    ['SEPAY_CANCEL_URL', callbacks.cancel],
+  ] as const) {
+    let parsed: URL;
+    try {
+      parsed = new URL(raw);
+    } catch {
+      throw new Error(`${label} không phải URL hợp lệ.`);
+    }
+
+    if (!production) continue;
+
+    if (parsed.protocol !== 'https:') {
+      throw new Error(
+        `${label} phải dùng HTTPS trên production (hiện tại: ${parsed.protocol}//${parsed.host}).`,
+      );
+    }
+    if (['localhost', '127.0.0.1'].includes(parsed.hostname)) {
+      throw new Error(
+        `${label} không được trỏ localhost trên production. ` +
+          'Cập nhật URL Vercel, ví dụ https://your-app.vercel.app/payments/return?status=success',
+      );
+    }
+  }
+}
+
 export function buildInvoiceNumber(orderId: string | number | bigint): string {
   const suffix = crypto.randomBytes(3).toString('hex');
   return `TS-${orderId}-${Date.now()}-${suffix}`;

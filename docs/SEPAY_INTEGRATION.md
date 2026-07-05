@@ -186,6 +186,7 @@ SePay production requires **public** success/error/cancel domains — localhost 
 
 | Symptom | Likely cause | Fix |
 |---------|--------------|-----|
+| “Yêu cầu không hợp lệ” on SePay page | Sandbox merchant/secret on production checkout, or callback URLs still `localhost` / HTTP | Production keys from my.sepay.vn; HTTPS public URLs on Render (`SEPAY_*_URL` or `FRONTEND_URL`) |
 | “SePay is not configured” | Empty merchant/secret | Set `SEPAY_MERCHANT_ID` and `SEPAY_SECRET_KEY`, restart backend |
 | Invalid signature on SePay page | Wrong secret or field order | Re-copy credentials; do not reorder signed fields |
 | Paid on SePay but app shows pending | IPN never reached backend | Use ngrok; register IPN URL |

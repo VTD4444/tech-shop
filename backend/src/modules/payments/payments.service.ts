@@ -9,8 +9,10 @@ import { PrismaService } from '../prisma/prisma.service';
 import { MailService } from '../mail/mail.service';
 import {
   appendInvoiceToUrl,
+  assertSepayCheckoutReady,
   buildInvoiceNumber,
   getSepayCheckoutUrl,
+  resolveSepayCallbackBase,
   signSepayCheckoutFields,
 } from '../../common/utils/sepay.util';
 
@@ -46,16 +48,34 @@ export class PaymentsService {
 
     const invoiceNumber = buildInvoiceNumber(orderId);
     const orderAmount = String(Math.round(Number(order.totalAmount)));
+    if (Number(orderAmount) <= 0) {
+      throw new BadRequestException('Order amount must be greater than 0');
+    }
 
-    const successBase =
-      process.env.SEPAY_SUCCESS_URL ||
-      'http://localhost:3001/payments/return?status=success';
-    const errorBase =
-      process.env.SEPAY_ERROR_URL ||
-      'http://localhost:3001/payments/return?status=error';
-    const cancelBase =
-      process.env.SEPAY_CANCEL_URL ||
-      'http://localhost:3001/payments/return?status=cancel';
+    const successBase = resolveSepayCallbackBase(
+      'SEPAY_SUCCESS_URL',
+      '/payments/return?status=success',
+    );
+    const errorBase = resolveSepayCallbackBase(
+      'SEPAY_ERROR_URL',
+      '/payments/return?status=error',
+    );
+    const cancelBase = resolveSepayCallbackBase(
+      'SEPAY_CANCEL_URL',
+      '/payments/return?status=cancel',
+    );
+
+    try {
+      assertSepayCheckoutReady(merchantId, secretKey, {
+        success: successBase,
+        error: errorBase,
+        cancel: cancelBase,
+      });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Invalid SePay configuration';
+      this.logger.warn(`SePay config rejected: ${message}`);
+      throw new BadRequestException(message);
+    }
 
     const fields: Record<string, string> = {
       merchant: merchantId,
