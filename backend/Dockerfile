@@ -1,5 +1,6 @@
 FROM node:22-alpine AS builder
 WORKDIR /app
+ENV DATABASE_URL=postgresql://build:build@127.0.0.1:5432/build
 COPY package*.json ./
 RUN npm ci
 COPY . .
