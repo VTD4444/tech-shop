@@ -30,6 +30,23 @@ export const SEPAY_SIGNED_FIELDS = [
   'cancel_url',
 ] as const;
 
+/** Strip accidental quotes copied from Render/env UI into values. */
+export function stripEnvQuotes(value: string | undefined): string {
+  if (!value) return '';
+  const trimmed = value.trim();
+  if (
+    (trimmed.startsWith('"') && trimmed.endsWith('"')) ||
+    (trimmed.startsWith("'") && trimmed.endsWith("'"))
+  ) {
+    return trimmed.slice(1, -1);
+  }
+  return trimmed;
+}
+
+export function isSepayDebugEnabled(): boolean {
+  return process.env.SEPAY_DEBUG === 'true' || process.env.SEPAY_DEBUG === '1';
+}
+
 export function buildSepaySignData(fields: Record<string, string>): string {
   const parts: string[] = [];
   for (const field of SEPAY_SIGNED_FIELDS) {
@@ -52,7 +69,7 @@ export function signSepayCheckoutFields(
 
 export function getSepayCheckoutUrl(): string {
   if (process.env.SEPAY_CHECKOUT_URL) {
-    return process.env.SEPAY_CHECKOUT_URL;
+    return stripEnvQuotes(process.env.SEPAY_CHECKOUT_URL);
   }
   if (process.env.SEPAY_ENV === 'production') {
     return 'https://pay.sepay.vn/v1/checkout/init';
@@ -69,7 +86,7 @@ export function resolveSepayCallbackBase(
   envKey: 'SEPAY_SUCCESS_URL' | 'SEPAY_ERROR_URL' | 'SEPAY_CANCEL_URL',
   path: string,
 ): string {
-  const explicit = process.env[envKey];
+  const explicit = stripEnvQuotes(process.env[envKey]);
   if (explicit) return explicit;
 
   const frontend = (process.env.FRONTEND_URL || '').replace(/\/+$/, '');
@@ -131,7 +148,7 @@ export function assertSepayCheckoutReady(
 }
 
 export function resolveSepayPaymentMethod(): string | undefined {
-  const explicit = process.env.SEPAY_PAYMENT_METHOD?.trim();
+  const explicit = stripEnvQuotes(process.env.SEPAY_PAYMENT_METHOD);
   if (explicit === '') return undefined;
   if (explicit) return explicit;
   // Sandbox often requires an explicit method; production merchants may only enable CARD/NAPAS.
@@ -150,4 +167,48 @@ export function appendInvoiceToUrl(baseUrl: string, invoiceNumber: string): stri
   const url = new URL(baseUrl);
   url.searchParams.set('invoice', invoiceNumber);
   return url.toString();
+}
+
+/** Safe payload for logs — never includes secret key or full signature. */
+export function buildSepayCheckoutDebugInfo(
+  fields: Record<string, string>,
+  secretKey: string,
+) {
+  const signedString = buildSepaySignData(fields);
+  const signFieldNames = SEPAY_SIGNED_FIELDS.filter((f) => fields[f] != null);
+
+  const urlChecks = ['success_url', 'error_url', 'cancel_url'].map((key) => {
+    const raw = fields[key] ?? '';
+    const issues: string[] = [];
+    if (raw !== raw.trim()) issues.push('has_leading_or_trailing_whitespace');
+    if (raw.startsWith('"') || raw.endsWith('"')) issues.push('has_quote_chars');
+    try {
+      const u = new URL(raw);
+      return { key, host: u.host, protocol: u.protocol, issues };
+    } catch {
+      return { key, host: '(invalid)', protocol: '', issues: ['invalid_url', ...issues] };
+    }
+  });
+
+  return {
+    sepayEnv: process.env.SEPAY_ENV ?? '(unset)',
+    checkoutUrl: getSepayCheckoutUrl(),
+    productionCheckout: isSepayProductionCheckout(),
+    merchantId: fields.merchant,
+    secretKeyPrefix: secretKey ? `${secretKey.slice(0, 8)}...` : '(empty)',
+    secretKeyKind: secretKey.startsWith('spsk_test')
+      ? 'sandbox'
+      : secretKey.startsWith('spsk_live')
+        ? 'live'
+        : 'unknown',
+    orderAmount: fields.order_amount,
+    invoiceNumber: fields.order_invoice_number,
+    paymentMethod: fields.payment_method ?? '(omitted)',
+    customerId: fields.customer_id,
+    signFieldNames,
+    signedStringLength: signedString.length,
+    signatureLength: fields.signature?.length ?? 0,
+    urlChecks,
+    ...(isSepayDebugEnabled() ? { signedString } : {}),
+  };
 }

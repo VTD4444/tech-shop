@@ -10,10 +10,12 @@ import { MailService } from '../mail/mail.service';
 import {
   assertSepayCheckoutReady,
   buildInvoiceNumber,
+  buildSepayCheckoutDebugInfo,
   getSepayCheckoutUrl,
   resolveSepayCallbackBase,
   resolveSepayPaymentMethod,
   signSepayCheckoutFields,
+  stripEnvQuotes,
 } from '../../common/utils/sepay.util';
 
 @Injectable()
@@ -40,8 +42,8 @@ export class PaymentsService {
       throw new BadRequestException('Order is already paid');
     }
 
-    const merchantId = process.env.SEPAY_MERCHANT_ID || '';
-    const secretKey = process.env.SEPAY_SECRET_KEY || '';
+    const merchantId = stripEnvQuotes(process.env.SEPAY_MERCHANT_ID);
+    const secretKey = stripEnvQuotes(process.env.SEPAY_SECRET_KEY);
     if (!merchantId || !secretKey) {
       throw new BadRequestException('SePay is not configured');
     }
@@ -98,6 +100,11 @@ export class PaymentsService {
 
     fields.signature = signSepayCheckoutFields(fields, secretKey);
 
+    const debugInfo = buildSepayCheckoutDebugInfo(fields, secretKey);
+    this.logger.log(
+      `SePay checkout init orderId=${orderId} invoice=${invoiceNumber} ${JSON.stringify(debugInfo)}`,
+    );
+
     if (order.paymentTxn) {
       await this.prisma.paymentTransaction.update({
         where: { id: order.paymentTxn.id },
@@ -127,6 +134,9 @@ export class PaymentsService {
       actionUrl: getSepayCheckoutUrl(),
       fields,
       invoiceNumber,
+      ...(process.env.SEPAY_DEBUG === 'true' || process.env.SEPAY_DEBUG === '1'
+        ? { debug: debugInfo }
+        : {}),
     };
   }
 

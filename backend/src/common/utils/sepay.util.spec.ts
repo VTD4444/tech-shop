@@ -5,6 +5,7 @@ import {
   appendInvoiceToUrl,
   resolveSepayCallbackBase,
   assertSepayCheckoutReady,
+  stripEnvQuotes,
 } from './sepay.util';
 
 describe('sepay.util', () => {
@@ -105,6 +106,10 @@ describe('sepay.util', () => {
       'https://shop.example.com/payments/return?status=success',
     );
     process.env.FRONTEND_URL = prev;
+  });
+
+  it('stripEnvQuotes removes wrapping quotes from env values', () => {
+    expect(stripEnvQuotes('"https://example.com/success"')).toBe('https://example.com/success');
   });
 
   it('assertSepayCheckoutReady rejects sandbox merchant on production checkout', () => {
