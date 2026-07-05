@@ -5,8 +5,38 @@ on:
     branches: [main, master]
   pull_request:
 
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      backend: ${{ steps.filter.outputs.backend }}
+      frontend: ${{ steps.filter.outputs.frontend }}
+      ai-service: ${{ steps.filter.outputs.ai-service }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            backend:
+              - 'backend/**'
+              - '.github/workflows/ci.yml'
+              - '.github/workflows/cd.yml'
+            frontend:
+              - 'frontend/**'
+              - '.github/workflows/ci.yml'
+            ai-service:
+              - 'ai-service/**'
+              - '.github/workflows/ci.yml'
+              - '.github/workflows/cd.yml'
+
   backend:
+    needs: changes
+    if: needs.changes.outputs.backend == 'true'
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -27,37 +57,99 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Backend install & build
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+      - name: Install, migrate, test, build
         working-directory: backend
         env:
           DATABASE_URL: postgresql://techshop:techshop_pass@localhost:5432/techshop
+          JWT_SECRET: ci-jwt-secret
+          JWT_REFRESH_SECRET: ci-jwt-refresh-secret
         run: |
           npm ci
-          npx prisma db push
+          npx prisma migrate deploy
+          npm run test
           npm run build
 
   frontend:
+    needs: changes
+    if: needs.changes.outputs.frontend == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Frontend install & build
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install, test, build
         working-directory: frontend
+        env:
+          NUXT_PUBLIC_API_BASE_URL: https://example.com/api/v1
+          NUXT_PUBLIC_AI_API_URL: /api/ai
         run: |
           npm ci
+          npm run test
           npm run build
 
   ai-service:
+    needs: changes
+    if: needs.changes.outputs.ai-service == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: AI service install
+          cache: pip
+          cache-dependency-path: ai-service/requirements.txt
+      - name: Install and verify import
         working-directory: ai-service
         run: |
           pip install -r requirements.txt
           python -c "from app.main import app; print('AI service OK')"
+
+  docker-build-check:
+    needs: changes
+    if: needs.changes.outputs.backend == 'true' || needs.changes.outputs.ai-service == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build backend image
+        if: needs.changes.outputs.backend == 'true'
+        run: docker build -t techshop-backend:ci ./backend
+      - name: Build AI service image
+        if: needs.changes.outputs.ai-service == 'true'
+        run: docker build -t techshop-ai:ci ./ai-service
+
+  ci-success:
+    needs:
+      - changes
+      - backend
+      - frontend
+      - ai-service
+      - docker-build-check
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify required jobs
+        env:
+          BACKEND_REQUIRED: ${{ needs.changes.outputs.backend }}
+          FRONTEND_REQUIRED: ${{ needs.changes.outputs.frontend }}
+          AI_REQUIRED: ${{ needs.changes.outputs.ai-service }}
+          DOCKER_REQUIRED: ${{ needs.changes.outputs.backend == 'true' || needs.changes.outputs.ai-service == 'true' }}
+        run: |
+          check() {
+            local name="$1"
+            local required="$2"
+            local result="$3"
+            if [ "$required" = "true" ] && [ "$result" != "success" ] && [ "$result" != "skipped" ]; then
+              echo "$name failed (result=$result)"
+              exit 1
+            fi
+          }
+          check backend "$BACKEND_REQUIRED" "${{ needs.backend.result }}"
+          check frontend "$FRONTEND_REQUIRED" "${{ needs.frontend.result }}"
+          check ai-service "$AI_REQUIRED" "${{ needs.ai-service.result }}"
+          check docker-build-check "$DOCKER_REQUIRED" "${{ needs.docker-build-check.result }}"
+          echo "All required CI jobs passed"

@@ -174,6 +174,76 @@ Full guide: **[RESEND_INTEGRATION.md](./RESEND_INTEGRATION.md)**
 
 Free tier is limited by RPM/TPM/RPD (not dollars). `max_output_tokens` is a per-response ceiling (8192); billing/quota counts **actual tokens used**. Recommend falls back to rule-based suggestions when Gemini quota is exceeded; Chat shows an error or falls back to non-stream `/advisor/chat`.
 
+## 10. CI/CD (GitHub Actions)
+
+Pipeline overview:
+
+| Workflow | Trigger | Purpose |
+|----------|---------|---------|
+| [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) | PR + push `main` | Path-filtered test, migrate, build, Docker build check |
+| [`.github/workflows/cd.yml`](../.github/workflows/cd.yml) | push `main` | Push Docker images to GHCR, trigger Render deploy hooks |
+| [`.github/workflows/uptime.yml`](../.github/workflows/uptime.yml) | cron 5 min | Ping production health URLs |
+
+```mermaid
+flowchart LR
+  PR[PR_or_push] --> CI[CI_test_build]
+  Main[push_main] --> CI
+  CI --> CD[CD_GHCR_Render]
+  Main --> Vercel[Vercel_auto_deploy]
+```
+
+### GitHub Secrets (repository Settings → Secrets)
+
+| Secret | Required | Purpose |
+|--------|----------|---------|
+| `RENDER_DEPLOY_HOOK_BACKEND` | Recommended | POST after backend image push |
+| `RENDER_DEPLOY_HOOK_AI` | Recommended | POST after AI image push |
+| `UPTIME_URLS` | Optional | Pipe-separated URLs, e.g. `https://api.example.com/api/v1/health\|https://app.vercel.app` |
+| `SENTRY_AUTH_TOKEN` | Optional | Sentry release tracking from CD |
+
+`GITHUB_TOKEN` is provided automatically for GHCR push.
+
+### Render (Docker from GHCR)
+
+1. Create **Registry Credential** in Render: GitHub PAT with `read:packages`.
+2. Switch each Web Service to **Deploy from image**: `ghcr.io/<github-user>/techshop-backend:latest` (and `techshop-ai`).
+3. Health checks: backend `/api/v1/health`, AI `/api/v1/advisor/health` (timeout ≥ 30s on free tier).
+4. Copy deploy hook URLs → GitHub Secrets above.
+5. Optional: apply [`render.yaml`](../render.yaml) as Blueprint (replace `YOUR_GITHUB_USERNAME`).
+
+Migrations run automatically on container start via [`backend/docker-entrypoint.sh`](../backend/docker-entrypoint.sh).
+
+### Vercel (frontend)
+
+1. Connect GitHub repo → **Root Directory**: `frontend`
+2. **Production Branch**: `main`
+3. Environment variables (Production):
+
+```env
+NUXT_PUBLIC_API_BASE_URL=https://YOUR-BACKEND.onrender.com/api/v1
+NUXT_PUBLIC_AI_API_URL=https://YOUR-AI.onrender.com/api/v1
+NUXT_PUBLIC_SENTRY_DSN=
+```
+
+Vercel deploys automatically on push to `main` when Git integration is enabled (no extra CD job required).
+
+### Monitoring (Sentry)
+
+Set on Render (backend) and Vercel (frontend):
+
+| Service | Variable |
+|---------|----------|
+| Backend | `SENTRY_DSN`, `NODE_ENV=production` |
+| Frontend | `NUXT_PUBLIC_SENTRY_DSN` |
+
+### Branch protection (`main`)
+
+In GitHub → Settings → Branches → Add rule:
+
+- Require pull request before merging (recommended)
+- Require status check: **ci-success** (job `Verify required jobs` in CI workflow)
+- Do not allow bypassing for admins (optional)
+
 ## npm scripts
 
 ### Backend
@@ -203,3 +273,4 @@ Free tier is limited by RPM/TPM/RPD (not dollars). `max_output_tokens` is a per-
 | [SETUP_PRODUCTION.md](./SETUP_PRODUCTION.md) | Production checklist |
 | [API.md](./API.md) | REST API reference |
 | [ARCHITECTURE.md](./ARCHITECTURE.md) | System design |
+| [`render.yaml`](../render.yaml) | Render Docker Blueprint |
