@@ -25,6 +25,13 @@ export class PaymentsController {
 
   @Public()
   @Throttle({ default: { limit: 30, ttl: 60000 } })
+  @Post('sepay/abandon')
+  abandonCheckout(@Body('invoice') invoice: string) {
+    return this.paymentsService.abandonCheckout(invoice);
+  }
+
+  @Public()
+  @Throttle({ default: { limit: 30, ttl: 60000 } })
   @Post('sepay/ipn')
   handleIpn(@Body() body: Record<string, any>, @Req() req: Request) {
     const clientIp = req.ip || req.socket.remoteAddress;

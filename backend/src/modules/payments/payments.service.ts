@@ -154,6 +154,35 @@ export class PaymentsService {
     };
   }
 
+  /** User left SePay without paying — release processing txn so they can retry. */
+  async abandonCheckout(invoiceNumber: string) {
+    if (!invoiceNumber) {
+      return { abandoned: false, orderId: '', txnStatus: '' };
+    }
+
+    const txn = await this.prisma.paymentTransaction.findUnique({
+      where: { invoiceNumber },
+    });
+    if (!txn || txn.status !== 'processing') {
+      return {
+        abandoned: false,
+        orderId: txn?.orderId.toString() ?? '',
+        txnStatus: txn?.status ?? '',
+      };
+    }
+
+    await this.prisma.paymentTransaction.update({
+      where: { id: txn.id },
+      data: { status: 'failed' },
+    });
+
+    return {
+      abandoned: true,
+      orderId: txn.orderId.toString(),
+      txnStatus: 'failed',
+    };
+  }
+
   /** Read-only status for frontend after SePay redirect */
   async getReturnStatus(invoiceNumber: string) {
     if (!invoiceNumber) {
