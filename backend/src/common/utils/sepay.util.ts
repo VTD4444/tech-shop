@@ -130,9 +130,20 @@ export function assertSepayCheckoutReady(
   }
 }
 
+export function resolveSepayPaymentMethod(): string | undefined {
+  const explicit = process.env.SEPAY_PAYMENT_METHOD?.trim();
+  if (explicit === '') return undefined;
+  if (explicit) return explicit;
+  // Sandbox often requires an explicit method; production merchants may only enable CARD/NAPAS.
+  if (process.env.SEPAY_ENV === 'sandbox' || getSepayCheckoutUrl().includes('sandbox')) {
+    return 'BANK_TRANSFER';
+  }
+  return undefined;
+}
+
 export function buildInvoiceNumber(orderId: string | number | bigint): string {
-  const suffix = crypto.randomBytes(3).toString('hex');
-  return `TS-${orderId}-${Date.now()}-${suffix}`;
+  const suffix = crypto.randomBytes(4).toString('hex');
+  return `INV${orderId}${Date.now()}${suffix}`;
 }
 
 export function appendInvoiceToUrl(baseUrl: string, invoiceNumber: string): string {

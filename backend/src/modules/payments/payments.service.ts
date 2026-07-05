@@ -8,11 +8,11 @@ import { Prisma } from '../../generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { MailService } from '../mail/mail.service';
 import {
-  appendInvoiceToUrl,
   assertSepayCheckoutReady,
   buildInvoiceNumber,
   getSepayCheckoutUrl,
   resolveSepayCallbackBase,
+  resolveSepayPaymentMethod,
   signSepayCheckoutFields,
 } from '../../common/utils/sepay.util';
 
@@ -77,6 +77,8 @@ export class PaymentsService {
       throw new BadRequestException(message);
     }
 
+    const paymentMethod = resolveSepayPaymentMethod();
+
     const fields: Record<string, string> = {
       merchant: merchantId,
       currency: 'VND',
@@ -84,12 +86,15 @@ export class PaymentsService {
       operation: 'PURCHASE',
       order_description: `Thanh toan don hang #${orderId}`,
       order_invoice_number: invoiceNumber,
-      customer_id: userId,
-      payment_method: process.env.SEPAY_PAYMENT_METHOD || 'BANK_TRANSFER',
-      success_url: appendInvoiceToUrl(successBase, invoiceNumber),
-      error_url: appendInvoiceToUrl(errorBase, invoiceNumber),
-      cancel_url: appendInvoiceToUrl(cancelBase, invoiceNumber),
+      customer_id: `CUST_${userId}`,
+      success_url: successBase,
+      error_url: errorBase,
+      cancel_url: cancelBase,
     };
+
+    if (paymentMethod) {
+      fields.payment_method = paymentMethod;
+    }
 
     fields.signature = signSepayCheckoutFields(fields, secretKey);
 

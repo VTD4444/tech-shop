@@ -84,7 +84,7 @@ describe('sepay.util', () => {
   it('buildInvoiceNumber is unique per call', () => {
     const a = buildInvoiceNumber(42);
     const b = buildInvoiceNumber(42);
-    expect(a).toMatch(/^TS-42-\d+-[a-f0-9]+$/);
+    expect(a).toMatch(/^INV42\d+[a-f0-9]{8}$/);
     expect(a).not.toBe(b);
   });
 

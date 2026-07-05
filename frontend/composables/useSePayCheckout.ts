@@ -9,9 +9,14 @@ export function useSePayCheckout() {
     });
     const actionUrl = res.data?.actionUrl as string | undefined;
     const fields = res.data?.fields as Record<string, string> | undefined;
+    const invoiceNumber = res.data?.invoiceNumber as string | undefined;
 
     if (!actionUrl || !fields) {
       throw new Error('Không có dữ liệu thanh toán SePay');
+    }
+
+    if (invoiceNumber) {
+      sessionStorage.setItem('sepay_pending_invoice', invoiceNumber);
     }
 
     const form = document.createElement('form');

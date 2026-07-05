@@ -10,7 +10,17 @@ const message = ref('');
 const orderId = ref('');
 const pendingIpn = ref(false);
 const redirectStatus = (route.query.status as string) || '';
-const invoice = (route.query.invoice as string) || '';
+const invoiceFromQuery =
+  (route.query.invoice as string) ||
+  (route.query.order_invoice_number as string) ||
+  '';
+const invoiceFromSession =
+  import.meta.client ? sessionStorage.getItem('sepay_pending_invoice') || '' : '';
+const invoice = invoiceFromQuery || invoiceFromSession;
+
+if (import.meta.client && invoiceFromSession) {
+  sessionStorage.removeItem('sepay_pending_invoice');
+}
 
 try {
   if (invoice) {
