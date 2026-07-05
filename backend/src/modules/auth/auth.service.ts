@@ -3,6 +3,7 @@ import {
   ConflictException,
   UnauthorizedException,
   BadRequestException,
+  Logger,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
@@ -10,6 +11,7 @@ import * as crypto from 'crypto';
 import { Profile } from 'passport-google-oauth20';
 import { PrismaService } from '../prisma/prisma.service';
 import { MailService } from '../mail/mail.service';
+import { stripEnvQuotes } from '../../common/utils/sepay.util';
 
 type SessionUser = {
   id: bigint;
@@ -22,6 +24,8 @@ type SessionUser = {
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService,
@@ -187,7 +191,7 @@ export class AuthService {
     if (!user) {
       return { message: 'If the email exists, a reset link was sent' };
     }
-    if (!user.passwordHash) {
+    if (!user.isActive) {
       return { message: 'If the email exists, a reset link was sent' };
     }
 
@@ -200,11 +204,17 @@ export class AuthService {
       data: { userId: user.id, tokenHash, expiresAt },
     });
 
-    const frontend = process.env.FRONTEND_URL || 'http://localhost:3001';
-    await this.mailService.sendPasswordReset(
-      user.email,
-      `${frontend}/reset-password?token=${rawToken}`,
-    );
+    const frontend =
+      stripEnvQuotes(process.env.FRONTEND_URL) || 'http://localhost:3001';
+    const resetUrl = `${frontend.replace(/\/+$/, '')}/reset-password?token=${rawToken}`;
+    const sent = await this.mailService.sendPasswordReset(user.email, resetUrl);
+
+    if (!sent) {
+      this.logger.error(
+        `Password reset email not sent for user ${user.id} — check RESEND_API_KEY, MAIL_FROM, FRONTEND_URL on server`,
+      );
+    }
+
     return { message: 'If the email exists, a reset link was sent' };
   }
 

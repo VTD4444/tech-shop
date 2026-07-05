@@ -13,7 +13,16 @@ async function create(payload: Record<string, unknown>) {
 
 <template>
   <div>
-    <UiText as="h1" size="2xl" class="mb-6">Sản phẩm mới</UiText>
-    <AdminProductForm @submit="create" />
+    <NuxtLink
+      to="/admin/products"
+      class="text-accent text-sm hover:underline mb-2 inline-block"
+    >
+      ← Danh sách sản phẩm
+    </NuxtLink>
+    <UiText as="h1" size="2xl" class="mb-1">Sản phẩm mới</UiText>
+    <UiText variant="muted" size="sm" class="mb-6">
+      Thêm sản phẩm mới vào cửa hàng
+    </UiText>
+    <AdminProductForm submit-label="Tạo sản phẩm" @submit="create" />
   </div>
 </template>
