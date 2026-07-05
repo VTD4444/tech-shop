@@ -12,10 +12,12 @@ import {
   buildInvoiceNumber,
   buildSepayCheckoutDebugInfo,
   getSepayCheckoutUrl,
+  probeSepayCheckoutInit,
   resolveSepayCallbackBase,
   resolveSepayPaymentMethod,
   signSepayCheckoutFields,
   stripEnvQuotes,
+  isSepayDebugEnabled,
 } from '../../common/utils/sepay.util';
 
 @Injectable()
@@ -104,6 +106,18 @@ export class PaymentsService {
     this.logger.log(
       `SePay checkout init orderId=${orderId} invoice=${invoiceNumber} ${JSON.stringify(debugInfo)}`,
     );
+
+    if (isSepayDebugEnabled()) {
+      try {
+        const probe = await probeSepayCheckoutInit(fields);
+        this.logger.warn(`SePay probe result: ${JSON.stringify(probe)}`);
+        Object.assign(debugInfo, { probe });
+      } catch (err) {
+        this.logger.warn(
+          `SePay probe failed: ${err instanceof Error ? err.message : String(err)}`,
+        );
+      }
+    }
 
     if (order.paymentTxn) {
       await this.prisma.paymentTransaction.update({

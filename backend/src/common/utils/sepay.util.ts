@@ -30,15 +30,15 @@ export const SEPAY_SIGNED_FIELDS = [
   'cancel_url',
 ] as const;
 
-/** Strip accidental quotes copied from Render/env UI into values. */
+/** Strip accidental quotes / whitespace from Render env values. */
 export function stripEnvQuotes(value: string | undefined): string {
   if (!value) return '';
-  const trimmed = value.trim();
+  let trimmed = value.trim();
   if (
     (trimmed.startsWith('"') && trimmed.endsWith('"')) ||
     (trimmed.startsWith("'") && trimmed.endsWith("'"))
   ) {
-    return trimmed.slice(1, -1);
+    trimmed = trimmed.slice(1, -1).trim();
   }
   return trimmed;
 }
@@ -159,8 +159,8 @@ export function resolveSepayPaymentMethod(): string | undefined {
 }
 
 export function buildInvoiceNumber(orderId: string | number | bigint): string {
-  const suffix = crypto.randomBytes(4).toString('hex');
-  return `INV${orderId}${Date.now()}${suffix}`;
+  const nonce = crypto.randomBytes(3).toString('hex');
+  return `INV-${orderId}-${Date.now()}${nonce}`;
 }
 
 export function appendInvoiceToUrl(baseUrl: string, invoiceNumber: string): string {
@@ -196,6 +196,7 @@ export function buildSepayCheckoutDebugInfo(
     productionCheckout: isSepayProductionCheckout(),
     merchantId: fields.merchant,
     secretKeyPrefix: secretKey ? `${secretKey.slice(0, 8)}...` : '(empty)',
+    secretKeyLength: secretKey.length,
     secretKeyKind: secretKey.startsWith('spsk_test')
       ? 'sandbox'
       : secretKey.startsWith('spsk_live')
@@ -211,4 +212,22 @@ export function buildSepayCheckoutDebugInfo(
     urlChecks,
     ...(isSepayDebugEnabled() ? { signedString } : {}),
   };
+}
+
+/** Server-side probe: POST the same form SePay receives and parse the HTML title. */
+export async function probeSepayCheckoutInit(fields: Record<string, string>) {
+  const actionUrl = getSepayCheckoutUrl();
+  const body = new URLSearchParams(fields).toString();
+  const res = await fetch(actionUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body,
+  });
+  const html = await res.text();
+  const title =
+    html.match(/data-state="init"[\s\S]*?title text-center">([^<]+)/)?.[1]?.trim() ||
+    html.match(/data-state="error"[\s\S]*?title text-center">([^<]+)/)?.[1]?.trim() ||
+    'unknown';
+  const accepted = !/không hợp lệ|Lỗi không xác định/i.test(title);
+  return { httpStatus: res.status, sepayTitle: title, accepted };
 }
