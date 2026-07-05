@@ -7,6 +7,10 @@ export default defineNuxtPlugin(async () => {
   try {
     const path = useRequestURL().pathname;
 
+    if (path === '/auth/google/callback') {
+      return;
+    }
+
     if (isPublicAuthPath(path)) {
       authStore.markBootstrapped();
       return;

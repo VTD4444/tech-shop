@@ -3,6 +3,7 @@ export const PUBLIC_AUTH_PATHS = [
   '/register',
   '/forgot-password',
   '/reset-password',
+  '/auth/google/callback',
 ];
 
 export function isPublicAuthPath(path: string) {

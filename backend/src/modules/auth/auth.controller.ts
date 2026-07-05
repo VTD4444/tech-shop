@@ -76,6 +76,11 @@ class ResetPasswordDto {
   password: string;
 }
 
+class GoogleCompleteDto {
+  @IsString()
+  code: string;
+}
+
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
@@ -86,7 +91,11 @@ export class AuthController {
     const { confirmPassword: _, ...registerData } = dto;
     const result = await this.authService.register(registerData);
     this.setTokenCookies(res, result.accessToken, result.refreshToken);
-    return { user: result.user };
+    return {
+      user: result.user,
+      accessToken: result.accessToken,
+      refreshToken: result.refreshToken,
+    };
   }
 
   @Public()
@@ -95,7 +104,11 @@ export class AuthController {
   async login(@Body() dto: LoginDto, @Res({ passthrough: true }) res: Response) {
     const result = await this.authService.login(dto);
     this.setTokenCookies(res, result.accessToken, result.refreshToken);
-    return { user: result.user };
+    return {
+      user: result.user,
+      accessToken: result.accessToken,
+      refreshToken: result.refreshToken,
+    };
   }
 
   @Public()
@@ -109,10 +122,31 @@ export class AuthController {
   @Get('google/callback')
   @UseGuards(AuthGuard('google'))
   async googleCallback(@Req() req: Request, @Res() res: Response) {
-    const result = this.authService.issueSession(req.user as any);
+    const session = this.authService.issueSession(req.user as any);
+    const code = this.authService.createGoogleExchangeCode(session.user.id);
+    const frontend = (process.env.FRONTEND_URL || 'http://localhost:3001').replace(
+      /\/+$/,
+      '',
+    );
+    res.redirect(
+      `${frontend}/auth/google/callback?code=${encodeURIComponent(code)}`,
+    );
+  }
+
+  @Public()
+  @Post('google/complete')
+  @HttpCode(HttpStatus.OK)
+  async googleComplete(
+    @Body() dto: GoogleCompleteDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const result = await this.authService.completeGoogleExchange(dto.code);
     this.setTokenCookies(res, result.accessToken, result.refreshToken);
-    const frontend = process.env.FRONTEND_URL || 'http://localhost:3001';
-    res.redirect(`${frontend}/?auth=google`);
+    return {
+      user: result.user,
+      accessToken: result.accessToken,
+      refreshToken: result.refreshToken,
+    };
   }
 
   @Public()
@@ -129,7 +163,11 @@ export class AuthController {
     }
     const result = await this.authService.refresh(token);
     this.setTokenCookies(res, result.accessToken, result.refreshToken);
-    return { user: result.user };
+    return {
+      user: result.user,
+      accessToken: result.accessToken,
+      refreshToken: result.refreshToken,
+    };
   }
 
   @Public()
@@ -153,11 +191,16 @@ export class AuthController {
     return { message: 'Logged out successfully' };
   }
 
+  private isProduction() {
+    return process.env.NODE_ENV === 'production';
+  }
+
   private cookieOptions(maxAge: number) {
+    const production = this.isProduction();
     return {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'none' as const,
+      secure: production,
+      sameSite: (production ? 'none' : 'lax') as 'none' | 'lax',
       path: '/',
       maxAge,
     };
@@ -169,7 +212,13 @@ export class AuthController {
   }
 
   private clearTokenCookies(res: Response) {
-    const opts = { path: '/', httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' as const };
+    const production = this.isProduction();
+    const opts = {
+      path: '/',
+      httpOnly: true,
+      secure: production,
+      sameSite: (production ? 'none' : 'lax') as 'none' | 'lax',
+    };
     res.clearCookie('access_token', opts);
     res.clearCookie('refresh_token', opts);
   }

@@ -128,6 +128,40 @@ export class AuthService {
     return this.generateTokens(user);
   }
 
+  createGoogleExchangeCode(userId: string): string {
+    return this.jwtService.sign(
+      { type: 'google_exchange', sub: userId },
+      {
+        secret: process.env.JWT_SECRET || 'default-secret',
+        expiresIn: '2m',
+      },
+    );
+  }
+
+  async completeGoogleExchange(code: string) {
+    let payload: { type?: string; sub?: string };
+    try {
+      payload = this.jwtService.verify(code, {
+        secret: process.env.JWT_SECRET || 'default-secret',
+      });
+    } catch {
+      throw new UnauthorizedException('Invalid or expired Google login code');
+    }
+
+    if (payload.type !== 'google_exchange' || !payload.sub) {
+      throw new UnauthorizedException('Invalid Google login code');
+    }
+
+    const user = await this.prisma.user.findUnique({
+      where: { id: BigInt(payload.sub) },
+    });
+    if (!user || !user.isActive) {
+      throw new UnauthorizedException('User not found or inactive');
+    }
+
+    return this.issueSession(user);
+  }
+
   async refresh(refreshToken: string) {
     try {
       const payload = this.jwtService.verify(refreshToken, {
