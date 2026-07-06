@@ -1,5 +1,7 @@
 # SePay Payment Integration
 
+> Sơ đồ sequence checkout + IPN: [FLOWS.md](./FLOWS.md) §3–4. Checklist kiểm thử: [TEST_CHECKLIST.md](./TEST_CHECKLIST.md).
+
 ## Overview
 
 TechShop uses [SePay Payment Gateway](https://developer.sepay.vn/vi/cong-thanh-toan/gioi-thieu) for online payments (VietQR bank transfer, NAPAS, cards depending on merchant config).

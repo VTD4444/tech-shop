@@ -269,8 +269,13 @@ In GitHub → Settings → Branches → Add rule:
 | Doc | Topic |
 |-----|--------|
 | [SEPAY_INTEGRATION.md](./SEPAY_INTEGRATION.md) | Payments, IPN, ngrok, sandbox vs production |
+| [FLOWS.md](./FLOWS.md) | Flowcharts: login, forgot-password, checkout, IPN |
 | [RESEND_INTEGRATION.md](./RESEND_INTEGRATION.md) | Transactional email |
 | [SETUP_PRODUCTION.md](./SETUP_PRODUCTION.md) | Production checklist |
 | [API.md](./API.md) | REST API reference |
 | [ARCHITECTURE.md](./ARCHITECTURE.md) | System design |
+| [TEST_CHECKLIST.md](./TEST_CHECKLIST.md) | Manual test checklist |
+| [BUG_REPORT.md](./BUG_REPORT.md) | Major bugs & fixes |
+| [DEMO.md](./DEMO.md) | Demo video / slide outline |
+| [COMPLIANCE.md](./COMPLIANCE.md) | Map to project requirements |
 | [`render.yaml`](../render.yaml) | Render Docker Blueprint |

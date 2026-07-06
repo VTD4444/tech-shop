@@ -90,3 +90,5 @@ Optional: `SEPAY_IPN_WHITELIST` with SePay server IPs.
 cd backend && npm test && npm run test:e2e
 cd frontend && npm test
 ```
+
+Manual checklist: [TEST_CHECKLIST.md](./TEST_CHECKLIST.md). Known issues: [BUG_REPORT.md](./BUG_REPORT.md).

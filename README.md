@@ -47,8 +47,15 @@ uvicorn app.main:app --reload --port 8000
 | Doc | Topic |
 |-----|--------|
 | [docs/SETUP.md](docs/SETUP.md) | Local setup |
-| [docs/VNPAY_INTEGRATION.md](docs/VNPAY_INTEGRATION.md) | VNPay payments |
-| [docs/RESEND_INTEGRATION.md](docs/RESEND_INTEGRATION.md) | Email (Resend) |
 | [docs/SETUP_PRODUCTION.md](docs/SETUP_PRODUCTION.md) | Production checklist |
+| [docs/SEPAY_INTEGRATION.md](docs/SEPAY_INTEGRATION.md) | SePay payments (redirect + IPN) |
+| [docs/RESEND_INTEGRATION.md](docs/RESEND_INTEGRATION.md) | Email (Resend) |
+| [docs/API.md](docs/API.md) | REST API reference |
+| [docs/FLOWS.md](docs/FLOWS.md) | Flowcharts: login, checkout, webhook |
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | System design |
+| [docs/TEST_CHECKLIST.md](docs/TEST_CHECKLIST.md) | Manual test checklist |
+| [docs/BUG_REPORT.md](docs/BUG_REPORT.md) | Major bugs & fixes |
+| [docs/DEMO.md](docs/DEMO.md) | Demo video / slide outline |
+| [docs/COMPLIANCE.md](docs/COMPLIANCE.md) | Map to project requirements |
 
 See [docs/SETUP.md](docs/SETUP.md) for full configuration.

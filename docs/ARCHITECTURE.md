@@ -1,5 +1,7 @@
 # Architecture
 
+> Flowcharts chi tiết từng luồng: [FLOWS.md](./FLOWS.md)
+
 ## System Overview
 
 ```

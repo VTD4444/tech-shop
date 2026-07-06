@@ -131,3 +131,16 @@ const store = useXxxStore();        // Pinia
 const { $api } = useNuxtApp();      // NestJS API client (credentials: include)
 const { $aiApi } = useNuxtApp();    // AI service client (proxy /api/ai in dev)
 const config = useRuntimeConfig();  // Runtime config
+```
+
+## Tài liệu dự án
+
+| File | Mục đích |
+|------|----------|
+| [SETUP.md](./SETUP.md) | Cài đặt local |
+| [API.md](./API.md) | REST endpoints |
+| [FLOWS.md](./FLOWS.md) | Flowchart login, checkout, IPN |
+| [SEPAY_INTEGRATION.md](./SEPAY_INTEGRATION.md) | Thanh toán SePay |
+| [TEST_CHECKLIST.md](./TEST_CHECKLIST.md) | Checklist kiểm thử |
+| [BUG_REPORT.md](./BUG_REPORT.md) | Bugs chính đã fix |
+| [COMPLIANCE.md](./COMPLIANCE.md) | Đối chiếu yêu cầu đầu ra |
