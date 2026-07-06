@@ -13,11 +13,10 @@ const safeHtml = computed(() => {
 </script>
 
 <template>
-  <div v-if="safeHtml" class="prose prose-sm max-w-none text-text-primary product-long-description leading-relaxed" v-html="safeHtml" />
-  <p v-else class="text-text-muted text-sm">Chưa có mô tả chi tiết.</p>
+  <div v-if="safeHtml" class="max-w-none text-fg product-long-description leading-relaxed" v-html="safeHtml" />
+  <p v-else class="text-fg-muted text-sm">Chưa có mô tả chi tiết.</p>
 </template>
 
 <style>
 .product-long-description img { max-width: 100%; border-radius: 0.5rem; margin: 0.5rem 0; }
-.product-long-description a { color: var(--color-accent, #3b82f6); text-decoration: underline; }
 </style>

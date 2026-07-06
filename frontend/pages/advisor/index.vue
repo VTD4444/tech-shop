@@ -50,7 +50,7 @@ async function getRecommendation() {
       toast.success('Gợi ý được hỗ trợ bởi Gemini.');
     }
   } catch (e: any) {
-    error.value = e.data?.detail || e.data?.message || 'Dịch vụ AI không khả dụng. Hãy kiểm tra dịch vụ AI đang chạy.';
+    error.value = extractApiMessage(e, 'Dịch vụ AI không khả dụng. Hãy kiểm tra dịch vụ AI đang chạy.');
     toast.error(error.value);
   } finally {
     loading.value = false;
@@ -81,7 +81,7 @@ async function addToCart(item: any) {
         <button
           type="button"
           class="px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors"
-          :class="activeTab === 'recommend' ? 'border-accent text-accent' : 'border-transparent text-text-muted'"
+          :class="activeTab === 'recommend' ? 'border-accent text-accent' : 'border-transparent text-fg-muted'"
           @click="activeTab = 'recommend'"
         >
           Gợi ý
@@ -89,7 +89,7 @@ async function addToCart(item: any) {
         <button
           type="button"
           class="px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors"
-          :class="activeTab === 'chat' ? 'border-accent text-accent' : 'border-transparent text-text-muted'"
+          :class="activeTab === 'chat' ? 'border-accent text-accent' : 'border-transparent text-fg-muted'"
           @click="activeTab = 'chat'"
         >
           Trò chuyện
@@ -122,7 +122,7 @@ async function addToCart(item: any) {
                 v-model="preferences"
                 rows="2"
                 placeholder="VD: ưu tiên Intel, cần WiFi..."
-                class="w-full rounded-md border border-subtle bg-surface-3 px-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted/60 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+                class="w-full rounded-md border border-subtle bg-surface-3 px-4 py-2.5 text-sm text-fg placeholder:text-fg-muted/60 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
               />
             </div>
             <UiButton variant="primary" :loading="loading" @click="getRecommendation">
@@ -138,22 +138,22 @@ async function addToCart(item: any) {
               v-if="recommendationSource"
               size="xs"
               class="uppercase tracking-wide"
-              :class="recommendationSource === 'gemini' ? 'text-accent' : 'text-text-muted'"
+              :class="recommendationSource === 'gemini' ? 'text-accent' : 'text-fg-muted'"
             >
               {{ recommendationSource === 'gemini' ? 'Hỗ trợ bởi Gemini' : 'Dự phòng theo quy tắc' }}
             </UiText>
           </div>
-          <p v-if="aiSummary" class="text-sm text-text-primary mb-4 whitespace-pre-wrap">{{ aiSummary }}</p>
-          <p v-else-if="recommendationNote" class="text-sm text-text-muted mb-4">{{ recommendationNote }}</p>
+          <p v-if="aiSummary" class="text-sm text-fg mb-4 whitespace-pre-wrap">{{ aiSummary }}</p>
+          <p v-else-if="recommendationNote" class="text-sm text-fg-muted mb-4">{{ recommendationNote }}</p>
           <div v-for="item in recommendation" :key="item.component_type || item.name" class="flex items-center gap-4 py-3 border-b border-subtle last:border-0">
             <div class="flex-1 min-w-0">
-              <p class="font-medium text-text-primary">{{ item.product_name || item.name }}</p>
-              <p v-if="item.explanation" class="text-sm text-text-muted">{{ item.explanation }}</p>
+              <p class="font-medium text-fg">{{ item.product_name || item.name }}</p>
+              <p v-if="item.explanation" class="text-sm text-fg-muted">{{ item.explanation }}</p>
             </div>
             <p class="font-semibold text-accent shrink-0">{{ formatPrice(item.price) }}</p>
             <UiButton v-if="item.product_id || item.slug" variant="secondary" size="sm" @click="addToCart(item)">Thêm</UiButton>
           </div>
-          <p class="text-right text-lg font-bold mt-4 text-text-primary">
+          <p class="text-right text-lg font-bold mt-4 text-fg">
             Tổng cộng: <span class="text-accent">{{ formatPrice(totalRecommended) }}</span>
           </p>
         </UiCard>

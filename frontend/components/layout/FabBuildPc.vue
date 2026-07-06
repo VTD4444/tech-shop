@@ -11,7 +11,7 @@ const show = computed(() =>
   <NuxtLink
     v-if="show"
     to="/pc-builder"
-    class="fixed bottom-6 right-6 z-30 flex items-center gap-2 px-5 py-3 rounded-lg bg-accent text-surface-0 font-semibold text-sm shadow-glow-accent hover:bg-accent-hover transition-all hover:scale-105"
+    class="fixed bottom-6 right-6 z-30 flex items-center gap-2 px-5 py-3 rounded-lg bg-accent text-on-accent font-semibold text-sm shadow-glow-accent hover:bg-accent-hover transition-all hover:scale-105"
   >
     <Wrench class="w-4 h-4" />
     XÂY DỰNG PC

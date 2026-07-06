@@ -15,7 +15,7 @@ const emit = defineEmits<{ 'update:modelValue': [value: string] }>();
   <select
     :value="modelValue"
     :class="cn(
-      'w-full rounded-md border border-subtle bg-surface-3 px-4 py-2.5 text-sm text-text-primary',
+      'w-full rounded-md border border-subtle bg-surface-3 px-4 py-2.5 text-sm text-fg',
       'focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent cursor-pointer',
       props.class,
     )"

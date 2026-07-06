@@ -230,8 +230,8 @@ onMounted(async () => {
             :key="type"
             class="flex justify-between text-sm py-2 border-b border-subtle"
           >
-            <span class="text-text-muted">{{ typeLabel(String(type)) }}</span>
-            <span class="text-text-primary truncate ml-2 max-w-[140px]">{{ comp.product?.name }}</span>
+            <span class="text-fg-muted">{{ typeLabel(String(type)) }}</span>
+            <span class="text-fg truncate ml-2 max-w-[140px]">{{ comp.product?.name }}</span>
           </div>
           <UiText variant="accent" size="2xl" class="font-bold">{{ formatPrice(totalPrice) }}</UiText>
         </template>
@@ -294,8 +294,8 @@ onMounted(async () => {
               class="flex items-center justify-between gap-2 p-2 rounded-lg bg-surface-2 border border-subtle"
             >
               <button type="button" class="text-left flex-1 min-w-0" @click="loadBuild(build)">
-                <p class="text-sm font-medium text-text-primary truncate">{{ build.name }}</p>
-                <p class="text-xs text-text-muted">{{ formatPrice(build.totalPrice) }}</p>
+                <p class="text-sm font-medium text-fg truncate">{{ build.name }}</p>
+                <p class="text-xs text-fg-muted">{{ formatPrice(build.totalPrice) }}</p>
               </button>
               <button
                 type="button"
@@ -331,7 +331,7 @@ onMounted(async () => {
           <div class="flex items-center gap-4">
             <img :src="comp.product?.imageUrl || '/placeholder.svg'" class="w-14 h-14 object-cover rounded bg-surface-3" />
             <div class="flex-1 min-w-0">
-              <p class="font-medium text-text-primary truncate">{{ comp.product?.name }}</p>
+              <p class="font-medium text-fg truncate">{{ comp.product?.name }}</p>
               <p class="text-accent font-semibold text-sm">{{ formatPrice(comp.product?.price || 0) }}</p>
               <p
                 v-for="reason in comp.incompatibilityReasons"

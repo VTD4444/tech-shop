@@ -28,7 +28,7 @@ function setRating(n: number) {
       :key="n"
       type="button"
       class="text-lg leading-none transition-colors"
-      :class="n <= modelValue ? 'text-warning' : 'text-text-muted/40'"
+      :class="n <= modelValue ? 'text-warning' : 'text-fg-muted/40'"
       :disabled="readonly"
       :aria-label="`${n} sao`"
       :aria-checked="n === modelValue"

@@ -10,7 +10,7 @@ defineProps<{
 
 <template>
   <div class="flex flex-col items-center justify-center py-16 text-center">
-    <component :is="icon" v-if="icon" class="w-12 h-12 text-text-muted mb-4" />
+    <component :is="icon" v-if="icon" class="w-12 h-12 text-fg-muted mb-4" />
     <UiText as="h3" size="xl">{{ title }}</UiText>
     <UiText v-if="description" variant="muted" size="sm" class="mt-2 max-w-md">
       {{ description }}

@@ -1,3 +1,5 @@
+import { translateApiMessage } from '~/utils/translateApiMessage';
+
 type ToastType = 'success' | 'error' | 'info';
 
 interface ToastItem {
@@ -12,7 +14,8 @@ export function useToast() {
 
   function push(type: ToastType, message: string, durationMs = 4000) {
     const id = ++nextId.value;
-    toasts.value = [...toasts.value, { id, type, message }];
+    const localized = translateApiMessage(message);
+    toasts.value = [...toasts.value, { id, type, message: localized }];
     if (import.meta.client) {
       setTimeout(() => dismiss(id), durationMs);
     }

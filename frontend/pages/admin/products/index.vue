@@ -35,7 +35,7 @@ const statusLabels: Record<string, string> = {
         <UiTableHead align="right">Thao tác</UiTableHead>
       </template>
       <UiTableRow v-for="p in products" :key="p.id">
-        <UiTableCell><span class="font-medium text-text-primary">{{ p.name }}</span></UiTableCell>
+        <UiTableCell><span class="font-medium text-fg">{{ p.name }}</span></UiTableCell>
         <UiTableCell>{{ formatPrice(p.price) }}</UiTableCell>
         <UiTableCell>{{ p.stockQuantity }}</UiTableCell>
         <UiTableCell><UiBadge variant="neutral">{{ statusLabels[p.status] || p.status }}</UiBadge></UiTableCell>

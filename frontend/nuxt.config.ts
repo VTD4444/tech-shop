@@ -17,6 +17,9 @@ export default defineNuxtConfig({
       { name: 'useAuthValidation', from: '~/composables/useAuthValidation' },
       { name: 'useProductDetail', from: '~/composables/useProductDetail' },
       { name: 'useAdvisorChat', from: '~/composables/useAdvisorChat' },
+      { name: 'useTheme', from: '~/composables/useTheme' },
+      { name: 'extractApiMessage', from: '~/utils/translateApiMessage' },
+      { name: 'translateApiMessage', from: '~/utils/translateApiMessage' },
     ],
   },
   components: [
@@ -36,6 +39,9 @@ export default defineNuxtConfig({
       title: 'TechShop - Xây dựng PC mơ ước',
       meta: [
         { name: 'description', content: 'TechShop - Cửa hàng linh kiện PC, laptop hiệu năng cao tại Việt Nam' },
+      ],
+      script: [
+        { src: '/theme-init.js', tagPosition: 'head' },
       ],
     },
   },

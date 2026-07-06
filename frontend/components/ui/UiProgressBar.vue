@@ -8,7 +8,7 @@ defineProps<{
 
 <template>
   <div>
-    <div v-if="label" class="flex justify-between text-xs text-text-muted mb-1">
+    <div v-if="label" class="flex justify-between text-xs text-fg-muted mb-1">
       <span>{{ label }}</span>
       <span>{{ value }}{{ max ? ` / ${max}` : '' }}</span>
     </div>

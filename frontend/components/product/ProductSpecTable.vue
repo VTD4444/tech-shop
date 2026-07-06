@@ -30,9 +30,9 @@ const rows = computed(() => {
 <template>
   <dl v-if="rows.length" class="grid sm:grid-cols-2 gap-3 text-sm">
     <div v-for="row in rows" :key="row.label" class="flex justify-between border-b border-subtle pb-2 gap-4">
-      <dt class="text-text-muted shrink-0">{{ row.label }}</dt>
-      <dd class="text-text-primary text-right">{{ row.value }}</dd>
+      <dt class="text-fg-muted shrink-0">{{ row.label }}</dt>
+      <dd class="text-fg text-right">{{ row.value }}</dd>
     </div>
   </dl>
-  <p v-else class="text-text-muted text-sm">Chưa có thông số kỹ thuật.</p>
+  <p v-else class="text-fg-muted text-sm">Chưa có thông số kỹ thuật.</p>
 </template>

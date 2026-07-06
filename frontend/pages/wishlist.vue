@@ -55,7 +55,7 @@ async function removeFromWishlist(productId: string) {
           </NuxtLink>
           <NuxtLink
             :to="`/products/${item.product?.slug}`"
-            class="font-semibold text-text-primary hover:text-accent line-clamp-2 mb-2"
+            class="font-semibold text-fg hover:text-accent line-clamp-2 mb-2"
           >
             {{ item.product?.name }}
           </NuxtLink>

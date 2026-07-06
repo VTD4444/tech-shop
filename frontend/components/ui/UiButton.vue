@@ -18,9 +18,9 @@ const props = withDefaults(
 );
 
 const variantClasses: Record<Variant, string> = {
-  primary: 'bg-accent text-surface-0 hover:bg-accent-hover font-semibold',
+  primary: 'bg-accent text-on-accent hover:bg-accent-hover font-semibold',
   secondary: 'border border-accent text-accent hover:bg-accent-muted bg-transparent',
-  ghost: 'text-text-muted hover:text-text-primary hover:bg-surface-3 bg-transparent',
+  ghost: 'text-fg-muted hover:text-fg hover:bg-surface-3 bg-transparent',
   danger: 'bg-danger/20 text-danger border border-danger/30 hover:bg-danger/30',
 };
 

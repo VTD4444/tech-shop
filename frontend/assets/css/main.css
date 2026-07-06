@@ -10,14 +10,19 @@
 
 @layer base {
   :root {
-    --scrollbar-thumb: color-mix(in srgb, var(--color-text-muted) 55%, transparent);
-    --scrollbar-thumb-hover: color-mix(in srgb, var(--color-accent) 70%, transparent);
+    --scrollbar-thumb: color-mix(in srgb, rgb(var(--color-text-muted)) 55%, transparent);
+    --scrollbar-thumb-hover: color-mix(in srgb, rgb(var(--color-accent)) 70%, transparent);
     --scrollbar-track: transparent;
   }
 
   html {
     scrollbar-width: thin;
     scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+    color-scheme: light;
+  }
+
+  [data-theme='dark'] {
+    color-scheme: dark;
   }
 
   html::-webkit-scrollbar {
@@ -50,21 +55,79 @@
   }
 
   body {
-    @apply bg-surface-0 text-text-muted antialiased font-sans;
+    @apply bg-surface-0 text-fg-muted antialiased font-sans;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply text-fg;
+  }
+
+  select option {
+    background-color: rgb(var(--color-surface-1));
+    color: rgb(var(--color-text-primary));
+  }
+
+  svg {
+    color: currentColor;
   }
 
   ::selection {
-    @apply bg-accent/30 text-text-primary;
+    @apply bg-accent/30 text-fg;
+  }
+}
+
+@layer components {
+  .tiptap-editor .ProseMirror,
+  .product-long-description,
+  .advisor-message-body {
+    color: rgb(var(--color-text-primary));
+  }
+
+  .product-long-description :where(p, li, span, td, th),
+  .advisor-message-body :where(p, li, span, td, th) {
+    color: rgb(var(--color-text-muted));
+  }
+
+  .product-long-description :where(h1, h2, h3, h4, h5, h6, strong, b),
+  .advisor-message-body :where(h1, h2, h3, h4, h5, h6, strong, b) {
+    color: rgb(var(--color-text-primary));
+  }
+
+  .product-long-description a,
+  .advisor-message-body a {
+    color: rgb(var(--color-accent));
+    text-decoration: underline;
+  }
+
+  .tiptap-editor .ProseMirror p.is-editor-empty:first-child::before {
+    color: rgb(var(--color-text-muted));
+    opacity: 0.6;
+  }
+
+  a.bg-accent,
+  button.bg-accent {
+    color: rgb(var(--color-on-accent));
   }
 }
 
 @layer utilities {
   .glass-panel {
-    @apply bg-white/5 backdrop-blur-md border border-white/10;
+    background: var(--color-glass-bg);
+    border: 1px solid var(--color-glass-border);
+    @apply backdrop-blur-md;
   }
 
   .text-gradient-accent {
     @apply bg-gradient-to-r from-accent to-accent-hover bg-clip-text text-transparent;
+  }
+
+  .text-on-accent {
+    color: rgb(var(--color-on-accent));
   }
 
   /* Cuộn ngang: ẩn trên mobile, thanh mảnh trên desktop */

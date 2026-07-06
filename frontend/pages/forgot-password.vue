@@ -58,7 +58,7 @@ async function submit() {
         Gửi liên kết đặt lại
       </UiButton>
     </form>
-    <NuxtLink to="/login" class="block mt-4 text-center text-sm text-text-muted hover:text-accent">
+    <NuxtLink to="/login" class="block mt-4 text-center text-sm text-fg-muted hover:text-accent">
       Quay lại đăng nhập
     </NuxtLink>
   </UiCard>

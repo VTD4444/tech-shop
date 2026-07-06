@@ -20,6 +20,6 @@ defineProps<{
       <span v-if="required" class="text-danger normal-case">*</span>
     </UiText>
     <slot />
-    <p v-if="hint" class="text-xs text-text-muted">{{ hint }}</p>
+    <p v-if="hint" class="text-xs text-fg-muted">{{ hint }}</p>
   </div>
 </template>

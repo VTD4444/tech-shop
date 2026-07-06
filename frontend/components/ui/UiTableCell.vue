@@ -7,7 +7,7 @@ withDefaults(defineProps<{ align?: 'left' | 'center' | 'right' }>(), { align: 'l
 <template>
   <td
     :class="cn(
-      'px-4 py-3 text-text-primary',
+      'px-4 py-3 text-fg',
       align === 'center' && 'text-center',
       align === 'right' && 'text-right',
     )"

@@ -25,7 +25,7 @@ const pages = computed(() => {
   <div v-if="totalPages > 1" class="flex items-center justify-center gap-1 mt-8">
     <button
       type="button"
-      class="w-9 h-9 rounded border border-subtle text-text-muted hover:border-accent hover:text-accent disabled:opacity-40"
+      class="w-9 h-9 rounded border border-subtle text-fg-muted hover:border-accent hover:text-accent disabled:opacity-40"
       :disabled="page <= 1"
       @click="go(page - 1)"
     >
@@ -38,8 +38,8 @@ const pages = computed(() => {
       :class="cn(
         'w-9 h-9 rounded text-sm font-medium transition-colors',
         p === page
-          ? 'bg-accent text-surface-0'
-          : 'border border-subtle text-text-muted hover:border-accent hover:text-accent',
+          ? 'bg-accent text-on-accent'
+          : 'border border-subtle text-fg-muted hover:border-accent hover:text-accent',
       )"
       @click="go(p)"
     >
@@ -47,7 +47,7 @@ const pages = computed(() => {
     </button>
     <button
       type="button"
-      class="w-9 h-9 rounded border border-subtle text-text-muted hover:border-accent hover:text-accent disabled:opacity-40"
+      class="w-9 h-9 rounded border border-subtle text-fg-muted hover:border-accent hover:text-accent disabled:opacity-40"
       :disabled="page >= totalPages"
       @click="go(page + 1)"
     >

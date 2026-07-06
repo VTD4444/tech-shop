@@ -20,7 +20,7 @@ function onInput(e: Event) {
 <template>
   <div class="w-full">
     <div class="relative">
-      <div v-if="$slots.prefix" class="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted">
+      <div v-if="$slots.prefix" class="absolute left-3 top-1/2 -translate-y-1/2 text-fg-muted">
         <slot name="prefix" />
       </div>
       <input
@@ -29,8 +29,8 @@ function onInput(e: Event) {
         :placeholder="placeholder"
         :disabled="disabled"
         :class="cn(
-          'w-full rounded-md border border-subtle bg-surface-3 px-4 py-2.5 text-sm text-text-primary',
-          'placeholder:text-text-muted/60 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent',
+          'w-full rounded-md border border-subtle bg-surface-3 px-4 py-2.5 text-sm text-fg',
+          'placeholder:text-fg-muted/60 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent',
           'disabled:opacity-50',
           $slots.prefix && 'pl-10',
           error && 'border-danger focus:ring-danger',

@@ -57,7 +57,7 @@ async function submit() {
     images.value = [];
     emit('submitted');
   } catch (e: any) {
-    const msg = e?.data?.error?.message || e?.data?.message || 'Không thể gửi đánh giá';
+    const msg = extractApiMessage(e, 'Không thể gửi đánh giá');
     toast.error(msg);
   } finally {
     submitting.value = false;

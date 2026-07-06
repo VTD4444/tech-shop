@@ -73,8 +73,8 @@ async function saveEdit() {
   <div :class="depth ? 'ml-6 mt-3 border-l-2 border-subtle pl-4' : ''">
     <div class="flex items-start justify-between gap-2">
       <div>
-        <span class="font-medium text-text-primary">{{ comment.user?.fullName || comment.user?.username }}</span>
-        <span class="text-text-muted text-sm ml-2">{{ formatDate(comment.createdAt) }}</span>
+        <span class="font-medium text-fg">{{ comment.user?.fullName || comment.user?.username }}</span>
+        <span class="text-fg-muted text-sm ml-2">{{ formatDate(comment.createdAt) }}</span>
         <EditedLabel :is-edited="comment.isEdited" />
       </div>
       <div v-if="authStore.isAuthenticated && comment.userId === authStore.user?.id" class="flex gap-2">
@@ -82,7 +82,7 @@ async function saveEdit() {
       </div>
     </div>
 
-    <p v-if="!editing" class="text-text-muted text-sm mt-1 whitespace-pre-wrap">{{ comment.content }}</p>
+    <p v-if="!editing" class="text-fg-muted text-sm mt-1 whitespace-pre-wrap">{{ comment.content }}</p>
     <div v-else class="mt-2 space-y-2">
       <textarea v-model="editText" rows="2" class="w-full rounded-md border border-subtle bg-surface-3 px-3 py-2 text-sm" />
       <UiButton size="sm" variant="primary" :loading="submitting" @click="saveEdit">Lưu</UiButton>

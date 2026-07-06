@@ -35,11 +35,11 @@ const steps = computed(() => {
       <UiText
         size="sm"
         class="font-medium"
-        :class="step.done ? 'text-text-primary' : 'text-text-muted'"
+        :class="step.done ? 'text-fg' : 'text-fg-muted'"
       >
         {{ step.label }}
       </UiText>
-      <p v-if="step.date" class="text-xs text-text-muted mt-0.5">
+      <p v-if="step.date" class="text-xs text-fg-muted mt-0.5">
         {{ new Date(step.date).toLocaleString('vi-VN') }}
       </p>
     </li>

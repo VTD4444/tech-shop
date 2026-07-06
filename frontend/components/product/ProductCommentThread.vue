@@ -49,7 +49,7 @@ async function submit() {
       />
       <UiButton variant="primary" size="sm" :loading="submitting" @click="submit">Gửi bình luận</UiButton>
     </UiCard>
-    <p v-else class="text-sm text-text-muted mb-4">
+    <p v-else class="text-sm text-fg-muted mb-4">
       <NuxtLink to="/login" class="text-accent hover:underline">Đăng nhập</NuxtLink> để bình luận
     </p>
 

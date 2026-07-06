@@ -53,7 +53,7 @@ function patch(key: string, value: string | number) {
           :placeholder="field.placeholder"
           @update:model-value="patch(field.key, $event)"
         />
-        <p v-if="field.hint" class="text-xs text-text-muted mt-1">{{ field.hint }}</p>
+        <p v-if="field.hint" class="text-xs text-fg-muted mt-1">{{ field.hint }}</p>
       </div>
     </div>
 

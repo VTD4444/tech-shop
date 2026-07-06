@@ -62,8 +62,8 @@ async function cancelOrder() {
         </UiCard>
         <UiCard padding="md">
           <UiText as="h2" size="lg" class="mb-3">Giao hàng</UiText>
-          <p class="text-sm text-text-primary">{{ order.customerName }} · {{ order.customerPhone }}</p>
-          <p class="text-sm text-text-muted mt-1">{{ order.shippingAddress }}</p>
+          <p class="text-sm text-fg">{{ order.customerName }} · {{ order.customerPhone }}</p>
+          <p class="text-sm text-fg-muted mt-1">{{ order.shippingAddress }}</p>
         </UiCard>
       </div>
       <UiCard padding="md" class="mb-8">
@@ -77,8 +77,8 @@ async function cancelOrder() {
           <div class="flex items-center gap-4">
             <img :src="item.productImageUrl || '/placeholder.svg'" class="w-16 h-16 object-cover rounded-lg bg-surface-3" />
             <div>
-              <NuxtLink :to="`/products/${item.productSlug}`" class="font-medium text-text-primary hover:text-accent">{{ item.productName }}</NuxtLink>
-              <p class="text-sm text-text-muted">× {{ item.quantity }}</p>
+              <NuxtLink :to="`/products/${item.productSlug}`" class="font-medium text-fg hover:text-accent">{{ item.productName }}</NuxtLink>
+              <p class="text-sm text-fg-muted">× {{ item.quantity }}</p>
             </div>
           </div>
           <span class="font-semibold text-accent">{{ formatPrice(item.subtotal) }}</span>

@@ -80,7 +80,7 @@ function onDrop(e: DragEvent) {
         <div
           class="absolute inset-0 flex items-center justify-center bg-surface-0/60 opacity-0 hover:opacity-100 transition-opacity"
         >
-          <span class="inline-flex items-center gap-2 text-sm font-medium text-text-primary">
+          <span class="inline-flex items-center gap-2 text-sm font-medium text-fg">
             <Upload class="w-4 h-4" />
             Đổi ảnh
           </span>
@@ -92,7 +92,7 @@ function onDrop(e: DragEvent) {
         class="flex flex-col items-center justify-center gap-2 px-4 py-8 text-center"
       >
         <span
-          class="flex h-12 w-12 items-center justify-center rounded-full bg-surface-3 text-text-muted"
+          class="flex h-12 w-12 items-center justify-center rounded-full bg-surface-3 text-fg-muted"
         >
           <ImageIcon v-if="!loading" class="w-5 h-5" />
           <span
@@ -100,12 +100,12 @@ function onDrop(e: DragEvent) {
             class="w-5 h-5 border-2 border-accent border-t-transparent rounded-full animate-spin"
           />
         </span>
-        <UiText size="sm" class="font-medium text-text-primary">{{ emptyText }}</UiText>
+        <UiText size="sm" class="font-medium text-fg">{{ emptyText }}</UiText>
         <UiText variant="muted" size="xs">PNG, JPG, WEBP</UiText>
       </div>
     </div>
 
     <p v-if="error" class="text-xs text-danger">{{ error }}</p>
-    <p v-else-if="hint" class="text-xs text-text-muted">{{ hint }}</p>
+    <p v-else-if="hint" class="text-xs text-fg-muted">{{ hint }}</p>
   </div>
 </template>

@@ -41,7 +41,7 @@ const inputId = computed(() => props.id || `checkbox-${useId()}`);
         :class="cn(
           'flex h-5 w-5 items-center justify-center rounded border transition-all',
           'border-subtle bg-surface-3 peer-focus-visible:ring-2 peer-focus-visible:ring-accent peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-surface-0',
-          modelValue && 'border-accent bg-accent text-surface-0',
+          modelValue && 'border-accent bg-accent text-on-accent',
         )"
         aria-hidden="true"
       >
@@ -49,8 +49,8 @@ const inputId = computed(() => props.id || `checkbox-${useId()}`);
       </span>
     </span>
     <span v-if="label || description || $slots.default" class="min-w-0 flex-1">
-      <span v-if="label" class="block text-sm font-medium text-text-primary">{{ label }}</span>
-      <span v-if="description" class="block text-xs text-text-muted mt-0.5">{{ description }}</span>
+      <span v-if="label" class="block text-sm font-medium text-fg">{{ label }}</span>
+      <span v-if="description" class="block text-xs text-fg-muted mt-0.5">{{ description }}</span>
       <slot />
     </span>
   </label>

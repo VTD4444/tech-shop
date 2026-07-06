@@ -47,7 +47,7 @@ async function remove(id: string) {
       </template>
       <UiTableRow v-for="c in categories" :key="c.id">
         <UiTableCell>{{ c.name }}</UiTableCell>
-        <UiTableCell><span class="text-text-muted">/{{ c.slug }}</span></UiTableCell>
+        <UiTableCell><span class="text-fg-muted">/{{ c.slug }}</span></UiTableCell>
         <UiTableCell align="right">
           <UiButton variant="ghost" size="sm" class="!text-danger" @click="remove(c.id)">Xóa</UiButton>
         </UiTableCell>

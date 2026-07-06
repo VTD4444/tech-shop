@@ -49,7 +49,7 @@ async function handleRegister() {
     toast.success('Tài khoản đã được tạo!');
     await navigateTo('/');
   } catch (e: any) {
-    error.value = e.data?.message || 'Đăng ký thất bại';
+    error.value = extractApiMessage(e, 'Đăng ký thất bại');
     toast.error(error.value);
   } finally {
     loading.value = false;
@@ -88,7 +88,7 @@ async function handleRegister() {
       </div>
       <p v-if="error" class="text-danger text-sm">{{ error }}</p>
       <UiButton type="submit" variant="primary" block :loading="loading">Đăng ký</UiButton>
-      <p class="text-center text-sm text-text-muted">
+      <p class="text-center text-sm text-fg-muted">
         Đã có tài khoản? <NuxtLink to="/login" class="text-accent">Đăng nhập</NuxtLink>
       </p>
     </form>

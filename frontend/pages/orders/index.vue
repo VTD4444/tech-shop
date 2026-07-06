@@ -44,7 +44,7 @@ function goToPage(p: number) {
         <div class="flex flex-wrap justify-between gap-4 mb-4">
           <div>
             <p class="text-accent font-mono text-sm">#{{ order.id }}</p>
-            <p class="text-text-muted text-xs">{{ new Date(order.createdAt).toLocaleDateString('vi-VN') }}</p>
+            <p class="text-fg-muted text-xs">{{ new Date(order.createdAt).toLocaleDateString('vi-VN') }}</p>
           </div>
           <div class="flex gap-2">
             <OrderStatusBadge :status="order.status" />
@@ -52,8 +52,8 @@ function goToPage(p: number) {
           </div>
         </div>
         <div v-for="item in order.items" :key="item.id" class="flex justify-between text-sm py-1 border-b border-subtle last:border-0">
-          <span class="text-text-muted">{{ item.productName }} × {{ item.quantity }}</span>
-          <span class="text-text-primary">{{ formatPrice(item.subtotal) }}</span>
+          <span class="text-fg-muted">{{ item.productName }} × {{ item.quantity }}</span>
+          <span class="text-fg">{{ formatPrice(item.subtotal) }}</span>
         </div>
         <div class="flex justify-between items-center mt-4 pt-3 border-t border-subtle">
           <NuxtLink :to="`/orders/${order.id}`" class="text-accent text-sm hover:underline">Xem chi tiết →</NuxtLink>

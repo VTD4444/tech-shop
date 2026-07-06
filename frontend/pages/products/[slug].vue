@@ -136,7 +136,7 @@ async function onCommentChange() {
       <template #action><UiButton to="/products" variant="primary">Xem sản phẩm</UiButton></template>
     </UiEmptyState>
     <div v-else>
-      <nav class="text-sm mb-6 text-text-muted">
+      <nav class="text-sm mb-6 text-fg-muted">
         <NuxtLink to="/products" class="hover:text-accent">Sản phẩm</NuxtLink>
         <span class="mx-2">/</span>
         <span>{{ product.name }}</span>
@@ -167,7 +167,7 @@ async function onCommentChange() {
           <UiText as="h1" size="2xl" class="mb-2">{{ product.name }}</UiText>
           <div v-if="ratingSummary?.count" class="flex items-center gap-2 mb-3 text-sm">
             <ProductRatingStars :model-value="Math.round(ratingSummary.average)" readonly />
-            <span class="text-text-muted">{{ ratingSummary.average }} ({{ ratingSummary.count }})</span>
+            <span class="text-fg-muted">{{ ratingSummary.average }} ({{ ratingSummary.count }})</span>
           </div>
           <UiText variant="accent" size="3xl" class="font-bold mb-4">{{ formatPrice(product.price) }}</UiText>
           <UiText variant="muted" class="mb-6 leading-relaxed">{{ product.description }}</UiText>
@@ -195,10 +195,10 @@ async function onCommentChange() {
       </div>
 
       <nav class="sticky top-0 z-10 bg-surface-1/95 backdrop-blur border-b border-subtle mb-8 -mx-4 px-4 py-3 flex gap-6 text-sm overflow-x-auto">
-        <a href="#description" class="text-text-muted hover:text-accent whitespace-nowrap">Mô tả</a>
-        <a href="#specs" class="text-text-muted hover:text-accent whitespace-nowrap">Thông số</a>
-        <a href="#ratings" class="text-text-muted hover:text-accent whitespace-nowrap">Đánh giá</a>
-        <a href="#comments" class="text-text-muted hover:text-accent whitespace-nowrap">Bình luận</a>
+        <a href="#description" class="text-fg-muted hover:text-accent whitespace-nowrap">Mô tả</a>
+        <a href="#specs" class="text-fg-muted hover:text-accent whitespace-nowrap">Thông số</a>
+        <a href="#ratings" class="text-fg-muted hover:text-accent whitespace-nowrap">Đánh giá</a>
+        <a href="#comments" class="text-fg-muted hover:text-accent whitespace-nowrap">Bình luận</a>
       </nav>
 
       <section id="description" class="mb-12 scroll-mt-24">

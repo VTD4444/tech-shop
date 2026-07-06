@@ -88,26 +88,26 @@ async function updateStatus(status: string) {
           <UiText as="h2" size="lg" class="mb-4">Khách hàng & giao hàng</UiText>
           <dl class="grid sm:grid-cols-2 gap-4 text-sm">
             <div>
-              <dt class="text-text-muted mb-1">Họ tên</dt>
-              <dd class="text-text-primary font-medium">{{ order.customerName }}</dd>
+              <dt class="text-fg-muted mb-1">Họ tên</dt>
+              <dd class="text-fg font-medium">{{ order.customerName }}</dd>
             </div>
             <div>
-              <dt class="text-text-muted mb-1">Số điện thoại</dt>
-              <dd class="text-text-primary">{{ order.customerPhone }}</dd>
+              <dt class="text-fg-muted mb-1">Số điện thoại</dt>
+              <dd class="text-fg">{{ order.customerPhone }}</dd>
             </div>
             <div v-if="order.user" class="sm:col-span-2">
-              <dt class="text-text-muted mb-1">Tài khoản</dt>
-              <dd class="text-text-primary">
+              <dt class="text-fg-muted mb-1">Tài khoản</dt>
+              <dd class="text-fg">
                 {{ order.user.fullName }} · {{ order.user.email }}
               </dd>
             </div>
             <div class="sm:col-span-2">
-              <dt class="text-text-muted mb-1">Địa chỉ giao hàng</dt>
-              <dd class="text-text-primary">{{ order.shippingAddress }}</dd>
+              <dt class="text-fg-muted mb-1">Địa chỉ giao hàng</dt>
+              <dd class="text-fg">{{ order.shippingAddress }}</dd>
             </div>
             <div v-if="order.note" class="sm:col-span-2">
-              <dt class="text-text-muted mb-1">Ghi chú</dt>
-              <dd class="text-text-primary">{{ order.note }}</dd>
+              <dt class="text-fg-muted mb-1">Ghi chú</dt>
+              <dd class="text-fg">{{ order.note }}</dd>
             </div>
           </dl>
         </UiCard>
@@ -136,30 +136,30 @@ async function updateStatus(status: string) {
         <UiText as="h2" size="lg" class="mb-4">Thanh toán SePay</UiText>
         <dl class="grid sm:grid-cols-2 gap-4 text-sm">
           <div>
-            <dt class="text-text-muted mb-1">Mã hóa đơn</dt>
-            <dd class="font-mono text-xs text-text-primary break-all">
+            <dt class="text-fg-muted mb-1">Mã hóa đơn</dt>
+            <dd class="font-mono text-xs text-fg break-all">
               {{ order.paymentTxn.invoiceNumber }}
             </dd>
           </div>
           <div>
-            <dt class="text-text-muted mb-1">Trạng thái giao dịch</dt>
+            <dt class="text-fg-muted mb-1">Trạng thái giao dịch</dt>
             <dd>
               <UiBadge variant="neutral">{{ order.paymentTxn.status }}</UiBadge>
             </dd>
           </div>
           <div>
-            <dt class="text-text-muted mb-1">Số tiền</dt>
+            <dt class="text-fg-muted mb-1">Số tiền</dt>
             <dd class="text-accent font-semibold">{{ formatPrice(order.paymentTxn.amount) }}</dd>
           </div>
           <div v-if="order.paymentTxn.paymentDate">
-            <dt class="text-text-muted mb-1">Thời gian thanh toán</dt>
-            <dd class="text-text-primary">
+            <dt class="text-fg-muted mb-1">Thời gian thanh toán</dt>
+            <dd class="text-fg">
               {{ new Date(order.paymentTxn.paymentDate).toLocaleString('vi-VN') }}
             </dd>
           </div>
           <div v-if="order.paymentTxn.externalTxnId" class="sm:col-span-2">
-            <dt class="text-text-muted mb-1">Mã giao dịch SePay</dt>
-            <dd class="font-mono text-xs text-text-primary break-all">
+            <dt class="text-fg-muted mb-1">Mã giao dịch SePay</dt>
+            <dd class="font-mono text-xs text-fg break-all">
               {{ order.paymentTxn.externalTxnId }}
             </dd>
           </div>
@@ -185,13 +185,13 @@ async function updateStatus(status: string) {
               <NuxtLink
                 v-if="item.productSlug"
                 :to="`/products/${item.productSlug}`"
-                class="font-medium text-text-primary hover:text-accent line-clamp-2"
+                class="font-medium text-fg hover:text-accent line-clamp-2"
                 target="_blank"
               >
                 {{ item.productName }}
               </NuxtLink>
-              <span v-else class="font-medium text-text-primary">{{ item.productName }}</span>
-              <p class="text-sm text-text-muted">
+              <span v-else class="font-medium text-fg">{{ item.productName }}</span>
+              <p class="text-sm text-fg-muted">
                 {{ formatPrice(item.price) }} × {{ item.quantity }}
               </p>
             </div>

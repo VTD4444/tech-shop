@@ -33,14 +33,14 @@ async function retry() {
 <template>
   <div
     v-if="apiDegraded && !dismissed"
-    class="border-b border-warning/30 bg-warning/10 text-text-primary"
+    class="border-b border-warning/30 bg-warning/10 text-fg"
     role="status"
   >
     <UiContainer class="flex items-start gap-3 py-3">
       <AlertTriangle class="w-5 h-5 text-warning shrink-0 mt-0.5" />
       <div class="flex-1 min-w-0">
         <p class="text-sm font-medium">Chế độ hạn chế</p>
-        <p class="text-sm text-text-muted">
+        <p class="text-sm text-fg-muted">
           {{ degradedMessage || 'Một số tính năng không khả dụng. Bạn vẫn có thể duyệt sản phẩm mẫu.' }}
         </p>
       </div>
@@ -51,7 +51,7 @@ async function retry() {
         </UiButton>
         <button
           type="button"
-          class="p-1.5 rounded-md text-text-muted hover:text-text-primary hover:bg-surface-2"
+          class="p-1.5 rounded-md text-fg-muted hover:text-fg hover:bg-surface-2"
           aria-label="Đóng"
           @click="dismissed = true"
         >

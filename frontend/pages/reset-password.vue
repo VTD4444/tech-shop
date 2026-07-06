@@ -29,7 +29,7 @@ async function submit() {
     toast.success('Mật khẩu đã được cập nhật');
     navigateTo('/login');
   } catch (e: any) {
-    error.value = e?.data?.message || 'Đặt lại mật khẩu thất bại';
+    error.value = extractApiMessage(e, 'Đặt lại mật khẩu thất bại');
     toast.error(error.value);
   }
 }

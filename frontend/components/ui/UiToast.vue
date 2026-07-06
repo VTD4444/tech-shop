@@ -6,7 +6,7 @@ const { toasts, dismiss } = useToast();
 const typeStyles = {
   success: 'border-accent/50 bg-surface-2 text-accent',
   error: 'border-danger/50 bg-surface-2 text-danger',
-  info: 'border-subtle bg-surface-2 text-text-primary',
+  info: 'border-subtle bg-surface-2 text-fg',
 };
 </script>
 
@@ -20,7 +20,7 @@ const typeStyles = {
           :class="['px-4 py-3 rounded-lg border shadow-card text-sm flex items-center justify-between gap-3', typeStyles[t.type]]"
         >
           <span>{{ t.message }}</span>
-          <button type="button" class="opacity-60 hover:opacity-100" @click="dismiss(t.id)">✕</button>
+          <button type="button" class="opacity-60 hover:opacity-100 text-current shrink-0" @click="dismiss(t.id)">✕</button>
         </div>
       </TransitionGroup>
     </div>

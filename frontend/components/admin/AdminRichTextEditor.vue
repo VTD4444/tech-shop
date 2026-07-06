@@ -48,17 +48,17 @@ onBeforeUnmount(() => editor.value?.destroy());
 <template>
   <div class="border border-subtle rounded-lg overflow-hidden">
     <div class="flex items-center gap-2 border-b border-subtle bg-surface-2 px-3 py-2">
-      <button type="button" class="text-xs px-2 py-1 rounded" :class="!preview ? 'bg-accent text-white' : 'text-text-muted'" @click="preview = false">Sửa</button>
-      <button type="button" class="text-xs px-2 py-1 rounded" :class="preview ? 'bg-accent text-white' : 'text-text-muted'" @click="preview = true">Xem trước</button>
+      <button type="button" class="text-xs px-2 py-1 rounded" :class="!preview ? 'bg-accent text-on-accent' : 'text-fg-muted'" @click="preview = false">Sửa</button>
+      <button type="button" class="text-xs px-2 py-1 rounded" :class="preview ? 'bg-accent text-on-accent' : 'text-fg-muted'" @click="preview = true">Xem trước</button>
       <template v-if="!preview">
-        <button type="button" class="text-xs text-text-muted hover:text-accent" @click="editor?.chain().focus().toggleBold().run()">B</button>
-        <button type="button" class="text-xs text-text-muted hover:text-accent italic" @click="editor?.chain().focus().toggleItalic().run()">I</button>
-        <button type="button" class="text-xs text-text-muted hover:text-accent" :disabled="uploading" @click="onImagePick">Ảnh</button>
+        <button type="button" class="text-xs text-fg-muted hover:text-accent" @click="editor?.chain().focus().toggleBold().run()">B</button>
+        <button type="button" class="text-xs text-fg-muted hover:text-accent italic" @click="editor?.chain().focus().toggleItalic().run()">I</button>
+        <button type="button" class="text-xs text-fg-muted hover:text-accent" :disabled="uploading" @click="onImagePick">Ảnh</button>
       </template>
-      <span class="ml-auto text-xs text-text-muted">{{ (model || '').length }} / 50000</span>
+      <span class="ml-auto text-xs text-fg-muted">{{ (model || '').length }} / 50000</span>
     </div>
-    <div v-if="preview" class="prose prose-sm max-w-none p-4 min-h-[160px] product-long-description" v-html="model" />
-    <EditorContent v-else :editor="editor" class="tiptap-editor min-h-[160px] p-4 text-sm" />
+    <div v-if="preview" class="max-w-none p-4 min-h-[160px] product-long-description" v-html="model" />
+    <EditorContent v-else :editor="editor" class="tiptap-editor min-h-[160px] p-4 text-sm text-fg" />
   </div>
 </template>
 

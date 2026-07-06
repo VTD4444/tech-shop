@@ -93,7 +93,7 @@ function onSubmit() {
               v-model="form.description"
               rows="3"
               placeholder="Mô tả hiển thị trên thẻ sản phẩm..."
-              class="w-full rounded-md border border-subtle bg-surface-3 px-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted/60 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+              class="w-full rounded-md border border-subtle bg-surface-3 px-4 py-2.5 text-sm text-fg placeholder:text-fg-muted/60 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
             />
           </UiFormField>
         </div>

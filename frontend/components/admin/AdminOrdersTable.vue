@@ -39,7 +39,7 @@ const statusOptions = [
           </NuxtLink>
         </UiTableCell>
         <UiTableCell>
-          <span class="text-text-muted text-sm">{{ order.user?.email || order.customerName }}</span>
+          <span class="text-fg-muted text-sm">{{ order.user?.email || order.customerName }}</span>
         </UiTableCell>
         <UiTableCell>
           <UiSelect

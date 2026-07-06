@@ -39,17 +39,17 @@ async function decrement(item: any) {
         <div class="flex items-center gap-4">
           <img :src="item.product.imageUrl || '/placeholder.svg'" class="w-20 h-20 object-cover rounded-lg bg-surface-3" />
           <div class="flex-1 min-w-0">
-            <NuxtLink :to="`/products/${item.product.slug}`" class="font-semibold text-text-primary hover:text-accent line-clamp-1">
+            <NuxtLink :to="`/products/${item.product.slug}`" class="font-semibold text-fg hover:text-accent line-clamp-1">
               {{ item.product.name }}
             </NuxtLink>
             <p class="text-accent font-semibold mt-1">{{ formatPrice(item.product.price) }}</p>
           </div>
           <div class="flex items-center gap-2">
             <UiButton variant="ghost" size="sm" :disabled="item.quantity <= 1" @click="decrement(item)">−</UiButton>
-            <span class="w-8 text-center font-medium text-text-primary">{{ item.quantity }}</span>
+            <span class="w-8 text-center font-medium text-fg">{{ item.quantity }}</span>
             <UiButton variant="ghost" size="sm" @click="increment(item)">+</UiButton>
           </div>
-          <p class="font-semibold text-text-primary w-28 text-right hidden sm:block">{{ formatPrice(item.product.price * item.quantity) }}</p>
+          <p class="font-semibold text-fg w-28 text-right hidden sm:block">{{ formatPrice(item.product.price * item.quantity) }}</p>
           <button type="button" class="text-danger hover:text-danger/80 p-1" @click="cartStore.removeItem(item.productId)">
             <Trash2 class="w-4 h-4" />
           </button>
@@ -58,7 +58,7 @@ async function decrement(item: any) {
       <UiCard padding="lg" class="text-right">
         <div class="space-y-2 text-sm mb-4">
           <div class="flex justify-between pt-2 border-t border-subtle font-semibold">
-            <span class="text-text-primary">Tổng cộng</span>
+            <span class="text-fg">Tổng cộng</span>
             <UiText variant="accent" size="xl" class="font-bold">{{ formatPrice(cartStore.totalPrice) }}</UiText>
           </div>
         </div>

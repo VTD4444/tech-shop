@@ -57,10 +57,10 @@ async function deleteAddress(id: string) {
     <UiCard padding="md" class="mb-6">
       <UiText as="h2" size="lg" class="mb-4">Thông tin tài khoản</UiText>
       <dl class="space-y-2 text-sm">
-        <div class="flex gap-2"><dt class="text-text-muted w-28">Họ tên</dt><dd class="text-text-primary">{{ authStore.user?.fullName }}</dd></div>
-        <div class="flex gap-2"><dt class="text-text-muted w-28">Email</dt><dd class="text-text-primary">{{ authStore.user?.email }}</dd></div>
-        <div class="flex gap-2"><dt class="text-text-muted w-28">Số điện thoại</dt><dd class="text-text-primary">{{ authStore.user?.phone || '—' }}</dd></div>
-        <div class="flex gap-2"><dt class="text-text-muted w-24">Vai trò</dt><dd><UiBadge variant="neutral">{{ roleLabel }}</UiBadge></dd></div>
+        <div class="flex gap-2"><dt class="text-fg-muted w-28">Họ tên</dt><dd class="text-fg">{{ authStore.user?.fullName }}</dd></div>
+        <div class="flex gap-2"><dt class="text-fg-muted w-28">Email</dt><dd class="text-fg">{{ authStore.user?.email }}</dd></div>
+        <div class="flex gap-2"><dt class="text-fg-muted w-28">Số điện thoại</dt><dd class="text-fg">{{ authStore.user?.phone || '—' }}</dd></div>
+        <div class="flex gap-2"><dt class="text-fg-muted w-24">Vai trò</dt><dd><UiBadge variant="neutral">{{ roleLabel }}</UiBadge></dd></div>
       </dl>
     </UiCard>
     <UiCard id="addresses" padding="md" class="scroll-mt-24">
@@ -69,8 +69,8 @@ async function deleteAddress(id: string) {
         <UiButton variant="secondary" size="sm" @click="showAddForm = !showAddForm">+ Thêm</UiButton>
       </div>
       <div v-for="addr in addresses" :key="addr.id" class="border border-subtle rounded-lg p-4 mb-3">
-        <p class="font-medium text-text-primary">{{ addr.receiverName }} · {{ addr.phone }}</p>
-        <p class="text-sm text-text-muted mt-1">{{ addr.addressLine }}, {{ addr.ward }}, {{ addr.district }}, {{ addr.city }}</p>
+        <p class="font-medium text-fg">{{ addr.receiverName }} · {{ addr.phone }}</p>
+        <p class="text-sm text-fg-muted mt-1">{{ addr.addressLine }}, {{ addr.ward }}, {{ addr.district }}, {{ addr.city }}</p>
         <div class="flex gap-2 mt-2 items-center">
           <UiBadge v-if="addr.isDefault" variant="accent">Mặc định</UiBadge>
           <UiButton variant="ghost" size="sm" class="!text-danger" @click="deleteAddress(addr.id)">Xóa</UiButton>

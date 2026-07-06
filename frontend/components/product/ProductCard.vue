@@ -25,7 +25,7 @@ const placeholder = '/placeholder.svg';
       </div>
     </NuxtLink>
     <div class="p-4 flex flex-col flex-1">
-      <p v-if="product.brand" class="text-[10px] uppercase tracking-wider text-text-muted mb-1">
+      <p v-if="product.brand" class="text-[10px] uppercase tracking-wider text-fg-muted mb-1">
         {{ product.brand.name }}
       </p>
       <NuxtLink :to="`/products/${product.slug}`">
@@ -34,7 +34,7 @@ const placeholder = '/placeholder.svg';
         </UiText>
       </NuxtLink>
       <UiText variant="accent" size="lg" class="font-bold mb-2">{{ formatPrice(product.price) }}</UiText>
-      <p v-if="product.description" class="text-xs text-text-muted line-clamp-2 mb-4 flex-1">
+      <p v-if="product.description" class="text-xs text-fg-muted line-clamp-2 mb-4 flex-1">
         {{ product.description }}
       </p>
       <UiButton

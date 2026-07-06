@@ -7,7 +7,7 @@ withDefaults(defineProps<{ align?: 'left' | 'center' | 'right' }>(), { align: 'l
 <template>
   <th
     :class="cn(
-      'px-4 py-3 text-xs font-semibold uppercase tracking-wider text-text-muted',
+      'px-4 py-3 text-xs font-semibold uppercase tracking-wider text-fg-muted',
       align === 'center' && 'text-center',
       align === 'right' && 'text-right',
     )"

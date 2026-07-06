@@ -13,28 +13,30 @@ export default {
       },
       colors: {
         surface: {
-          0: '#0A0A0A',
-          1: '#12151A',
-          2: '#1A1D21',
-          3: '#242830',
+          0: 'rgb(var(--color-surface-0) / <alpha-value>)',
+          1: 'rgb(var(--color-surface-1) / <alpha-value>)',
+          2: 'rgb(var(--color-surface-2) / <alpha-value>)',
+          3: 'rgb(var(--color-surface-3) / <alpha-value>)',
         },
         accent: {
-          DEFAULT: '#00E5C3',
-          hover: '#46D9B1',
-          muted: 'rgba(0, 229, 195, 0.15)',
+          DEFAULT: 'rgb(var(--color-accent) / <alpha-value>)',
+          hover: 'rgb(var(--color-accent-hover) / <alpha-value>)',
+          muted: 'var(--color-accent-muted)',
         },
-        text: {
-          primary: '#FFFFFF',
-          muted: '#94A3B8',
+        fg: {
+          DEFAULT: 'rgb(var(--color-text-primary) / <alpha-value>)',
+          muted: 'rgb(var(--color-text-muted) / <alpha-value>)',
         },
         danger: {
-          DEFAULT: '#EF4444',
-          muted: 'rgba(239, 68, 68, 0.15)',
+          DEFAULT: 'rgb(var(--color-danger) / <alpha-value>)',
+          muted: 'var(--color-danger-muted)',
         },
         warning: {
-          DEFAULT: '#F97316',
-          muted: 'rgba(249, 115, 22, 0.15)',
+          DEFAULT: 'rgb(var(--color-warning) / <alpha-value>)',
+          muted: 'var(--color-warning-muted)',
         },
+        'on-accent': 'rgb(var(--color-on-accent) / <alpha-value>)',
+        overlay: 'var(--color-overlay)',
         // Legacy alias for gradual migration
         primary: {
           50: '#ecfdf8',
@@ -50,14 +52,14 @@ export default {
         },
       },
       borderColor: {
-        subtle: 'rgba(255, 255, 255, 0.08)',
+        subtle: 'var(--color-border)',
       },
       boxShadow: {
-        'glow-accent': '0 0 20px rgba(0, 229, 195, 0.35)',
-        card: '0 4px 24px rgba(0, 0, 0, 0.4)',
+        'glow-accent': 'var(--shadow-glow-accent)',
+        card: 'var(--shadow-card)',
       },
       backgroundImage: {
-        'hero-gradient': 'linear-gradient(135deg, rgba(0,229,195,0.08) 0%, transparent 50%)',
+        'hero-gradient': 'var(--hero-gradient)',
       },
     },
   },

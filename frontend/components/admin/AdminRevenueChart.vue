@@ -34,21 +34,28 @@ const chartData = computed(() => ({
   ],
 }));
 
-const chartOptions = {
-  responsive: true,
-  maintainAspectRatio: false,
-  plugins: { legend: { display: false } },
-  scales: {
-    x: {
-      grid: { color: 'rgba(255,255,255,0.05)' },
-      ticks: { color: '#94A3B8' },
+const { theme } = useTheme();
+
+const chartOptions = computed(() => {
+  const isDark = theme.value === 'dark';
+  const gridColor = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(15,23,42,0.08)';
+  const tickColor = isDark ? '#94A3B8' : '#64748B';
+  return {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+      x: {
+        grid: { color: gridColor },
+        ticks: { color: tickColor },
+      },
+      y: {
+        grid: { color: gridColor },
+        ticks: { color: tickColor },
+      },
     },
-    y: {
-      grid: { color: 'rgba(255,255,255,0.05)' },
-      ticks: { color: '#94A3B8' },
-    },
-  },
-};
+  };
+});
 
 async function loadChart() {
   if (props.monthlyData?.length) {
@@ -75,15 +82,15 @@ watch(() => props.monthlyData, loadChart);
     <UiText as="h3" size="lg" class="mb-4">Doanh thu theo tháng</UiText>
     <div class="h-64">
       <ClientOnly>
-        <div v-if="loading" class="h-full flex items-center justify-center text-sm text-text-muted">
+        <div v-if="loading" class="h-full flex items-center justify-center text-sm text-fg-muted">
           Đang tải biểu đồ...
         </div>
         <Bar v-else-if="data.length" :data="chartData" :options="chartOptions" />
-        <div v-else class="h-full flex items-center justify-center text-sm text-text-muted">
+        <div v-else class="h-full flex items-center justify-center text-sm text-fg-muted">
           Chưa có đơn hàng thanh toán
         </div>
         <template #fallback>
-          <div class="h-full flex items-center justify-center text-sm text-text-muted">Đang tải biểu đồ...</div>
+          <div class="h-full flex items-center justify-center text-sm text-fg-muted">Đang tải biểu đồ...</div>
         </template>
       </ClientOnly>
     </div>

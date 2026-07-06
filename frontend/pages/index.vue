@@ -44,8 +44,8 @@ await Promise.all([
             <div class="w-12 h-0.5 bg-accent" />
           </div>
         </div>
-        <div class="-mx-4 px-4 sm:mx-0 sm:px-0 overflow-x-auto pb-3 scrollbar-horizontal">
-          <div class="flex gap-4 md:gap-6 w-max min-w-full sm:min-w-0">
+        <div class="-mx-4 px-4 pt-2 pb-4 sm:mx-0 sm:px-0 overflow-x-auto scrollbar-horizontal">
+          <div class="flex gap-4 md:gap-6 w-max min-w-full sm:min-w-0 p-1">
             <NuxtLink
               v-for="cat in productStore.categories"
               :key="cat.id"
@@ -53,7 +53,7 @@ await Promise.all([
               class="group flex flex-col items-center gap-3 text-center shrink-0 w-[6.5rem] sm:w-28"
             >
               <div
-                class="w-full aspect-square rounded-2xl border border-subtle bg-surface-2 flex items-center justify-center transition-all group-hover:border-accent group-hover:bg-accent-muted/40 group-hover:shadow-glow-accent/20 group-hover:-translate-y-0.5"
+                class="w-full aspect-square rounded-2xl border border-subtle bg-surface-2 flex items-center justify-center transition-all group-hover:border-accent group-hover:bg-accent-muted/40 group-hover:shadow-glow-accent/30 group-hover:scale-[1.03]"
               >
                 <component
                   :is="getCategoryIcon(cat.slug)"
@@ -61,7 +61,7 @@ await Promise.all([
                   aria-hidden="true"
                 />
               </div>
-              <UiText size="sm" class="font-medium text-text-primary group-hover:text-accent transition-colors leading-tight">
+              <UiText size="sm" class="font-medium text-fg group-hover:text-accent transition-colors leading-tight">
                 {{ cat.name }}
               </UiText>
             </NuxtLink>
@@ -108,9 +108,9 @@ await Promise.all([
           <UiCard glass padding="lg">
             <UiText as="h3" size="lg" class="mb-4">Tương thích thời gian thực</UiText>
             <ul class="space-y-3 text-sm">
-              <li class="flex justify-between text-text-muted"><span>Bo mạch chủ</span><span class="text-text-primary">ATX — OK</span></li>
-              <li class="flex justify-between text-text-muted"><span>Socket CPU</span><span class="text-accent">Tương thích</span></li>
-              <li class="flex justify-between text-text-muted"><span>Thế hệ RAM</span><span class="text-accent">DDR5</span></li>
+              <li class="flex justify-between text-fg-muted"><span>Bo mạch chủ</span><span class="text-fg">ATX — OK</span></li>
+              <li class="flex justify-between text-fg-muted"><span>Socket CPU</span><span class="text-accent">Tương thích</span></li>
+              <li class="flex justify-between text-fg-muted"><span>Thế hệ RAM</span><span class="text-accent">DDR5</span></li>
             </ul>
             <p class="mt-4 text-accent text-sm font-medium flex items-center gap-2">
               <span class="w-2 h-2 rounded-full bg-accent" /> Linh kiện tương thích

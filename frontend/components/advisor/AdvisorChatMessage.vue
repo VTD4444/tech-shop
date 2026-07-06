@@ -24,11 +24,11 @@ const html = computed(() => {
     <div
       class="max-w-[85%] rounded-lg px-4 py-3 text-sm"
       :class="role === 'user'
-        ? 'bg-accent text-surface-0'
-        : 'bg-surface-2 border border-subtle text-text-primary prose prose-invert prose-sm max-w-none'"
+        ? 'bg-accent text-on-accent'
+        : 'bg-surface-2 border border-subtle text-fg'"
     >
-      <div v-if="role === 'assistant' && !content" class="text-text-muted italic">Đang suy nghĩ...</div>
-      <div v-else v-html="html" />
+      <div v-if="role === 'assistant' && !content" class="text-fg-muted italic">Đang suy nghĩ...</div>
+      <div v-else class="advisor-message-body" v-html="html" />
     </div>
   </div>
 </template>

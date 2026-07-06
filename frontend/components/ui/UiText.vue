@@ -17,8 +17,8 @@ const tag = computed(() => props.as);
 
 const classes = computed(() =>
   cn(
-    props.variant === 'default' && 'text-text-primary',
-    props.variant === 'muted' && 'text-text-muted',
+    props.variant === 'default' && 'text-fg',
+    props.variant === 'muted' && 'text-fg-muted',
     props.variant === 'accent' && 'text-accent',
     props.variant === 'danger' && 'text-danger',
     props.size === 'xs' && 'text-xs',
@@ -30,7 +30,7 @@ const classes = computed(() =>
     props.size === '3xl' && 'text-3xl font-bold',
     props.size === '4xl' && 'text-4xl md:text-5xl font-bold tracking-tight',
     props.uppercase && 'uppercase tracking-wide',
-    (props.as === 'h1' || props.as === 'h2' || props.as === 'h3' || props.as === 'h4') && 'text-text-primary font-bold',
+    (props.as === 'h1' || props.as === 'h2' || props.as === 'h3' || props.as === 'h4') && 'text-fg font-bold',
   ),
 );
 </script>

@@ -88,11 +88,11 @@ async function placeOrderPayLater() {
                   alt=""
                 />
                 <div class="min-w-0">
-                  <p class="font-medium text-text-primary truncate">{{ item.product.name }}</p>
-                  <p class="text-sm text-text-muted">SL: {{ item.quantity }}</p>
+                  <p class="font-medium text-fg truncate">{{ item.product.name }}</p>
+                  <p class="text-sm text-fg-muted">SL: {{ item.quantity }}</p>
                 </div>
               </div>
-              <span class="font-semibold text-text-primary shrink-0 ml-2">
+              <span class="font-semibold text-fg shrink-0 ml-2">
                 {{ formatPrice(item.product.price * item.quantity) }}
               </span>
             </div>
@@ -113,8 +113,8 @@ async function placeOrderPayLater() {
             >
               <input v-model="selectedAddressId" type="radio" :value="addr.id" class="mt-1 accent-accent" />
               <div class="text-sm">
-                <p class="font-medium text-text-primary">{{ addr.receiverName }} · {{ addr.phone }}</p>
-                <p class="text-text-muted">{{ addr.addressLine }}</p>
+                <p class="font-medium text-fg">{{ addr.receiverName }} · {{ addr.phone }}</p>
+                <p class="text-fg-muted">{{ addr.addressLine }}</p>
               </div>
             </label>
           </div>
@@ -134,8 +134,8 @@ async function placeOrderPayLater() {
       <UiCard padding="md" class="h-fit">
         <UiText as="h2" size="lg" class="mb-4">Tóm tắt đơn hàng</UiText>
         <div v-for="item in cartStore.items" :key="item.productId" class="flex justify-between text-sm py-2 border-b border-subtle">
-          <span class="text-text-muted truncate mr-2">{{ item.product.name }} × {{ item.quantity }}</span>
-          <span class="text-text-primary shrink-0">{{ formatPrice(item.product.price * item.quantity) }}</span>
+          <span class="text-fg-muted truncate mr-2">{{ item.product.name }} × {{ item.quantity }}</span>
+          <span class="text-fg shrink-0">{{ formatPrice(item.product.price * item.quantity) }}</span>
         </div>
         <div class="space-y-2 text-sm border-t border-subtle pt-4 mt-4">
           <div class="flex justify-between font-semibold text-base pt-2">

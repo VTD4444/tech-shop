@@ -29,7 +29,7 @@ function onBackdrop(e: MouseEvent) {
     <Transition name="fade">
       <div
         v-if="open"
-        class="fixed inset-0 z-[90] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
+        class="fixed inset-0 z-[90] flex items-center justify-center p-4 bg-overlay backdrop-blur-sm"
         @click="onBackdrop"
       >
         <UiCard
@@ -43,7 +43,7 @@ function onBackdrop(e: MouseEvent) {
           <div v-if="title" class="mb-2">
             <UiText id="ui-dialog-title" as="h3" size="lg">{{ title }}</UiText>
           </div>
-          <p v-if="description" class="text-sm text-text-muted">{{ description }}</p>
+          <p v-if="description" class="text-sm text-fg-muted">{{ description }}</p>
           <div v-if="$slots.default" :class="description ? 'mt-4' : ''">
             <slot />
           </div>

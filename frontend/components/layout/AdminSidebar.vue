@@ -37,7 +37,7 @@ function isActive(link: { to: string; exact?: boolean }) {
           'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors border-l-2',
           isActive(link)
             ? 'bg-accent-muted text-accent border-accent'
-            : 'text-text-muted border-transparent hover:bg-surface-3 hover:text-text-primary',
+            : 'text-fg-muted border-transparent hover:bg-surface-3 hover:text-fg',
         ]"
       >
         <component :is="link.icon" class="w-4 h-4 shrink-0" />
@@ -49,10 +49,10 @@ function isActive(link: { to: string; exact?: boolean }) {
         <Wrench class="w-4 h-4" />
         Xây dựng PC
       </UiButton>
-      <NuxtLink to="/" class="flex items-center gap-2 px-3 py-2 text-xs text-text-muted hover:text-accent">
+      <NuxtLink to="/" class="flex items-center gap-2 px-3 py-2 text-xs text-fg-muted hover:text-accent">
         <HelpCircle class="w-4 h-4" /> Hỗ trợ
       </NuxtLink>
-      <span class="flex items-center gap-2 px-3 py-2 text-xs text-text-muted">
+      <span class="flex items-center gap-2 px-3 py-2 text-xs text-fg-muted">
         <Settings class="w-4 h-4" /> Cài đặt
       </span>
     </div>

@@ -38,7 +38,7 @@ const items = computed(() => {
   <div ref="menuRef" class="relative">
     <button
       type="button"
-      class="p-2 text-text-muted hover:text-accent transition-colors rounded-lg hover:bg-surface-2"
+      class="p-2 text-fg-muted hover:text-accent transition-colors rounded-lg hover:bg-surface-2"
       aria-label="Menu tài khoản"
       aria-haspopup="true"
       :aria-expanded="open"
@@ -60,7 +60,7 @@ const items = computed(() => {
         class="absolute right-0 mt-2 w-52 py-1 rounded-lg border border-subtle bg-surface-1 shadow-xl z-50"
         role="menu"
       >
-        <p class="px-3 py-2 text-xs text-text-muted border-b border-subtle truncate">
+        <p class="px-3 py-2 text-xs text-fg-muted border-b border-subtle truncate">
           {{ authStore.displayName }}
         </p>
         <NuxtLink
@@ -68,10 +68,10 @@ const items = computed(() => {
           :key="item.to"
           :to="item.to"
           role="menuitem"
-          class="flex items-center gap-2.5 px-3 py-2.5 text-sm text-text-primary hover:bg-surface-2 hover:text-accent transition-colors"
+          class="flex items-center gap-2.5 px-3 py-2.5 text-sm text-fg hover:bg-surface-2 hover:text-accent transition-colors"
           @click="close"
         >
-          <component :is="item.icon" class="w-4 h-4 shrink-0 text-text-muted" />
+          <component :is="item.icon" class="w-4 h-4 shrink-0 text-fg-muted" />
           {{ item.label }}
         </NuxtLink>
         <div class="border-t border-subtle mt-1 pt-1">

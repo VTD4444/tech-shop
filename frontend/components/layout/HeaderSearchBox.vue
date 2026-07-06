@@ -121,7 +121,7 @@ function onSubmit() {
       v-if="showDropdown"
       class="absolute left-0 right-0 top-full mt-1 z-50 rounded-lg border border-subtle bg-surface-1 shadow-xl overflow-hidden"
     >
-      <div v-if="loading && !results.length" class="px-4 py-6 text-sm text-text-muted text-center">
+      <div v-if="loading && !results.length" class="px-4 py-6 text-sm text-fg-muted text-center">
         Đang tìm kiếm...
       </div>
 
@@ -140,8 +140,8 @@ function onSubmit() {
                 class="w-10 h-10 rounded-md object-cover bg-surface-3 shrink-0"
               />
               <div class="min-w-0 flex-1">
-                <p class="text-sm font-medium text-text-primary truncate">{{ item.name }}</p>
-                <p v-if="item.brand?.name" class="text-xs text-text-muted truncate">{{ item.brand.name }}</p>
+                <p class="text-sm font-medium text-fg truncate">{{ item.name }}</p>
+                <p v-if="item.brand?.name" class="text-xs text-fg-muted truncate">{{ item.brand.name }}</p>
               </div>
               <span class="text-sm font-semibold text-accent shrink-0">{{ formatPrice(item.price) }}</span>
             </button>
@@ -158,7 +158,7 @@ function onSubmit() {
         </button>
       </template>
 
-      <div v-else class="px-4 py-6 text-sm text-text-muted text-center">
+      <div v-else class="px-4 py-6 text-sm text-fg-muted text-center">
         Không tìm thấy sản phẩm phù hợp
       </div>
     </div>

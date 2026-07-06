@@ -32,7 +32,7 @@ watch(
       <button
         v-if="messages.length"
         type="button"
-        class="text-xs text-text-muted hover:text-danger flex items-center gap-1"
+        class="text-xs text-fg-muted hover:text-danger flex items-center gap-1"
         @click="clearHistory"
       >
         <Trash2 class="w-3.5 h-3.5" /> Xóa lịch sử

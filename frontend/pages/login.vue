@@ -31,7 +31,7 @@ async function handleLogin() {
     toast.success('Chào mừng trở lại!');
     await navigateTo('/');
   } catch (e: any) {
-    error.value = e.data?.message || 'Đăng nhập thất bại';
+    error.value = extractApiMessage(e, 'Đăng nhập thất bại');
     toast.error(error.value);
   } finally {
     loading.value = false;
@@ -61,13 +61,13 @@ async function handleLogin() {
           <div class="w-full border-t border-subtle" />
         </div>
         <div class="relative flex justify-center text-xs uppercase">
-          <span class="bg-surface-1 px-2 text-text-muted">hoặc</span>
+          <span class="bg-surface-1 px-2 text-fg-muted">hoặc</span>
         </div>
       </div>
 
       <a
         :href="googleAuthUrl"
-        class="flex items-center justify-center gap-2 w-full rounded-lg border border-subtle bg-surface-2 px-4 py-2.5 text-sm font-medium text-text-primary hover:bg-surface-3 transition-colors"
+        class="flex items-center justify-center gap-2 w-full rounded-lg border border-subtle bg-surface-2 px-4 py-2.5 text-sm font-medium text-fg hover:bg-surface-3 transition-colors"
       >
         <svg class="w-5 h-5" viewBox="0 0 24 24" aria-hidden="true">
           <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -78,10 +78,10 @@ async function handleLogin() {
         Đăng nhập với Google
       </a>
 
-      <p class="text-center text-sm">
+      <p class="text-center text-sm text-fg-muted">
         <NuxtLink to="/forgot-password" class="text-accent hover:underline">Quên mật khẩu?</NuxtLink>
       </p>
-      <p class="text-center text-sm text-text-muted">
+      <p class="text-center text-sm text-fg-muted">
         Chưa có tài khoản? <NuxtLink to="/register" class="text-accent">Đăng ký</NuxtLink>
       </p>
     </form>

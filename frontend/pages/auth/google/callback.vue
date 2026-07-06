@@ -27,7 +27,7 @@ onMounted(async () => {
     toast.success('Đăng nhập Google thành công!');
     await navigateTo('/', { replace: true });
   } catch (e: any) {
-    error.value = e.data?.message || 'Đăng nhập Google thất bại';
+    error.value = extractApiMessage(e, 'Đăng nhập Google thất bại');
     toast.error(error.value);
   } finally {
     loading.value = false;

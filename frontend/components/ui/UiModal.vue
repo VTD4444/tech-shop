@@ -16,13 +16,13 @@ function onBackdrop(e: MouseEvent) {
     <Transition name="fade">
       <div
         v-if="open"
-        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
+        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-overlay backdrop-blur-sm"
         @click="onBackdrop"
       >
         <UiCard class="w-full max-w-lg max-h-[90vh] overflow-y-auto" padding="lg" @click.stop>
           <div v-if="title" class="flex items-center justify-between mb-4">
             <UiText as="h3" size="xl">{{ title }}</UiText>
-            <button type="button" class="text-text-muted hover:text-text-primary p-1" @click="emit('close')">✕</button>
+            <button type="button" class="text-fg-muted hover:text-fg p-1" @click="emit('close')">✕</button>
           </div>
           <slot />
         </UiCard>
