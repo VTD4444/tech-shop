@@ -166,48 +166,57 @@ async function updateStatus(status: string) {
         </dl>
       </UiCard>
 
-      <UiCard padding="none">
-        <div class="p-4 border-b border-subtle">
-          <UiText as="h2" size="lg">Sản phẩm ({{ order.items?.length || 0 }})</UiText>
-        </div>
-        <div
-          v-for="item in order.items"
-          :key="item.id"
-          class="flex justify-between items-center gap-4 px-4 py-4 border-b border-subtle last:border-0"
-        >
-          <div class="flex items-center gap-4 min-w-0">
-            <img
-              :src="item.productImageUrl || '/placeholder.svg'"
-              :alt="item.productName"
-              class="w-16 h-16 object-cover rounded-lg bg-surface-3 shrink-0"
-            />
-            <div class="min-w-0">
-              <NuxtLink
-                v-if="item.productSlug"
-                :to="`/products/${item.productSlug}`"
-                class="font-medium text-fg hover:text-accent line-clamp-2"
-                target="_blank"
-              >
-                {{ item.productName }}
-              </NuxtLink>
-              <span v-else class="font-medium text-fg">{{ item.productName }}</span>
-              <p class="text-sm text-fg-muted">
-                {{ formatPrice(item.price) }} × {{ item.quantity }}
-              </p>
+      <UiDataTable
+        :title="`Sản phẩm (${order.items?.length || 0})`"
+        :empty="!order.items?.length"
+        empty-title="Không có sản phẩm"
+      >
+        <template #head>
+          <UiTableHead>Sản phẩm</UiTableHead>
+          <UiTableHead align="right">Đơn giá</UiTableHead>
+          <UiTableHead align="right">SL</UiTableHead>
+          <UiTableHead align="right">Thành tiền</UiTableHead>
+        </template>
+
+        <UiTableRow v-for="item in order.items" :key="item.id">
+          <UiTableCell>
+            <div class="flex min-w-0 items-center gap-3">
+              <img
+                :src="item.productImageUrl || '/placeholder.svg'"
+                :alt="item.productName"
+                class="h-12 w-12 shrink-0 rounded-lg bg-surface-3 object-cover"
+              />
+              <div class="min-w-0">
+                <UiTableAction
+                  v-if="item.productSlug"
+                  :to="`/products/${item.productSlug}`"
+                  external
+                >
+                  <span class="line-clamp-2 text-left">{{ item.productName }}</span>
+                </UiTableAction>
+                <span v-else class="font-medium text-fg">{{ item.productName }}</span>
+              </div>
             </div>
+          </UiTableCell>
+          <UiTableCell align="right" variant="numeric">{{ formatPrice(item.price) }}</UiTableCell>
+          <UiTableCell align="right" variant="numeric">{{ item.quantity }}</UiTableCell>
+          <UiTableCell align="right" variant="numeric">
+            <span class="font-semibold text-accent">{{ formatPrice(item.subtotal) }}</span>
+          </UiTableCell>
+        </UiTableRow>
+
+        <template #footer>
+          <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <div class="flex items-center justify-between gap-4 text-sm sm:justify-start">
+              <UiText variant="muted" size="sm">Phí vận chuyển</UiText>
+              <UiText size="sm" class="tabular-nums">{{ formatPrice(order.shippingFee) }}</UiText>
+            </div>
+            <UiText variant="accent" size="xl" class="font-bold tabular-nums sm:text-right">
+              Tổng cộng: {{ formatPrice(order.totalAmount) }}
+            </UiText>
           </div>
-          <span class="font-semibold text-accent shrink-0">{{ formatPrice(item.subtotal) }}</span>
-        </div>
-        <div class="p-4 flex justify-between items-center border-t border-subtle">
-          <UiText variant="muted" size="sm">Phí vận chuyển</UiText>
-          <UiText size="sm">{{ formatPrice(order.shippingFee) }}</UiText>
-        </div>
-        <div class="px-4 pb-4 text-right">
-          <UiText variant="accent" size="2xl" class="font-bold">
-            Tổng cộng: {{ formatPrice(order.totalAmount) }}
-          </UiText>
-        </div>
-      </UiCard>
+        </template>
+      </UiDataTable>
     </div>
   </div>
 </template>

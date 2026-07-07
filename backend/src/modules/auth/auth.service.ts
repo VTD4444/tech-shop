@@ -3,15 +3,18 @@ import {
   ConflictException,
   UnauthorizedException,
   BadRequestException,
+  NotFoundException,
+  ServiceUnavailableException,
+  InternalServerErrorException,
   Logger,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import * as crypto from 'crypto';
 import { Profile } from 'passport-google-oauth20';
 import { PrismaService } from '../prisma/prisma.service';
 import { MailService } from '../mail/mail.service';
-import { stripEnvQuotes } from '../../common/utils/sepay.util';
 
 type SessionUser = {
   id: bigint;
@@ -30,6 +33,7 @@ export class AuthService {
     private prisma: PrismaService,
     private jwtService: JwtService,
     private mailService: MailService,
+    private config: ConfigService,
   ) {}
 
   async register(dto: {
@@ -185,14 +189,15 @@ export class AuthService {
   }
 
   async forgotPassword(email: string) {
+    const normalized = email.trim().toLowerCase();
     const user = await this.prisma.user.findUnique({
-      where: { email: email.trim().toLowerCase() },
+      where: { email: normalized },
     });
     if (!user) {
-      return { message: 'If the email exists, a reset link was sent' };
+      throw new NotFoundException('Email chưa được đăng ký trong hệ thống');
     }
     if (!user.isActive) {
-      return { message: 'If the email exists, a reset link was sent' };
+      throw new BadRequestException('Tài khoản đã bị vô hiệu hóa');
     }
 
     const rawToken = crypto.randomBytes(32).toString('hex');
@@ -204,18 +209,53 @@ export class AuthService {
       data: { userId: user.id, tokenHash, expiresAt },
     });
 
-    const frontend =
-      stripEnvQuotes(process.env.FRONTEND_URL) || 'http://localhost:3001';
-    const resetUrl = `${frontend.replace(/\/+$/, '')}/reset-password?token=${rawToken}`;
-    const sent = await this.mailService.sendPasswordReset(user.email, resetUrl);
+    const frontend = this.config.get<string>('app.frontendUrl', 'http://localhost:3001');
+    const resetUrl = `${frontend}/reset-password?token=${rawToken}`;
 
-    if (!sent) {
+    if (!this.mailService.isConfigured()) {
       this.logger.error(
-        `Password reset email not sent for user ${user.id} — check RESEND_API_KEY, MAIL_FROM, FRONTEND_URL on server`,
+        'Password reset email skipped — RESEND_API_KEY or MAIL_FROM not configured',
+      );
+      if (this.config.get<string>('app.nodeEnv') === 'development') {
+        this.logger.warn(`[DEV] Password reset link for ${user.email}: ${resetUrl}`);
+      }
+      throw new ServiceUnavailableException(
+        'Không thể gửi email đặt lại mật khẩu. Hệ thống email chưa được cấu hình trên máy chủ.',
       );
     }
 
-    return { message: 'If the email exists, a reset link was sent' };
+    const sendResult = await this.mailService.sendPasswordReset(user.email, resetUrl);
+    if (!sendResult.ok) {
+      if (
+        this.config.get<string>('app.nodeEnv') === 'development' &&
+        MailService.isSandboxRestriction(sendResult.error)
+      ) {
+        this.logger.warn(
+          `[DEV] Resend sandbox — chỉ gửi được tới email chủ tài khoản Resend. Link reset: ${resetUrl}`,
+        );
+        return {
+          message:
+            'Đã gửi liên kết đặt lại mật khẩu đến email của bạn (dev: xem link trong log server)',
+        };
+      }
+
+      this.logger.error(
+        `Password reset email failed for user ${user.id} (${user.email}): ${sendResult.error}`,
+      );
+
+      if (MailService.isSandboxRestriction(sendResult.error)) {
+        throw new ServiceUnavailableException(
+          'Không thể gửi email: Resend đang ở chế độ thử nghiệm. Hãy verify domain trên resend.com/domains và cập nhật MAIL_FROM.',
+        );
+      }
+
+      throw new InternalServerErrorException(
+        'Không thể gửi email. Vui lòng thử lại sau hoặc liên hệ hỗ trợ.',
+      );
+    }
+
+    this.logger.log(`Password reset email sent to ${user.email}`);
+    return { message: 'Đã gửi liên kết đặt lại mật khẩu đến email của bạn' };
   }
 
   async resetPassword(token: string, newPassword: string) {

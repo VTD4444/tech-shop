@@ -1,6 +1,5 @@
 import { useAuthStore } from '~/stores/auth';
 import { isPublicAuthPath } from '~/utils/auth-paths';
-import { getAccessToken } from '~/utils/auth-token';
 
 export default defineNuxtPlugin((nuxtApp) => {
   const initAuth = async (path: string) => {
@@ -16,7 +15,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     }
 
     if (authStore.bootstrapped) {
-      if (!authStore.user && getAccessToken()) {
+      if (!authStore.user) {
         await authStore.fetchProfile();
       }
       return;

@@ -47,8 +47,9 @@ Browser → Nuxt (server) → NestJS /products → PostgreSQL → HTML
 
 ### 2. Authentication
 ```
-Login Form → Nuxt → POST /auth/login → NestJS validates → Set-Cookie (httpOnly)
-Auto-sent on all subsequent requests via credentials: 'include'
+Login Form → Nuxt → POST /auth/login → NestJS validates → Set-Cookie (httpOnly access + refresh)
+Subsequent API calls: credentials: 'include' only (no localStorage / Bearer header)
+Login response body: { user } — tokens are not returned in JSON
 ```
 
 ### 3. Checkout (Atomic)
@@ -128,7 +129,8 @@ SSR auth bootstrap: `plugins/auth.server.ts` hydrates session from cookies on `/
 
 ## Security
 
-- **JWT**: Access (15m) + Refresh (7d) tokens stored in httpOnly, Secure cookies
+- **JWT**: Access (15m) + Refresh (7d) in httpOnly cookies; cookie-only on API (no Bearer)
+- **Config**: `@nestjs/config` + Joi validates env at startup (`backend/src/config/`)
 - **SePay**: HMAC-SHA256 form signature; IPN is source of truth for `paid`
 - **Rate limiting**: `@nestjs/throttler` (60 req/min)
 - **Helmet**: HTTP headers security

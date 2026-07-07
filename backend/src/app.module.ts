@@ -1,3 +1,4 @@
+import { AppConfigModule } from './config/config.module';
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
@@ -26,6 +27,7 @@ import { HealthController } from './health.controller';
 
 @Module({
   imports: [
+    AppConfigModule,
     SentryModule.forRoot(),
     LoggerModule.forRoot({
       pinoHttp: {

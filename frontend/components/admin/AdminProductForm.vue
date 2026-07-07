@@ -21,8 +21,41 @@ const form = reactive({
   price: props.initial?.price || 0,
   stockQuantity: props.initial?.stockQuantity || 0,
   description: props.initial?.description || '',
+  categoryId: props.initial?.categoryId ? String(props.initial.categoryId) : '',
+  brandId: props.initial?.brandId ? String(props.initial.brandId) : '',
   isPcComponent: props.initial?.isPcComponent || false,
   status: props.initial?.status || 'active',
+});
+
+const { $api } = useNuxtApp();
+const categories = ref<{ label: string; value: string }[]>([]);
+const brands = ref<{ label: string; value: string }[]>([]);
+
+function flattenCategories(items: any[], prefix = ''): { label: string; value: string }[] {
+  const out: { label: string; value: string }[] = [];
+  for (const item of items) {
+    out.push({ label: `${prefix}${item.name}`, value: String(item.id) });
+    if (item.children?.length) {
+      out.push(...flattenCategories(item.children, `${prefix}— `));
+    }
+  }
+  return out;
+}
+
+onMounted(async () => {
+  try {
+    const [catRes, brandRes]: any[] = await Promise.all([
+      $api('/categories'),
+      $api('/brands'),
+    ]);
+    categories.value = flattenCategories(catRes.data || []);
+    brands.value = (brandRes.data || []).map((b: any) => ({
+      label: b.name,
+      value: String(b.id),
+    }));
+  } catch {
+    toast.error('Không tải được danh mục hoặc thương hiệu');
+  }
 });
 
 const longDescription = ref(props.initial?.longDescription || '');
@@ -64,6 +97,8 @@ function onSubmit() {
 
   emit('submit', {
     ...form,
+    categoryId: form.categoryId || undefined,
+    brandId: form.brandId || undefined,
     longDescription: longDescription.value || null,
     spec: productSpec.value,
     images: images.value.length ? images.value : undefined,
@@ -129,6 +164,32 @@ function onSubmit() {
           hint="Ảnh chính hiển thị trên trang sản phẩm và danh sách"
           @change="onFileSelected"
         />
+      </UiCard>
+
+      <UiCard padding="md">
+        <UiText as="h2" size="lg" class="mb-4 pb-3 border-b border-subtle">
+          Phân loại
+        </UiText>
+        <div class="space-y-4">
+          <UiFormField label="Danh mục">
+            <UiSelect
+              v-model="form.categoryId"
+              :options="[{ label: '— Không chọn —', value: '' }, ...categories]"
+              placeholder="Chọn danh mục"
+            />
+          </UiFormField>
+          <UiFormField label="Thương hiệu">
+            <UiSelect
+              v-model="form.brandId"
+              :options="[{ label: '— Không chọn —', value: '' }, ...brands]"
+              placeholder="Chọn thương hiệu"
+            />
+          </UiFormField>
+          <UiText v-if="!brands.length" variant="muted" size="xs">
+            Chưa có thương hiệu —
+            <NuxtLink to="/admin/brands" class="text-accent hover:underline">thêm tại đây</NuxtLink>
+          </UiText>
+        </div>
       </UiCard>
 
       <UiCard padding="md">

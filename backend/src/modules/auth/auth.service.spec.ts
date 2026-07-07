@@ -1,6 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { UnauthorizedException } from '@nestjs/common';
+import {
+  UnauthorizedException,
+  NotFoundException,
+  ServiceUnavailableException,
+  BadRequestException,
+} from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
 import { AuthService } from './auth.service';
 import { PrismaService } from '../prisma/prisma.service';
@@ -13,13 +19,14 @@ describe('AuthService', () => {
       findFirst: jest.fn(),
       findUnique: jest.fn(),
       create: jest.fn(),
+      update: jest.fn(),
     },
     passwordResetToken: {
       deleteMany: jest.fn(),
       create: jest.fn(),
       findFirst: jest.fn(),
     },
-    $transaction: jest.fn((fn) => fn(prisma)),
+    $transaction: jest.fn((ops) => Promise.all(ops)),
   };
   const jwtService = {
     sign: jest.fn().mockReturnValue('token'),
@@ -27,6 +34,14 @@ describe('AuthService', () => {
   };
   const mailService = {
     sendPasswordReset: jest.fn(),
+    isConfigured: jest.fn().mockReturnValue(true),
+  };
+  const configService = {
+    get: jest.fn((key: string, defaultVal?: string) => {
+      if (key === 'app.frontendUrl') return 'http://localhost:3001';
+      if (key === 'app.nodeEnv') return 'test';
+      return defaultVal;
+    }),
   };
 
   beforeEach(async () => {
@@ -37,6 +52,7 @@ describe('AuthService', () => {
         { provide: PrismaService, useValue: prisma },
         { provide: JwtService, useValue: jwtService },
         { provide: MailService, useValue: mailService },
+        { provide: ConfigService, useValue: configService },
       ],
     }).compile();
     service = module.get(AuthService);
@@ -80,5 +96,54 @@ describe('AuthService', () => {
     await expect(
       service.login({ email: 'a@b.com', password: 'secret1' }),
     ).rejects.toBeInstanceOf(UnauthorizedException);
+  });
+
+  it('forgotPassword throws when email is not registered', async () => {
+    prisma.user.findUnique.mockResolvedValue(null);
+    await expect(service.forgotPassword('unknown@test.com')).rejects.toBeInstanceOf(
+      NotFoundException,
+    );
+  });
+
+  it('forgotPassword sends reset email for registered active user', async () => {
+    prisma.user.findUnique.mockResolvedValue({
+      id: 1n,
+      email: 'user@test.com',
+      isActive: true,
+    });
+    prisma.passwordResetToken.deleteMany.mockResolvedValue({ count: 0 });
+    prisma.passwordResetToken.create.mockResolvedValue({});
+    mailService.isConfigured.mockReturnValue(true);
+    mailService.sendPasswordReset.mockResolvedValue({ ok: true });
+
+    const result = await service.forgotPassword('user@test.com');
+
+    expect(mailService.sendPasswordReset).toHaveBeenCalledWith(
+      'user@test.com',
+      expect.stringContaining('/reset-password?token='),
+    );
+    expect(result.message).toContain('Đã gửi liên kết');
+  });
+
+  it('forgotPassword throws when mail service is not configured', async () => {
+    prisma.user.findUnique.mockResolvedValue({
+      id: 1n,
+      email: 'user@test.com',
+      isActive: true,
+    });
+    prisma.passwordResetToken.deleteMany.mockResolvedValue({ count: 0 });
+    prisma.passwordResetToken.create.mockResolvedValue({});
+    mailService.isConfigured.mockReturnValue(false);
+
+    await expect(service.forgotPassword('user@test.com')).rejects.toBeInstanceOf(
+      ServiceUnavailableException,
+    );
+  });
+
+  it('resetPassword throws for invalid token', async () => {
+    prisma.passwordResetToken.findFirst.mockResolvedValue(null);
+    await expect(service.resetPassword('bad-token', 'newpass1')).rejects.toBeInstanceOf(
+      BadRequestException,
+    );
   });
 });

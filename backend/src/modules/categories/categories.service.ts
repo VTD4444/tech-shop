@@ -24,15 +24,32 @@ export class CategoriesService {
     return serializeCategory(category);
   }
 
-  async create(dto: { name: string; slug: string; parentId?: bigint }) {
-    const category = await this.prisma.category.create({ data: dto });
+  async create(dto: { name: string; slug: string; parentId?: string }) {
+    const data = {
+      name: dto.name,
+      slug: dto.slug,
+      parentId: dto.parentId ? BigInt(dto.parentId) : undefined,
+    };
+    const category = await this.prisma.category.create({ data });
     return serializeCategory(category);
   }
 
-  async update(id: string, dto: { name?: string; slug?: string; parentId?: bigint | null }) {
+  async update(
+    id: string,
+    dto: { name?: string; slug?: string; parentId?: string | null },
+  ) {
+    const data: { name?: string; slug?: string; parentId?: bigint | null } = {
+      ...dto,
+      parentId:
+        dto.parentId === undefined
+          ? undefined
+          : dto.parentId === null
+            ? null
+            : BigInt(dto.parentId),
+    };
     const category = await this.prisma.category.update({
       where: { id: BigInt(id) },
-      data: dto,
+      data,
     });
     return serializeCategory(category);
   }

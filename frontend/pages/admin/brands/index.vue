@@ -32,26 +32,36 @@ async function remove(id: string) {
 <template>
   <div>
     <UiText as="h1" size="2xl" class="mb-6">Thương hiệu</UiText>
+
     <UiCard padding="md" class="mb-6">
       <form class="flex flex-wrap gap-2" @submit.prevent="create">
-        <UiInput v-model="name" placeholder="Tên" required class="flex-1 min-w-[120px]" />
-        <UiInput v-model="slug" placeholder="đường dẫn" required class="w-40" />
+        <UiInput v-model="name" placeholder="Tên thương hiệu" required class="min-w-[120px] flex-1" />
+        <UiInput v-model="slug" placeholder="đường-dẫn" required class="w-44" />
         <UiButton type="submit" variant="primary" size="sm">Thêm</UiButton>
       </form>
     </UiCard>
-    <UiTable>
+
+    <UiDataTable
+      :count="brands.length"
+      :empty="brands.length === 0"
+      empty-title="Chưa có thương hiệu"
+      empty-description="Thêm thương hiệu bằng form phía trên."
+    >
       <template #head>
         <UiTableHead>Tên</UiTableHead>
         <UiTableHead>Đường dẫn</UiTableHead>
-        <UiTableHead align="right">Thao tác</UiTableHead>
+        <UiTableHead align="right" width="sm">Thao tác</UiTableHead>
       </template>
+
       <UiTableRow v-for="b in brands" :key="b.id">
-        <UiTableCell>{{ b.name }}</UiTableCell>
-        <UiTableCell><span class="text-fg-muted">/{{ b.slug }}</span></UiTableCell>
-        <UiTableCell align="right">
-          <UiButton variant="ghost" size="sm" class="!text-danger" @click="remove(b.id)">Xóa</UiButton>
+        <UiTableCell variant="emphasis">{{ b.name }}</UiTableCell>
+        <UiTableCell variant="muted">/{{ b.slug }}</UiTableCell>
+        <UiTableCell variant="actions">
+          <UiButton variant="ghost" size="sm" class="!text-danger" @click="remove(b.id)">
+            Xóa
+          </UiButton>
         </UiTableCell>
       </UiTableRow>
-    </UiTable>
+    </UiDataTable>
   </div>
 </template>

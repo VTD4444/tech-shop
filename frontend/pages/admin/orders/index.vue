@@ -2,13 +2,18 @@
 definePageMeta({ layout: 'admin', middleware: ['auth', 'admin'] });
 
 const { $api } = useNuxtApp();
-const { formatPrice } = useFormatPrice();
 const toast = useToast();
 const orders = ref<any[]>([]);
+const loading = ref(true);
 
 async function loadOrders() {
-  const res: any = await $api('/admin/orders?limit=50');
-  orders.value = res.data || [];
+  loading.value = true;
+  try {
+    const res: any = await $api('/admin/orders?limit=50');
+    orders.value = res.data || [];
+  } finally {
+    loading.value = false;
+  }
 }
 
 await loadOrders();
@@ -23,6 +28,11 @@ async function updateStatus(id: string, status: string) {
 <template>
   <div>
     <UiText as="h1" size="2xl" class="mb-6">Đơn hàng</UiText>
-    <AdminOrdersTable :orders="orders" @update-status="updateStatus" />
+    <AdminOrdersTable
+      v-if="!loading"
+      :orders="orders"
+      @update-status="updateStatus"
+    />
+    <UiDataTable v-else :loading="true" :skeleton-rows="6" />
   </div>
 </template>

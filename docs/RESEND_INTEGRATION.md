@@ -10,7 +10,7 @@ TechShop uses [Resend](https://resend.com) for transactional email via `backend/
 | Order placed | Order created confirmation |
 | SePay IPN success | Payment received confirmation |
 
-If `RESEND_API_KEY` or `MAIL_FROM` is missing, the backend logs a warning and **skips** sending (API still returns success for forgot-password to avoid email enumeration).
+If `RESEND_API_KEY` or `MAIL_FROM` is missing, forgot-password returns **503** with a Vietnamese message (dev: reset link logged when Resend sandbox blocks).
 
 ---
 
@@ -72,7 +72,7 @@ The address must use a verified domain.
 2. Enter an email that exists in the database
 3. Check backend logs for:
    - `Resend configured (from: ...)` on startup
-   - `Email sent: Reset your TechShop password -> ...` on success
+   - `Email sent: Đặt lại mật khẩu TechShop -> ...` on success
    - `Email skipped (Resend not configured): ...` if `.env` is wrong
 
 ### API
@@ -84,7 +84,9 @@ Content-Type: application/json
 { "email": "user@example.com" }
 ```
 
-Always returns: `{ "message": "If the email exists, a reset link was sent" }`.
+- Registered email: `{ "message": "Đã gửi liên kết đặt lại mật khẩu đến email của bạn" }`
+- Unknown email: **404** `{ "message": "Email chưa được đăng ký trong hệ thống" }`
+- Mail not configured: **503** with Vietnamese error message
 
 ---
 

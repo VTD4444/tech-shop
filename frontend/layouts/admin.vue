@@ -11,7 +11,7 @@ if (!authStore.bootstrapped) {
 <template>
   <div class="min-h-screen bg-surface-0 flex flex-col">
     <AdminTopbar />
-    <div class="flex flex-1 max-w-[1600px] mx-auto w-full">
+    <div class="flex flex-1 w-full">
       <div class="hidden md:block p-6 border-r border-subtle bg-surface-1">
         <AdminSidebar />
       </div>

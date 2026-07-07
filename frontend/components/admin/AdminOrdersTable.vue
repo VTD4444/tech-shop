@@ -16,54 +16,49 @@ const statusOptions = [
 </script>
 
 <template>
-  <UiCard padding="none">
-    <div class="p-4 border-b border-subtle">
-      <UiText as="h3" size="lg">Giao dịch gần đây</UiText>
-    </div>
-    <UiTable>
-      <template #head>
-        <UiTableHead>Mã đơn</UiTableHead>
-        <UiTableHead>Khách hàng</UiTableHead>
-        <UiTableHead>Trạng thái</UiTableHead>
-        <UiTableHead align="right">Số tiền</UiTableHead>
-        <UiTableHead align="right">Thanh toán</UiTableHead>
-        <UiTableHead align="right">Chi tiết</UiTableHead>
-      </template>
-      <UiTableRow v-for="order in orders" :key="order.id">
-        <UiTableCell>
-          <NuxtLink
-            :to="`/admin/orders/${order.id}`"
-            class="text-accent font-mono text-xs hover:underline"
-          >
-            #{{ order.id }}
-          </NuxtLink>
-        </UiTableCell>
-        <UiTableCell>
-          <span class="text-fg-muted text-sm">{{ order.user?.email || order.customerName }}</span>
-        </UiTableCell>
-        <UiTableCell>
-          <UiSelect
-            :model-value="order.status"
-            :options="statusOptions"
-            class="!py-1.5 text-xs max-w-[140px]"
-            @update:model-value="$emit('update-status', order.id, $event)"
-          />
-        </UiTableCell>
-        <UiTableCell align="right">
-          <span class="font-semibold text-accent">{{ formatPrice(order.totalAmount) }}</span>
-        </UiTableCell>
-        <UiTableCell align="right">
-          <PaymentStatusBadge :status="order.paymentStatus" />
-        </UiTableCell>
-        <UiTableCell align="right">
-          <NuxtLink
-            :to="`/admin/orders/${order.id}`"
-            class="text-accent text-sm hover:underline"
-          >
-            Xem
-          </NuxtLink>
-        </UiTableCell>
-      </UiTableRow>
-    </UiTable>
-  </UiCard>
+  <UiDataTable
+    title="Giao dịch gần đây"
+    description="Theo dõi và cập nhật trạng thái đơn hàng"
+    :count="orders.length"
+    :empty="orders.length === 0"
+    empty-title="Chưa có đơn hàng"
+    empty-description="Đơn hàng mới sẽ hiển thị tại đây."
+  >
+    <template #head>
+      <UiTableHead>Mã đơn</UiTableHead>
+      <UiTableHead>Khách hàng</UiTableHead>
+      <UiTableHead>Trạng thái</UiTableHead>
+      <UiTableHead align="right">Số tiền</UiTableHead>
+      <UiTableHead align="right">Thanh toán</UiTableHead>
+      <UiTableHead align="right" width="sm">Chi tiết</UiTableHead>
+    </template>
+
+    <UiTableRow v-for="order in orders" :key="order.id">
+      <UiTableCell variant="emphasis">
+        <UiTableAction :to="`/admin/orders/${order.id}`">
+          <span class="font-mono text-xs">#{{ order.id }}</span>
+        </UiTableAction>
+      </UiTableCell>
+      <UiTableCell variant="muted">
+        {{ order.user?.email || order.customerName || '—' }}
+      </UiTableCell>
+      <UiTableCell>
+        <UiSelect
+          :model-value="order.status"
+          :options="statusOptions"
+          class="!max-w-[150px] !py-1.5 text-xs"
+          @update:model-value="$emit('update-status', order.id, $event)"
+        />
+      </UiTableCell>
+      <UiTableCell align="right" variant="numeric">
+        <span class="font-semibold text-accent">{{ formatPrice(order.totalAmount) }}</span>
+      </UiTableCell>
+      <UiTableCell align="right">
+        <PaymentStatusBadge :status="order.paymentStatus" />
+      </UiTableCell>
+      <UiTableCell variant="actions">
+        <UiTableAction :to="`/admin/orders/${order.id}`">Xem</UiTableAction>
+      </UiTableCell>
+    </UiTableRow>
+  </UiDataTable>
 </template>

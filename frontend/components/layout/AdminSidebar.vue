@@ -5,9 +5,7 @@ import {
   FolderTree,
   Tag,
   ClipboardList,
-  Wrench,
-  Settings,
-  HelpCircle,
+  Users,
 } from 'lucide-vue-next';
 
 const route = useRoute();
@@ -18,6 +16,7 @@ const links = [
   { to: '/admin/categories', label: 'Danh mục', icon: FolderTree },
   { to: '/admin/brands', label: 'Thương hiệu', icon: Tag },
   { to: '/admin/orders', label: 'Đơn hàng', icon: ClipboardList },
+  { to: '/admin/customers', label: 'Khách hàng', icon: Users },
 ];
 
 function isActive(link: { to: string; exact?: boolean }) {
@@ -44,17 +43,5 @@ function isActive(link: { to: string; exact?: boolean }) {
         {{ link.label }}
       </NuxtLink>
     </nav>
-    <div class="mt-8 pt-6 border-t border-subtle space-y-2">
-      <UiButton to="/pc-builder" variant="primary" block size="sm">
-        <Wrench class="w-4 h-4" />
-        Xây dựng PC
-      </UiButton>
-      <NuxtLink to="/" class="flex items-center gap-2 px-3 py-2 text-xs text-fg-muted hover:text-accent">
-        <HelpCircle class="w-4 h-4" /> Hỗ trợ
-      </NuxtLink>
-      <span class="flex items-center gap-2 px-3 py-2 text-xs text-fg-muted">
-        <Settings class="w-4 h-4" /> Cài đặt
-      </span>
-    </div>
   </aside>
 </template>

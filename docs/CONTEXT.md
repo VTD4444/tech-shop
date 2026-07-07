@@ -11,7 +11,7 @@
 | ORM | Prisma (v7, adapter-pg) | ^7.0 |
 | Database | PostgreSQL 16 + pgvector | 16-alpine |
 | AI Service | Python FastAPI + Gemini | FastAPI ^0.115 |
-| Auth | JWT (httpOnly cookie + Bearer) | — |
+| Auth | JWT (httpOnly cookie only) | — |
 | Payment | SePay Sandbox (HMAC-SHA256 form + IPN) | — |
 | Email | Resend | — |
 
@@ -19,11 +19,12 @@
 
 ```
 tech-shop/
-├── backend/       # NestJS API (54+ source files)
-├── frontend/      # Nuxt 3 (29+ source files)
-├── ai-service/    # FastAPI (20+ source files)
+├── backend/       # NestJS API (~80+ source files)
+├── frontend/      # Nuxt 3 (~130+ source files)
+├── ai-service/    # FastAPI (~15+ source files)
 ├── docs/          # Tài liệu dự án
-├── init-scripts/  # SQL init (pgvector extension)
+├── init-scripts/  # Docker Postgres extensions only (schema via Prisma)
+├── scripts/       # Manual SQL samples (e.g. sample-data-extended.sql)
 ├── docker-compose.yml
 └── .gitignore
 ```
@@ -32,7 +33,8 @@ tech-shop/
 
 | Module | Path | Chức năng |
 |---|---|---|
-| Common | `backend/src/common/` | Guards, decorators, filters, interceptors, DTOs |
+| Common | `backend/src/common/` | Guards, decorators, filters, interceptors, utils |
+| Config | `backend/src/config/` | Env validation (Joi) + typed `app.*` config |
 | Prisma | `backend/src/modules/prisma/` | PrismaService wrapper |
 | Auth | `backend/src/modules/auth/` | JWT login/register/refresh, cookie-based |
 | Users | `backend/src/modules/users/` | Profile + address CRUD |

@@ -1,0 +1,16 @@
+# Local env
+.env
+.env.*
+!.env.example
+
+# Debug / manual test artifacts
+cookies*.txt
+login-*.json
+login-*.html
+reg.json
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

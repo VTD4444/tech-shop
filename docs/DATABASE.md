@@ -223,6 +223,12 @@ await prisma.$queryRaw`
 `;
 ```
 
+## Schema source of truth
+
+**Prisma migrations** (`backend/prisma/migrations/`) define the database schema. Do not run legacy `002-schema.sql` on new databases.
+
+Docker Postgres first boot only runs `init-scripts/001-init.sql` (extensions). Schema is applied when the backend container runs `prisma migrate deploy`.
+
 ## Sample data
 
 ### Prisma seed (minimal)
@@ -235,7 +241,7 @@ Creates admin, 1 customer, ~8 PC components, 1 laptop. Skips if `admin@techshop.
 
 ### Extended SQL sample (large dataset)
 
-File: [`init-scripts/004-sample-data-extended.sql`](../init-scripts/004-sample-data-extended.sql)
+File: [`scripts/sample-data-extended.sql`](../scripts/sample-data-extended.sql)
 
 **Append-only** — does not delete existing data. Adds:
 
@@ -253,10 +259,10 @@ File: [`init-scripts/004-sample-data-extended.sql`](../init-scripts/004-sample-d
 
 ```bash
 # Docker Postgres
-docker exec -i techshop-db psql -U techshop -d techshop < init-scripts/004-sample-data-extended.sql
+docker exec -i techshop-db psql -U techshop -d techshop < scripts/sample-data-extended.sql
 
 # Or with connection string
-psql "postgresql://techshop:techshop_pass@localhost:5433/techshop" -f init-scripts/004-sample-data-extended.sql
+psql "postgresql://techshop:techshop_pass@localhost:5433/techshop" -f scripts/sample-data-extended.sql
 ```
 
 Script ends with a row count summary per table.

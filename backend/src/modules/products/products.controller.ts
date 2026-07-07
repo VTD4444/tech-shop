@@ -23,6 +23,7 @@ import {
   UpdateCommentDto,
   PaginationQueryDto,
 } from './dto/engagement.dto';
+import { CreateProductDto, UpdateProductDto } from './dto/product-mutation.dto';
 
 @Controller('products')
 export class ProductsController {
@@ -137,13 +138,13 @@ export class ProductsController {
 
   @Roles('admin')
   @Post()
-  create(@Body() dto: any) {
+  create(@Body() dto: CreateProductDto) {
     return this.productsService.create(dto);
   }
 
   @Roles('admin')
   @Patch(':id')
-  update(@Param('id') id: string, @Body() dto: any) {
+  update(@Param('id') id: string, @Body() dto: UpdateProductDto) {
     return this.productsService.update(id, dto);
   }
 

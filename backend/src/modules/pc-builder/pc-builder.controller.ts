@@ -2,6 +2,7 @@ import { Controller, Get, Post, Delete, Body, Param, Query } from '@nestjs/commo
 import { PcBuilderService } from './pc-builder.service';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { Public } from '../../common/decorators/public.decorator';
+import { SaveBuildDto, ValidateBuildDto } from './dto/pc-builder.dto';
 
 @Controller('pc-builder')
 export class PcBuilderController {
@@ -27,15 +28,12 @@ export class PcBuilderController {
 
   @Public()
   @Post('validate')
-  validateBuild(@Body() dto: { componentIds: string[] }) {
+  validateBuild(@Body() dto: ValidateBuildDto) {
     return this.pcBuilderService.validateBuild(dto.componentIds);
   }
 
   @Post('build')
-  saveBuild(
-    @CurrentUser('id') userId: string,
-    @Body() dto: { name: string; componentIds: string[] },
-  ) {
+  saveBuild(@CurrentUser('id') userId: string, @Body() dto: SaveBuildDto) {
     return this.pcBuilderService.saveBuild(userId, dto);
   }
 

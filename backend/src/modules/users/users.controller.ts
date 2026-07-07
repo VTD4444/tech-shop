@@ -1,6 +1,7 @@
 import { Controller, Get, Patch, Post, Body, Param, Delete } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
+import { CreateAddressDto, UpdateAddressDto, UpdateProfileDto } from './dto/user.dto';
 
 @Controller('users')
 export class UsersController {
@@ -12,7 +13,7 @@ export class UsersController {
   }
 
   @Patch('profile')
-  updateProfile(@CurrentUser('id') userId: string, @Body() dto: any) {
+  updateProfile(@CurrentUser('id') userId: string, @Body() dto: UpdateProfileDto) {
     return this.usersService.updateProfile(userId, dto);
   }
 
@@ -22,7 +23,7 @@ export class UsersController {
   }
 
   @Post('addresses')
-  createAddress(@CurrentUser('id') userId: string, @Body() dto: any) {
+  createAddress(@CurrentUser('id') userId: string, @Body() dto: CreateAddressDto) {
     return this.usersService.createAddress(userId, dto);
   }
 
@@ -30,7 +31,7 @@ export class UsersController {
   updateAddress(
     @CurrentUser('id') userId: string,
     @Param('id') addressId: string,
-    @Body() dto: any,
+    @Body() dto: UpdateAddressDto,
   ) {
     return this.usersService.updateAddress(userId, addressId, dto);
   }

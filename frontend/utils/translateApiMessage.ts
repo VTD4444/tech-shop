@@ -14,8 +14,22 @@ const EXACT: Record<string, string> = {
   'Invalid or expired reset token': 'Liên kết đặt lại mật khẩu không hợp lệ hoặc đã hết hạn',
   'If the email exists, a reset link was sent':
     'Nếu email đã đăng ký, bạn sẽ nhận liên kết đặt lại mật khẩu trong vài phút.',
+  'Email chưa được đăng ký trong hệ thống': 'Email chưa được đăng ký trong hệ thống',
+  'Tài khoản đã bị vô hiệu hóa': 'Tài khoản đã bị vô hiệu hóa',
+  'Không thể gửi email đặt lại mật khẩu. Hệ thống email chưa được cấu hình trên máy chủ.':
+    'Không thể gửi email đặt lại mật khẩu. Hệ thống email chưa được cấu hình trên máy chủ.',
+  'Không thể gửi email. Vui lòng thử lại sau hoặc liên hệ hỗ trợ.':
+    'Không thể gửi email. Vui lòng thử lại sau hoặc liên hệ hỗ trợ.',
+  'Không thể gửi email: Resend đang ở chế độ thử nghiệm. Hãy verify domain trên resend.com/domains và cập nhật MAIL_FROM.':
+    'Không thể gửi email: Resend đang ở chế độ thử nghiệm. Hãy verify domain trên resend.com/domains và cập nhật MAIL_FROM.',
+  'Đã gửi liên kết đặt lại mật khẩu đến email của bạn':
+    'Đã gửi liên kết đặt lại mật khẩu đến email của bạn',
   'Password updated successfully': 'Mật khẩu đã được cập nhật',
   'Logged out successfully': 'Đã đăng xuất',
+  'Không tìm thấy khách hàng': 'Không tìm thấy khách hàng',
+  'Không thể xóa tài khoản đang đăng nhập': 'Không thể xóa tài khoản đang đăng nhập',
+  'Đã xóa khách hàng': 'Đã xóa khách hàng',
+  'Đã đặt lại mật khẩu cho khách hàng': 'Đã đặt lại mật khẩu cho khách hàng',
   'Shipping address not found': 'Không tìm thấy địa chỉ giao hàng',
   'Cart is empty': 'Giỏ hàng trống',
   'Insufficient stock': 'Không đủ hàng trong kho',

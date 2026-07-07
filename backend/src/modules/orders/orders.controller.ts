@@ -1,16 +1,14 @@
 import { Controller, Post, Get, Patch, Body, Param, Query } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
+import { CheckoutDto } from './dto/checkout.dto';
 
 @Controller('orders')
 export class OrdersController {
   constructor(private ordersService: OrdersService) {}
 
   @Post('checkout')
-  checkout(
-    @CurrentUser('id') userId: string,
-    @Body() dto: { shippingAddressId: string; note?: string },
-  ) {
+  checkout(@CurrentUser('id') userId: string, @Body() dto: CheckoutDto) {
     return this.ordersService.checkout(userId, dto);
   }
 

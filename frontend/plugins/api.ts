@@ -1,5 +1,4 @@
 import { useAuthStore } from '~/stores/auth';
-import { getAccessToken, getRefreshToken } from '~/utils/auth-token';
 
 function isAuthSessionRequest(url: string) {
   return url.includes('/auth/') || url.includes('/users/profile');
@@ -26,15 +25,6 @@ export default defineNuxtPlugin(() => {
       ...(serverCookie ? { cookie: serverCookie } : {}),
     },
     onRequest({ options }) {
-      if (import.meta.client) {
-        const token = getAccessToken();
-        if (token) {
-          options.headers = {
-            ...(options.headers as Record<string, string>),
-            Authorization: `Bearer ${token}`,
-          };
-        }
-      }
       if (serverCookie) {
         options.headers = {
           ...(options.headers as Record<string, string>),

@@ -1,4 +1,7 @@
 import * as crypto from 'crypto';
+import { stripEnvQuotes } from './env.util';
+
+export { stripEnvQuotes } from './env.util';
 
 export const SEPAY_FORM_FIELD_ORDER = [
   'merchant',
@@ -29,19 +32,6 @@ export const SEPAY_SIGNED_FIELDS = [
   'error_url',
   'cancel_url',
 ] as const;
-
-/** Strip accidental quotes / whitespace from Render env values. */
-export function stripEnvQuotes(value: string | undefined): string {
-  if (!value) return '';
-  let trimmed = value.trim();
-  if (
-    (trimmed.startsWith('"') && trimmed.endsWith('"')) ||
-    (trimmed.startsWith("'") && trimmed.endsWith("'"))
-  ) {
-    trimmed = trimmed.slice(1, -1).trim();
-  }
-  return trimmed;
-}
 
 export function isSepayDebugEnabled(): boolean {
   return process.env.SEPAY_DEBUG === 'true' || process.env.SEPAY_DEBUG === '1';

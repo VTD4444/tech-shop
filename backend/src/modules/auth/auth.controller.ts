@@ -10,80 +10,25 @@ import {
   UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { AuthGuard } from '@nestjs/passport';
 import { Response, Request } from 'express';
 import { AuthService } from './auth.service';
 import { Public } from '../../common/decorators/public.decorator';
 import {
-  IsEmail,
-  IsString,
-  MinLength,
-  MaxLength,
-  IsOptional,
-  Matches,
-} from 'class-validator';
-import { Match } from '../../common/decorators/match.decorator';
-
-export class RegisterDto {
-  @IsString()
-  @MinLength(2)
-  @MaxLength(100)
-  fullName: string;
-
-  @IsEmail()
-  email: string;
-
-  @IsString()
-  @Matches(/^0\d{9}$/, { message: 'Phone must be a valid Vietnamese number (10 digits)' })
-  phone: string;
-
-  @IsString()
-  @MinLength(6)
-  @MaxLength(100)
-  password: string;
-
-  @IsString()
-  @Match('password', { message: 'Passwords do not match' })
-  confirmPassword: string;
-}
-
-export class LoginDto {
-  @IsEmail()
-  email: string;
-
-  @IsString()
-  password: string;
-}
-
-class RefreshDto {
-  @IsOptional()
-  @IsString()
-  refreshToken?: string;
-}
-
-class ForgotPasswordDto {
-  @IsEmail()
-  email: string;
-}
-
-class ResetPasswordDto {
-  @IsString()
-  token: string;
-
-  @IsString()
-  @MinLength(6)
-  @MaxLength(100)
-  password: string;
-}
-
-class GoogleCompleteDto {
-  @IsString()
-  code: string;
-}
+  ForgotPasswordDto,
+  GoogleCompleteDto,
+  LoginDto,
+  RegisterDto,
+  ResetPasswordDto,
+} from './dto/auth.dto';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private config: ConfigService,
+  ) {}
 
   @Public()
   @Post('register')
@@ -91,11 +36,7 @@ export class AuthController {
     const { confirmPassword: _, ...registerData } = dto;
     const result = await this.authService.register(registerData);
     this.setTokenCookies(res, result.accessToken, result.refreshToken);
-    return {
-      user: result.user,
-      accessToken: result.accessToken,
-      refreshToken: result.refreshToken,
-    };
+    return { user: result.user };
   }
 
   @Public()
@@ -104,11 +45,7 @@ export class AuthController {
   async login(@Body() dto: LoginDto, @Res({ passthrough: true }) res: Response) {
     const result = await this.authService.login(dto);
     this.setTokenCookies(res, result.accessToken, result.refreshToken);
-    return {
-      user: result.user,
-      accessToken: result.accessToken,
-      refreshToken: result.refreshToken,
-    };
+    return { user: result.user };
   }
 
   @Public()
@@ -124,10 +61,7 @@ export class AuthController {
   async googleCallback(@Req() req: Request, @Res() res: Response) {
     const session = this.authService.issueSession(req.user as any);
     const code = this.authService.createGoogleExchangeCode(session.user.id);
-    const frontend = (process.env.FRONTEND_URL || 'http://localhost:3001').replace(
-      /\/+$/,
-      '',
-    );
+    const frontend = this.config.get<string>('app.frontendUrl', 'http://localhost:3001');
     res.redirect(
       `${frontend}/auth/google/callback?code=${encodeURIComponent(code)}`,
     );
@@ -142,32 +76,20 @@ export class AuthController {
   ) {
     const result = await this.authService.completeGoogleExchange(dto.code);
     this.setTokenCookies(res, result.accessToken, result.refreshToken);
-    return {
-      user: result.user,
-      accessToken: result.accessToken,
-      refreshToken: result.refreshToken,
-    };
+    return { user: result.user };
   }
 
   @Public()
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
-  async refresh(
-    @Req() req: Request,
-    @Body() dto: RefreshDto,
-    @Res({ passthrough: true }) res: Response,
-  ) {
-    const token = req.cookies?.refresh_token || dto.refreshToken;
+  async refresh(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+    const token = req.cookies?.refresh_token;
     if (!token) {
       throw new UnauthorizedException('Refresh token required');
     }
     const result = await this.authService.refresh(token);
     this.setTokenCookies(res, result.accessToken, result.refreshToken);
-    return {
-      user: result.user,
-      accessToken: result.accessToken,
-      refreshToken: result.refreshToken,
-    };
+    return { user: result.user };
   }
 
   @Public()
@@ -192,7 +114,7 @@ export class AuthController {
   }
 
   private isProduction() {
-    return process.env.NODE_ENV === 'production';
+    return this.config.get<string>('app.nodeEnv') === 'production';
   }
 
   private cookieOptions(maxAge: number) {

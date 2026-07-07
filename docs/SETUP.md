@@ -135,6 +135,9 @@ cd ai-service && uvicorn app.main:app --reload --port 8000
 docker compose up --build
 ```
 
+Backend entrypoint runs `prisma migrate deploy` then optional `RUN_SEED=true` → `prisma db seed`.
+Postgres `init-scripts/` only adds extensions — **schema source of truth is** `backend/prisma/schema.prisma`.
+
 | Service | Port |
 |---------|------|
 | postgres | 5433 (host) |

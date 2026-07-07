@@ -1,6 +1,7 @@
 import { Controller, Get, Post, Patch, Delete, Body, Param } from '@nestjs/common';
 import { CartService } from './cart.service';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
+import { AddCartItemDto, UpdateCartItemDto } from './dto/cart.dto';
 
 @Controller('cart')
 export class CartController {
@@ -12,10 +13,7 @@ export class CartController {
   }
 
   @Post()
-  addItem(
-    @CurrentUser('id') userId: string,
-    @Body() dto: { productId: string; quantity: number },
-  ) {
+  addItem(@CurrentUser('id') userId: string, @Body() dto: AddCartItemDto) {
     return this.cartService.addItem(userId, dto);
   }
 
@@ -23,7 +21,7 @@ export class CartController {
   updateItem(
     @CurrentUser('id') userId: string,
     @Param('productId') productId: string,
-    @Body() dto: { quantity: number },
+    @Body() dto: UpdateCartItemDto,
   ) {
     return this.cartService.updateItemQuantity(userId, productId, dto.quantity);
   }

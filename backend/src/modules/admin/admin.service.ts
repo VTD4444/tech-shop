@@ -1,4 +1,6 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import * as bcrypt from 'bcryptjs';
+import { Prisma } from '../../generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { toId } from '../../common/utils/serialize';
 
@@ -218,5 +220,111 @@ export class AdminService {
         orders: Number(r.orders),
       }))
       .reverse();
+  }
+
+  private mapCustomer(user: {
+    id: bigint;
+    username: string;
+    fullName: string;
+    email: string;
+    phone: string | null;
+    authProvider: string;
+    isActive: boolean;
+    createdAt: Date;
+    _count?: { orders: number };
+  }) {
+    return {
+      id: toId(user.id)!,
+      username: user.username,
+      fullName: user.fullName,
+      email: user.email,
+      phone: user.phone,
+      authProvider: user.authProvider,
+      isActive: user.isActive,
+      createdAt: user.createdAt,
+      orderCount: user._count?.orders ?? 0,
+    };
+  }
+
+  async getCustomers(page = 1, limit = 20, search?: string) {
+    const pageNum = Number(page) || 1;
+    const limitNum = Math.min(Number(limit) || 20, 100);
+    const skip = (pageNum - 1) * limitNum;
+
+    const where: Prisma.UserWhereInput = { role: 'customer' };
+    const q = search?.trim();
+    if (q) {
+      where.OR = [
+        { username: { contains: q, mode: 'insensitive' } },
+        { fullName: { contains: q, mode: 'insensitive' } },
+        { email: { contains: q, mode: 'insensitive' } },
+        ...(q.match(/^0\d{9}$/) ? [{ phone: { contains: q } }] : []),
+      ];
+    }
+
+    const [data, total] = await Promise.all([
+      this.prisma.user.findMany({
+        where,
+        skip,
+        take: limitNum,
+        orderBy: { createdAt: 'desc' },
+        select: {
+          id: true,
+          username: true,
+          fullName: true,
+          email: true,
+          phone: true,
+          authProvider: true,
+          isActive: true,
+          createdAt: true,
+          _count: { select: { orders: true } },
+        },
+      }),
+      this.prisma.user.count({ where }),
+    ]);
+
+    return {
+      data: data.map((u) => this.mapCustomer(u)),
+      meta: { page: pageNum, limit: limitNum, total, totalPages: Math.ceil(total / limitNum) },
+    };
+  }
+
+  async deleteCustomer(customerId: string, adminUserId: string) {
+    if (customerId === adminUserId) {
+      throw new BadRequestException('Không thể xóa tài khoản đang đăng nhập');
+    }
+
+    const user = await this.prisma.user.findUnique({
+      where: { id: BigInt(customerId) },
+    });
+    if (!user || user.role !== 'customer') {
+      throw new NotFoundException('Không tìm thấy khách hàng');
+    }
+
+    await this.prisma.user.delete({ where: { id: user.id } });
+    return { message: 'Đã xóa khách hàng' };
+  }
+
+  async resetCustomerPassword(customerId: string, newPassword: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: BigInt(customerId) },
+    });
+    if (!user || user.role !== 'customer') {
+      throw new NotFoundException('Không tìm thấy khách hàng');
+    }
+
+    const passwordHash = await bcrypt.hash(newPassword, 10);
+    await this.prisma.$transaction([
+      this.prisma.user.update({
+        where: { id: user.id },
+        data: {
+          passwordHash,
+          authProvider: user.authProvider === 'google' ? 'google' : 'local',
+        },
+      }),
+      this.prisma.passwordResetToken.deleteMany({ where: { userId: user.id } }),
+    ]);
+
+    return { message: 'Đã đặt lại mật khẩu cho khách hàng' };
   }
 }

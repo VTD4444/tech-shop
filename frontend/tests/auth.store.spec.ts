@@ -12,4 +12,16 @@ describe('useAuthStore', () => {
     expect(store.isAuthenticated).toBe(false);
     expect(store.user).toBeNull();
   });
+
+  it('clearSession resets user without localStorage tokens', () => {
+    const store = useAuthStore();
+    store.user = {
+      id: '1',
+      username: 'tester',
+      role: 'customer',
+    };
+    store.clearSession();
+    expect(store.user).toBeNull();
+    expect(store.bootstrapped).toBe(true);
+  });
 });

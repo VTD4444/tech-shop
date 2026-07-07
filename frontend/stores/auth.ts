@@ -1,7 +1,6 @@
 import { ref, computed } from 'vue';
 import { defineStore } from 'pinia';
 import { isPublicAuthPath } from '~/utils/auth-paths';
-import { setAuthTokens, clearAuthTokens, getRefreshToken } from '~/utils/auth-token';
 
 interface User {
   id: string;
@@ -26,7 +25,6 @@ export const useAuthStore = defineStore('auth', () => {
   function clearSession() {
     user.value = null;
     bootstrapped.value = true;
-    clearAuthTokens();
   }
 
   async function bootstrap() {
@@ -41,9 +39,6 @@ export const useAuthStore = defineStore('auth', () => {
       method: 'POST',
       body: { email, password },
     });
-    if (data.data?.accessToken && data.data?.refreshToken) {
-      setAuthTokens(data.data.accessToken, data.data.refreshToken);
-    }
     user.value = data.data.user;
     bootstrapped.value = true;
     return data.data.user;
@@ -61,9 +56,6 @@ export const useAuthStore = defineStore('auth', () => {
       method: 'POST',
       body: payload,
     });
-    if (data.data?.accessToken && data.data?.refreshToken) {
-      setAuthTokens(data.data.accessToken, data.data.refreshToken);
-    }
     user.value = data.data.user;
     bootstrapped.value = true;
     return data.data.user;
@@ -72,19 +64,14 @@ export const useAuthStore = defineStore('auth', () => {
   async function refreshAccessToken() {
     try {
       const { $api } = useNuxtApp();
-      const refreshToken = getRefreshToken();
       const data: any = await $api('/auth/refresh', {
         method: 'POST',
-        body: refreshToken ? { refreshToken } : {},
+        body: {},
       });
-      if (data.data?.accessToken && data.data?.refreshToken) {
-        setAuthTokens(data.data.accessToken, data.data.refreshToken);
-      }
       user.value = data.data.user;
       return true;
     } catch {
       user.value = null;
-      clearAuthTokens();
       return false;
     }
   }
@@ -123,9 +110,6 @@ export const useAuthStore = defineStore('auth', () => {
       method: 'POST',
       body: { code },
     });
-    if (data.data?.accessToken && data.data?.refreshToken) {
-      setAuthTokens(data.data.accessToken, data.data.refreshToken);
-    }
     user.value = data.data.user;
     bootstrapped.value = true;
     return data.data.user;
