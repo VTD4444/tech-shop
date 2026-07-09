@@ -13,6 +13,9 @@ export default defineNuxtRouteMiddleware(async (to) => {
   }
 
   if (!authStore.isAuthenticated) {
-    return navigateTo('/login', { redirectCode: 302 });
+    const redirect = to.fullPath !== '/login'
+      ? `?redirect=${encodeURIComponent(to.fullPath)}`
+      : '';
+    return navigateTo(`/login${redirect}`, { redirectCode: 302 });
   }
 });

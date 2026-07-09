@@ -31,14 +31,18 @@ async function loadDashboard() {
     orders.value = ordersRes.data ?? [];
     inventory.value = inventoryRes.data ?? inventoryRes;
   } catch (e: any) {
-    toast.error(e.data?.message || 'Không tải được bảng điều khiển');
+    toast.error(extractApiMessage(e, 'Không tải được bảng điều khiển'));
   }
 }
 
 async function updateStatus(orderId: string, status: string) {
-  await $api(`/admin/orders/${orderId}/status?status=${status}`, { method: 'PATCH' });
-  toast.success('Đã cập nhật trạng thái đơn hàng');
-  await loadDashboard();
+  try {
+    await $api(`/admin/orders/${orderId}/status?status=${status}`, { method: 'PATCH' });
+    toast.success('Đã cập nhật trạng thái đơn hàng');
+    await loadDashboard();
+  } catch (e: any) {
+    toast.error(extractApiMessage(e, 'Không thể cập nhật trạng thái đơn hàng'));
+  }
 }
 
 onMounted(loadDashboard);

@@ -7,31 +7,45 @@ const confirmDialog = useConfirmDialog();
 const brands = ref<any[]>([]);
 const name = ref('');
 const slug = ref('');
+const loadError = ref('');
 
-const res: any = await $api('/brands');
-brands.value = res.data || [];
+try {
+  const res: any = await $api('/brands');
+  brands.value = res.data || [];
+} catch (e: any) {
+  loadError.value = extractApiMessage(e, 'Không tải được thương hiệu');
+}
 
 async function create() {
-  await $api('/brands', { method: 'POST', body: { name: name.value, slug: slug.value } });
-  toast.success('Đã tạo thương hiệu');
-  name.value = '';
-  slug.value = '';
-  const r: any = await $api('/brands');
-  brands.value = r.data || [];
+  try {
+    await $api('/brands', { method: 'POST', body: { name: name.value, slug: slug.value } });
+    toast.success('Đã tạo thương hiệu');
+    name.value = '';
+    slug.value = '';
+    const r: any = await $api('/brands');
+    brands.value = r.data || [];
+  } catch (e: any) {
+    toast.error(extractApiMessage(e, 'Không thể tạo thương hiệu'));
+  }
 }
 
 async function remove(id: string) {
   const ok = await confirmDialog.confirm('Xóa thương hiệu này?');
   if (!ok) return;
-  await $api(`/brands/${id}`, { method: 'DELETE' });
-  brands.value = brands.value.filter((b) => b.id !== id);
-  toast.info('Đã xóa thương hiệu');
+  try {
+    await $api(`/brands/${id}`, { method: 'DELETE' });
+    brands.value = brands.value.filter((b) => b.id !== id);
+    toast.info('Đã xóa thương hiệu');
+  } catch (e: any) {
+    toast.error(extractApiMessage(e, 'Không thể xóa thương hiệu'));
+  }
 }
 </script>
 
 <template>
   <div>
     <UiText as="h1" size="2xl" class="mb-6">Thương hiệu</UiText>
+    <p v-if="loadError" class="mb-4 text-sm text-danger">{{ loadError }}</p>
 
     <UiCard padding="md" class="mb-6">
       <form class="flex flex-wrap gap-2" @submit.prevent="create">

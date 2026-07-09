@@ -6,7 +6,7 @@ import { MailService } from '../mail/mail.service';
 describe('PaymentsService', () => {
   let service: PaymentsService;
   const prisma = {
-    paymentTransaction: { findUnique: jest.fn() },
+    paymentTransaction: { findUnique: jest.fn(), update: jest.fn() },
     order: { update: jest.fn() },
     $transaction: jest.fn(),
   };
@@ -28,6 +28,57 @@ describe('PaymentsService', () => {
     const result = await service.handleIpn({ notification_type: 'OTHER' }, '127.0.0.1');
     expect(result).toEqual({ success: true });
     expect(prisma.paymentTransaction.findUnique).not.toHaveBeenCalled();
+  });
+
+  it('handleIpn rejects amount mismatch', async () => {
+    prisma.paymentTransaction.findUnique.mockResolvedValue({
+      id: 1n,
+      status: 'processing',
+      amount: 100000,
+      orderId: 1n,
+      order: { id: 1n, paymentStatus: 'unpaid', status: 'pending', user: { email: null } },
+    });
+    prisma.paymentTransaction.update.mockResolvedValue({});
+
+    const result = await service.handleIpn(
+      {
+        notification_type: 'ORDER_PAID',
+        order: {
+          order_status: 'CAPTURED',
+          order_invoice_number: 'INV-1',
+          order_amount: 1,
+        },
+      },
+      '127.0.0.1',
+    );
+
+    expect(result).toEqual({ success: false });
+    expect(prisma.$transaction).not.toHaveBeenCalled();
+  });
+
+  it('handleIpn skips cancelled orders', async () => {
+    prisma.paymentTransaction.findUnique.mockResolvedValue({
+      id: 1n,
+      status: 'processing',
+      amount: 100000,
+      orderId: 1n,
+      order: { id: 1n, paymentStatus: 'unpaid', status: 'cancelled', user: { email: null } },
+    });
+
+    const result = await service.handleIpn(
+      {
+        notification_type: 'ORDER_PAID',
+        order: {
+          order_status: 'CAPTURED',
+          order_invoice_number: 'INV-1',
+          order_amount: 100000,
+        },
+      },
+      '127.0.0.1',
+    );
+
+    expect(result).toEqual({ success: true });
+    expect(prisma.$transaction).not.toHaveBeenCalled();
   });
 
   it('handleIpn is idempotent when payment already success', async () => {

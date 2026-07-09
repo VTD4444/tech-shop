@@ -13,11 +13,16 @@ const selectedAddressId = ref('');
 const note = ref('');
 const loading = ref(false);
 const payLaterLoading = ref(false);
+const addressError = ref('');
 
 await cartStore.fetchCart();
-const addrRes: any = await $api('/users/addresses');
-addresses.value = addrRes.data || [];
-if (addresses.value.length) selectedAddressId.value = addresses.value[0].id;
+try {
+  const addrRes: any = await $api('/users/addresses');
+  addresses.value = addrRes.data || [];
+  if (addresses.value.length) selectedAddressId.value = addresses.value[0].id;
+} catch (e: any) {
+  addressError.value = extractApiMessage(e, 'Không tải được địa chỉ giao hàng');
+}
 
 async function createOrder() {
   if (!selectedAddressId.value) {
@@ -41,7 +46,8 @@ async function placeOrderAndPay() {
     toast.success('Đã tạo đơn hàng! Đang chuyển đến SePay...');
     await redirectToSePay(order.id);
   } catch (e: any) {
-    toast.error(e.data?.message || e.message || 'Thanh toán thất bại');
+    toast.error(extractApiMessage(e, 'Thanh toán thất bại'));
+  } finally {
     loading.value = false;
   }
 }
@@ -54,7 +60,7 @@ async function placeOrderPayLater() {
     toast.success('Đã đặt hàng! Bạn có thể thanh toán sau từ trang chi tiết đơn hàng.');
     await navigateTo(`/orders/${order.id}`);
   } catch (e: any) {
-    toast.error(e.data?.message || 'Thanh toán thất bại');
+    toast.error(extractApiMessage(e, 'Đặt hàng thất bại'));
   } finally {
     payLaterLoading.value = false;
   }
@@ -101,6 +107,7 @@ async function placeOrderPayLater() {
 
         <UiCard padding="md">
           <UiText as="h2" size="lg" class="mb-4">Địa chỉ giao hàng</UiText>
+          <p v-if="addressError" class="mb-3 text-sm text-danger">{{ addressError }}</p>
           <UiEmptyState v-if="!addresses.length" title="Chưa có địa chỉ" description="Hãy thêm địa chỉ trong hồ sơ của bạn trước.">
             <template #action><UiButton to="/profile" variant="secondary">Đến hồ sơ</UiButton></template>
           </UiEmptyState>

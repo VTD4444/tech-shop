@@ -2,11 +2,16 @@ import { Injectable, NotFoundException, BadRequestException } from '@nestjs/comm
 import * as bcrypt from 'bcryptjs';
 import { Prisma } from '../../generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import { OrdersService } from '../orders/orders.service';
+import { ORDER_STATUS_TRANSITIONS } from '../../common/utils/order-status.util';
 import { toId } from '../../common/utils/serialize';
 
 @Injectable()
 export class AdminService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private ordersService: OrdersService,
+  ) {}
 
   private mapOrderDetail(o: {
     id: bigint;
@@ -138,24 +143,75 @@ export class AdminService {
   }
 
   async updateOrderStatus(orderId: string, status: string) {
-    const order = await this.prisma.order.update({
+    const order = await this.prisma.order.findUnique({
+      where: { id: BigInt(orderId) },
+    });
+    if (!order) throw new NotFoundException('Order not found');
+
+    if (order.status === status) {
+      return {
+        id: toId(order.id)!,
+        userId: toId(order.userId),
+        totalAmount: Number(order.totalAmount),
+        shippingFee: Number(order.shippingFee),
+        shippingAddress: order.shippingAddress,
+        customerName: order.customerName,
+        customerPhone: order.customerPhone,
+        note: order.note,
+        status: order.status,
+        paymentStatus: order.paymentStatus,
+        createdAt: order.createdAt,
+        updatedAt: order.updatedAt,
+      };
+    }
+
+    const allowed = ORDER_STATUS_TRANSITIONS[order.status] ?? [];
+    if (!allowed.includes(status)) {
+      throw new BadRequestException(
+        `Cannot change order status from "${order.status}" to "${status}"`,
+      );
+    }
+
+    if (status === 'delivered' && order.paymentStatus !== 'paid') {
+      throw new BadRequestException('Order must be paid before marking as delivered');
+    }
+
+    if (status === 'cancelled') {
+      const cancelled = await this.ordersService.adminCancelWithStockRestore(orderId);
+      return {
+        id: cancelled.id,
+        userId: cancelled.userId,
+        totalAmount: cancelled.totalAmount,
+        shippingFee: cancelled.shippingFee,
+        shippingAddress: cancelled.shippingAddress,
+        customerName: cancelled.customerName,
+        customerPhone: cancelled.customerPhone,
+        note: cancelled.note,
+        status: cancelled.status,
+        paymentStatus: cancelled.paymentStatus,
+        createdAt: cancelled.createdAt,
+        updatedAt: cancelled.updatedAt,
+      };
+    }
+
+    const updated = await this.prisma.order.update({
       where: { id: BigInt(orderId) },
       data: { status },
     });
 
     return {
-      id: toId(order.id)!,
-      userId: toId(order.userId),
-      totalAmount: Number(order.totalAmount),
-      shippingFee: Number(order.shippingFee),
-      shippingAddress: order.shippingAddress,
-      customerName: order.customerName,
-      customerPhone: order.customerPhone,
-      note: order.note,
-      status: order.status,
-      paymentStatus: order.paymentStatus,
-      createdAt: order.createdAt,
-      updatedAt: order.updatedAt,
+      id: toId(updated.id)!,
+      userId: toId(updated.userId),
+      totalAmount: Number(updated.totalAmount),
+      shippingFee: Number(updated.shippingFee),
+      shippingAddress: updated.shippingAddress,
+      customerName: updated.customerName,
+      customerPhone: updated.customerPhone,
+      note: updated.note,
+      status: updated.status,
+      paymentStatus: updated.paymentStatus,
+      createdAt: updated.createdAt,
+      updatedAt: updated.updatedAt,
     };
   }
 
@@ -296,9 +352,18 @@ export class AdminService {
 
     const user = await this.prisma.user.findUnique({
       where: { id: BigInt(customerId) },
+      include: { _count: { select: { orders: true } } },
     });
     if (!user || user.role !== 'customer') {
       throw new NotFoundException('Không tìm thấy khách hàng');
+    }
+
+    if (user._count.orders > 0) {
+      await this.prisma.user.update({
+        where: { id: user.id },
+        data: { isActive: false },
+      });
+      return { message: 'Đã vô hiệu hóa khách hàng (còn lịch sử đơn hàng)' };
     }
 
     await this.prisma.user.delete({ where: { id: user.id } });

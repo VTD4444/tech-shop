@@ -22,6 +22,10 @@ export class OrdersCleanupService {
         status: 'pending',
         paymentStatus: 'unpaid',
         createdAt: { lt: cutoff },
+        OR: [
+          { paymentTxn: null },
+          { paymentTxn: { status: { not: 'processing' } } },
+        ],
       },
       select: { id: true },
     });

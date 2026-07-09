@@ -5,9 +5,13 @@ const { $api } = useNuxtApp();
 const toast = useToast();
 
 async function create(payload: Record<string, unknown>) {
-  await $api('/products', { method: 'POST', body: payload });
-  toast.success('Đã tạo sản phẩm');
-  navigateTo('/admin/products');
+  try {
+    await $api('/products', { method: 'POST', body: payload });
+    toast.success('Đã tạo sản phẩm');
+    navigateTo('/admin/products');
+  } catch (e: any) {
+    toast.error(extractApiMessage(e, 'Không thể tạo sản phẩm'));
+  }
 }
 </script>
 

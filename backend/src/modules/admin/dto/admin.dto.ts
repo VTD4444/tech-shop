@@ -16,6 +16,7 @@ export class AdminOrdersQueryDto {
 
   @IsOptional()
   @IsString()
+  @IsIn(['pending', 'confirmed', 'shipping', 'delivered', 'cancelled', 'completed'])
   status?: string;
 }
 

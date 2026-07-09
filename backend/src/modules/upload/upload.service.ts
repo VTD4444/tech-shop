@@ -7,13 +7,18 @@ export class UploadService {
   private readonly cloudName: string;
   private readonly apiKey: string;
   private readonly apiSecret: string;
-  private readonly folder: string;
+  private readonly productFolder: string;
+  private readonly userFolder: string;
 
   constructor(private readonly config: ConfigService) {
     this.cloudName = this.config.get<string>('app.cloudinary.cloudName', '');
     this.apiKey = this.config.get<string>('app.cloudinary.apiKey', '');
     this.apiSecret = this.config.get<string>('app.cloudinary.apiSecret', '');
-    this.folder = this.config.get<string>('app.cloudinary.folder', 'techshop/products');
+    this.productFolder = this.config.get<string>('app.cloudinary.folder', 'techshop/products');
+    this.userFolder = this.config.get<string>(
+      'app.cloudinary.userFolder',
+      'techshop/user-uploads',
+    );
 
     if (this.cloudName) {
       cloudinary.config({
@@ -24,20 +29,29 @@ export class UploadService {
     }
   }
 
-  getSignedUploadParams() {
+  getSignedUploadParams(folder?: string) {
     if (!this.apiSecret || !this.cloudName) {
       throw new BadRequestException('Cloudinary is not configured');
     }
+    const targetFolder = folder || this.productFolder;
     const timestamp = Math.round(Date.now() / 1000);
-    const paramsToSign = { timestamp, folder: this.folder };
+    const paramsToSign = { timestamp, folder: targetFolder };
     const signature = cloudinary.utils.api_sign_request(paramsToSign, this.apiSecret);
     return {
       cloudName: this.cloudName,
       apiKey: this.apiKey,
       timestamp,
-      folder: this.folder,
+      folder: targetFolder,
       signature,
     };
+  }
+
+  getProductUploadParams() {
+    return this.getSignedUploadParams(this.productFolder);
+  }
+
+  getUserUploadParams() {
+    return this.getSignedUploadParams(this.userFolder);
   }
 
   static isAllowedImageUrl(url: string): boolean {

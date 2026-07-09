@@ -32,12 +32,16 @@ export const envValidationSchema = Joi.object({
   SEPAY_ERROR_URL: Joi.string().uri().allow('').optional(),
   SEPAY_CANCEL_URL: Joi.string().uri().allow('').optional(),
   SEPAY_PAYMENT_METHOD: Joi.string().allow('').optional(),
-  SEPAY_IPN_WHITELIST: Joi.string().allow('').optional(),
+  SEPAY_IPN_WHITELIST: isProduction
+    ? Joi.string().min(1).required()
+    : Joi.string().allow('').optional(),
+  SEPAY_WEBHOOK_SECRET: Joi.string().allow('').optional(),
   SEPAY_DEBUG: Joi.string().allow('').optional(),
   CLOUDINARY_CLOUD_NAME: Joi.string().allow('').optional(),
   CLOUDINARY_API_KEY: Joi.string().allow('').optional(),
   CLOUDINARY_API_SECRET: Joi.string().allow('').optional(),
   CLOUDINARY_FOLDER: Joi.string().default('techshop/products'),
+  CLOUDINARY_USER_FOLDER: Joi.string().default('techshop/user-uploads'),
   AI_SERVICE_URL: Joi.string().uri().allow('').optional(),
   GOOGLE_CLIENT_ID: Joi.string().allow('').optional(),
   GOOGLE_CLIENT_SECRET: Joi.string().allow('').optional(),

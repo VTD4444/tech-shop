@@ -92,15 +92,15 @@ export class OrdersService {
     });
     if (!address) throw new NotFoundException('Shipping address not found');
 
-    const cartItems = await this.prisma.cartItem.findMany({
-      where: { userId: BigInt(userId) },
-      include: { product: true },
-    });
-    if (cartItems.length === 0) throw new BadRequestException('Cart is empty');
-
-    const productIds = cartItems.map((item) => item.productId).sort((a, b) => Number(a - b));
-
     const result = await this.prisma.$transaction(async (tx) => {
+      const cartItems = await tx.cartItem.findMany({
+        where: { userId: BigInt(userId) },
+        include: { product: true },
+      });
+      if (cartItems.length === 0) throw new BadRequestException('Cart is empty');
+
+      const productIds = cartItems.map((item) => item.productId).sort((a, b) => Number(a - b));
+
       const rows: { id: bigint; stock_quantity: number }[] = await tx.$queryRawUnsafe(
         `SELECT id, stock_quantity FROM products WHERE id = ANY($1) ORDER BY id FOR UPDATE`,
         [productIds],
@@ -115,11 +115,18 @@ export class OrdersService {
         productImageUrl: string | null;
         quantity: number;
         price: number;
+        subtotal: number;
       }[] = [];
 
       let totalAmount = 0;
 
       for (const item of cartItems) {
+        if (item.product.status !== 'active') {
+          throw new BadRequestException(
+            `Product "${item.product.name}" is no longer available`,
+          );
+        }
+
         const pid = item.productId.toString();
         const availableStock = productMap.get(pid) ?? 0;
 
@@ -149,6 +156,7 @@ export class OrdersService {
           productImageUrl: item.product.imageUrl,
           quantity: item.quantity,
           price,
+          subtotal: price * item.quantity,
         });
         totalAmount += price * item.quantity;
       }
@@ -165,7 +173,15 @@ export class OrdersService {
           status: 'pending',
           paymentStatus: 'unpaid',
           items: {
-            create: orderItemsData,
+            create: orderItemsData.map((row) => ({
+              productId: row.productId,
+              productName: row.productName,
+              productSlug: row.productSlug,
+              productImageUrl: row.productImageUrl,
+              quantity: row.quantity,
+              price: row.price,
+              subtotal: row.subtotal,
+            })),
           },
         },
         include: { items: true },
@@ -245,6 +261,39 @@ export class OrdersService {
         include: { items: true },
       });
       if (!order) throw new NotFoundException('Order not found or cannot be cancelled');
+
+      for (const item of order.items) {
+        if (item.productId) {
+          await tx.product.update({
+            where: { id: item.productId },
+            data: { stockQuantity: { increment: item.quantity } },
+          });
+        }
+      }
+
+      const updated = await tx.order.update({
+        where: { id: BigInt(orderId) },
+        data: { status: 'cancelled' },
+        include: { items: true },
+      });
+
+      return this.mapOrder(updated);
+    });
+  }
+
+  async adminCancelWithStockRestore(orderId: string) {
+    return this.prisma.$transaction(async (tx) => {
+      const order = await tx.order.findUnique({
+        where: { id: BigInt(orderId) },
+        include: { items: true },
+      });
+      if (!order) throw new NotFoundException('Order not found');
+      if (order.status === 'cancelled') {
+        throw new BadRequestException('Order is already cancelled');
+      }
+      if (order.status === 'delivered' || order.status === 'completed') {
+        throw new BadRequestException('Cannot cancel a delivered order');
+      }
 
       for (const item of order.items) {
         if (item.productId) {

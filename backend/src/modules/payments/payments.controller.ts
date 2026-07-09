@@ -5,6 +5,7 @@ import { PaymentsService } from './payments.service';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { Public } from '../../common/decorators/public.decorator';
 import { SepayIpnDto } from './dto/sepay-ipn.dto';
+import { AbandonCheckoutDto, CreateCheckoutQueryDto } from './dto/payments.dto';
 
 @Controller('payments')
 export class PaymentsController {
@@ -13,9 +14,9 @@ export class PaymentsController {
   @Post('sepay/init')
   createCheckout(
     @CurrentUser('id') userId: string,
-    @Query('orderId') orderId: string,
+    @Query() query: CreateCheckoutQueryDto,
   ) {
-    return this.paymentsService.createCheckout(userId, orderId);
+    return this.paymentsService.createCheckout(userId, query.orderId);
   }
 
   @Public()
@@ -24,11 +25,13 @@ export class PaymentsController {
     return this.paymentsService.getReturnStatus(invoice);
   }
 
-  @Public()
   @Throttle({ default: { limit: 30, ttl: 60000 } })
   @Post('sepay/abandon')
-  abandonCheckout(@Body('invoice') invoice: string) {
-    return this.paymentsService.abandonCheckout(invoice);
+  abandonCheckout(
+    @CurrentUser('id') userId: string,
+    @Body() body: AbandonCheckoutDto,
+  ) {
+    return this.paymentsService.abandonCheckout(userId, body.invoice);
   }
 
   @Public()
@@ -36,6 +39,15 @@ export class PaymentsController {
   @Post('sepay/ipn')
   handleIpn(@Body() body: SepayIpnDto, @Req() req: Request) {
     const clientIp = req.ip || req.socket.remoteAddress;
-    return this.paymentsService.handleIpn(body as Record<string, any>, clientIp);
+    const rawBody =
+      (req as Request & { rawBody?: Buffer }).rawBody?.toString('utf8') ??
+      JSON.stringify(body);
+    const signature = (req.headers['x-sepay-signature'] as string) ?? '';
+    const timestamp = (req.headers['x-sepay-timestamp'] as string) ?? '';
+    return this.paymentsService.handleIpn(
+      body as Record<string, any>,
+      clientIp,
+      { rawBody, signature, timestamp },
+    );
   }
 }

@@ -151,7 +151,7 @@ products ─── product_images
 | shipping_address | TEXT | |
 | customer_name / customer_phone | VARCHAR | |
 | note | TEXT | |
-| status | VARCHAR(50) | `pending`, `confirmed`, `shipping`, `completed`, `cancelled` |
+| status | VARCHAR(50) | `pending` → `confirmed` → `shipping` → `delivered` (terminal); `cancelled` (terminal). Legacy `completed` migrated to `delivered`. |
 | payment_status | VARCHAR(50) | `unpaid`, `paid`, `failed`, `refunded` |
 
 ### `order_items`

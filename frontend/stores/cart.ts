@@ -9,6 +9,7 @@ export const useCartStore = defineStore('cart', () => {
   const items = ref<any[]>([]);
   const summary = ref({ ...DEFAULT_SUMMARY });
   const unavailable = ref(false);
+  const loadError = ref<string | null>(null);
   const totalItems = computed(() => items.value.reduce((s, i) => s + i.quantity, 0));
   const subtotal = computed(() => summary.value.subtotal);
   const totalPrice = computed(() => summary.value.total);
@@ -29,6 +30,7 @@ export const useCartStore = defineStore('cart', () => {
 
   async function fetchCart() {
     unavailable.value = false;
+    loadError.value = null;
     try {
       const { $api } = useNuxtApp();
       const data: any = await $api('/cart');
@@ -37,6 +39,9 @@ export const useCartStore = defineStore('cart', () => {
       if (isApiUnavailableError(error)) {
         useSystemStore().markDegraded();
         unavailable.value = true;
+        loadError.value = null;
+      } else {
+        loadError.value = extractApiMessage(error, 'Không tải được giỏ hàng');
       }
       items.value = [];
       summary.value = { ...DEFAULT_SUMMARY };
@@ -96,6 +101,7 @@ export const useCartStore = defineStore('cart', () => {
     items,
     summary,
     unavailable,
+    loadError,
     totalItems,
     subtotal,
     totalPrice,

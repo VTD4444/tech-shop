@@ -98,11 +98,11 @@ describe('AuthService', () => {
     ).rejects.toBeInstanceOf(UnauthorizedException);
   });
 
-  it('forgotPassword throws when email is not registered', async () => {
+  it('forgotPassword returns generic message when email is not registered', async () => {
     prisma.user.findUnique.mockResolvedValue(null);
-    await expect(service.forgotPassword('unknown@test.com')).rejects.toBeInstanceOf(
-      NotFoundException,
-    );
+    const result = await service.forgotPassword('unknown@test.com');
+    expect(result.message).toContain('Nếu email đã đăng ký');
+    expect(mailService.sendPasswordReset).not.toHaveBeenCalled();
   });
 
   it('forgotPassword sends reset email for registered active user', async () => {

@@ -6,21 +6,45 @@ definePageMeta({ middleware: ['auth', 'customer'] });
 
 const cartStore = useCartStore();
 const { formatPrice } = useFormatPrice();
+const toast = useToast();
 
 await cartStore.fetchCart();
 
 async function increment(item: any) {
-  await cartStore.updateQuantity(item.productId, item.quantity + 1);
+  try {
+    await cartStore.updateQuantity(item.productId, item.quantity + 1);
+  } catch (e: any) {
+    toast.error(extractApiMessage(e, 'Không thể cập nhật số lượng'));
+  }
 }
 
 async function decrement(item: any) {
-  if (item.quantity > 1) await cartStore.updateQuantity(item.productId, item.quantity - 1);
+  if (item.quantity <= 1) return;
+  try {
+    await cartStore.updateQuantity(item.productId, item.quantity - 1);
+  } catch (e: any) {
+    toast.error(extractApiMessage(e, 'Không thể cập nhật số lượng'));
+  }
+}
+
+async function removeItem(productId: string) {
+  try {
+    await cartStore.removeItem(productId);
+  } catch (e: any) {
+    toast.error(extractApiMessage(e, 'Không thể xóa sản phẩm'));
+  }
 }
 </script>
 
 <template>
   <UiContainer size="narrow" class="py-8">
     <UiText as="h1" size="2xl" class="mb-8">Giỏ hàng</UiText>
+    <p
+      v-if="cartStore.loadError"
+      class="mb-6 text-sm text-danger bg-danger/10 border border-danger/20 rounded-lg px-4 py-3"
+    >
+      {{ cartStore.loadError }}
+    </p>
     <p
       v-if="cartStore.unavailable"
       class="mb-6 text-sm text-warning bg-warning/10 border border-warning/20 rounded-lg px-4 py-3"
@@ -50,7 +74,7 @@ async function decrement(item: any) {
             <UiButton variant="ghost" size="sm" @click="increment(item)">+</UiButton>
           </div>
           <p class="font-semibold text-fg w-28 text-right hidden sm:block">{{ formatPrice(item.product.price * item.quantity) }}</p>
-          <button type="button" class="text-danger hover:text-danger/80 p-1" @click="cartStore.removeItem(item.productId)">
+          <button type="button" class="text-danger hover:text-danger/80 p-1" @click="removeItem(item.productId)">
             <Trash2 class="w-4 h-4" />
           </button>
         </div>

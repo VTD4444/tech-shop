@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
@@ -27,10 +27,16 @@ export class WishlistService {
   }
 
   async addItem(userId: string, productId: string) {
+    if (!/^\d+$/.test(productId)) {
+      throw new BadRequestException('Invalid product ID');
+    }
+
     const product = await this.prisma.product.findUnique({
       where: { id: BigInt(productId) },
     });
-    if (!product) throw new Error('Product not found');
+    if (!product || product.status !== 'active') {
+      throw new NotFoundException('Product not found or unavailable');
+    }
 
     const existing = await this.prisma.wishlist.findUnique({
       where: {
@@ -59,8 +65,8 @@ export class WishlistService {
         },
       },
     });
-    if (item) {
-      return this.prisma.wishlist.delete({ where: { id: item.id } });
-    }
+    if (!item) throw new NotFoundException('Wishlist item not found');
+
+    return this.prisma.wishlist.delete({ where: { id: item.id } });
   }
 }

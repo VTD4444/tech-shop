@@ -42,6 +42,7 @@ export default registerAs('app', () => ({
     apiKey: env('CLOUDINARY_API_KEY'),
     apiSecret: env('CLOUDINARY_API_SECRET'),
     folder: env('CLOUDINARY_FOLDER', 'techshop/products'),
+    userFolder: env('CLOUDINARY_USER_FOLDER', 'techshop/user-uploads'),
   },
   google: {
     clientId: env('GOOGLE_CLIENT_ID'),

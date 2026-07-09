@@ -57,6 +57,56 @@ export function signSepayCheckoutFields(
     .digest('base64');
 }
 
+/** IPN / webhook HMAC — `sha256={hex}` over `{timestamp}.{rawBody}` */
+export function verifySepayWebhookHmac(
+  rawBody: string,
+  signatureHeader: string,
+  timestampHeader: string,
+  secretKey: string,
+  maxSkewSeconds = 300,
+): boolean {
+  if (!secretKey || !signatureHeader || !timestampHeader) return false;
+
+  const timestamp = Number(timestampHeader);
+  if (!Number.isFinite(timestamp)) return false;
+
+  const now = Math.floor(Date.now() / 1000);
+  if (Math.abs(now - timestamp) > maxSkewSeconds) return false;
+
+  const expected =
+    'sha256=' +
+    crypto.createHmac('sha256', secretKey).update(`${timestamp}.${rawBody}`, 'utf8').digest('hex');
+
+  const sig = Buffer.from(signatureHeader);
+  const exp = Buffer.from(expected);
+  if (sig.length !== exp.length) return false;
+  return crypto.timingSafeEqual(sig, exp);
+}
+
+/** Payment Gateway IPN may include a top-level signature over order fields */
+export function verifySepayOrderIpnSignature(
+  body: Record<string, unknown>,
+  secretKey: string,
+): boolean {
+  const signature = body.signature;
+  if (typeof signature !== 'string' || !signature) return false;
+
+  const order = (body.order ?? {}) as Record<string, string>;
+  const fields: Record<string, string> = {};
+  for (const key of SEPAY_SIGNED_FIELDS) {
+    if (order[key] != null && order[key] !== '') {
+      fields[key] = String(order[key]);
+    }
+  }
+  if (!fields.order_amount || !fields.order_invoice_number) return false;
+
+  const expected = signSepayCheckoutFields(fields, secretKey);
+  const sig = Buffer.from(signature);
+  const exp = Buffer.from(expected);
+  if (sig.length !== exp.length) return false;
+  return crypto.timingSafeEqual(sig, exp);
+}
+
 export function getSepayCheckoutUrl(): string {
   if (process.env.SEPAY_CHECKOUT_URL) {
     return stripEnvQuotes(process.env.SEPAY_CHECKOUT_URL);

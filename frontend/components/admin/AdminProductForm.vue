@@ -97,8 +97,8 @@ function onSubmit() {
 
   emit('submit', {
     ...form,
-    categoryId: form.categoryId || undefined,
-    brandId: form.brandId || undefined,
+    categoryId: form.categoryId ? form.categoryId : null,
+    brandId: form.brandId ? form.brandId : null,
     longDescription: longDescription.value || null,
     spec: productSpec.value,
     images: images.value.length ? images.value : undefined,

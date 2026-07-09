@@ -18,6 +18,8 @@ import {
   signSepayCheckoutFields,
   stripEnvQuotes,
   isSepayDebugEnabled,
+  verifySepayOrderIpnSignature,
+  verifySepayWebhookHmac,
 } from '../../common/utils/sepay.util';
 
 @Injectable()
@@ -155,13 +157,14 @@ export class PaymentsService {
   }
 
   /** User left SePay without paying — release processing txn so they can retry. */
-  async abandonCheckout(invoiceNumber: string) {
+  async abandonCheckout(userId: string, invoiceNumber: string) {
     if (!invoiceNumber) {
       return { abandoned: false, orderId: '', txnStatus: '' };
     }
 
     const txn = await this.prisma.paymentTransaction.findUnique({
       where: { invoiceNumber },
+      include: { order: { select: { userId: true } } },
     });
     if (!txn || txn.status !== 'processing') {
       return {
@@ -169,6 +172,10 @@ export class PaymentsService {
         orderId: txn?.orderId.toString() ?? '',
         txnStatus: txn?.status ?? '',
       };
+    }
+
+    if (txn.order.userId?.toString() !== userId) {
+      throw new BadRequestException('Not authorized to abandon this checkout');
     }
 
     await this.prisma.paymentTransaction.update({
@@ -224,17 +231,47 @@ export class PaymentsService {
 
   /**
    * IPN is the source of truth for marking orders paid.
-   * Always acknowledge with { success: true } so SePay does not retry endlessly.
+   * Returns { success: false } on verification/amount failures so SePay may retry when appropriate.
    */
-  async handleIpn(body: Record<string, any>, clientIp?: string) {
+  async handleIpn(
+    body: Record<string, any>,
+    clientIp?: string,
+    meta?: { rawBody?: string; signature?: string; timestamp?: string },
+  ) {
     try {
+      const isProduction = process.env.NODE_ENV === 'production';
+      const secretKey =
+        stripEnvQuotes(process.env.SEPAY_WEBHOOK_SECRET) ||
+        stripEnvQuotes(process.env.SEPAY_SECRET_KEY);
+
       const allowedIps = (process.env.SEPAY_IPN_WHITELIST || '')
         .split(',')
         .map((s) => s.trim())
         .filter(Boolean);
+
+      if (isProduction && allowedIps.length === 0) {
+        this.logger.error('SEPAY_IPN_WHITELIST is required in production');
+        return { success: false };
+      }
+
       if (allowedIps.length > 0 && clientIp && !allowedIps.includes(clientIp)) {
         this.logger.warn(`SePay IPN rejected from IP: ${clientIp}`);
-        return { success: true };
+        return { success: false };
+      }
+
+      const headerVerified =
+        meta?.rawBody &&
+        meta.signature &&
+        meta.timestamp &&
+        secretKey &&
+        verifySepayWebhookHmac(meta.rawBody, meta.signature, meta.timestamp, secretKey);
+
+      const orderSignatureVerified =
+        secretKey && verifySepayOrderIpnSignature(body, secretKey);
+
+      if (isProduction && !headerVerified && !orderSignatureVerified) {
+        this.logger.warn('SePay IPN signature verification failed');
+        return { success: false };
       }
 
       if (body?.notification_type !== 'ORDER_PAID') {
@@ -249,7 +286,7 @@ export class PaymentsService {
       const invoiceNumber = orderPayload.order_invoice_number as string;
       if (!invoiceNumber) {
         this.logger.warn('SePay IPN missing order_invoice_number');
-        return { success: true };
+        return { success: false };
       }
 
       const txn = await this.prisma.paymentTransaction.findUnique({
@@ -258,10 +295,17 @@ export class PaymentsService {
       });
       if (!txn) {
         this.logger.warn(`SePay IPN transaction not found: ${invoiceNumber}`);
-        return { success: true };
+        return { success: false };
       }
 
       if (txn.status === 'success' || txn.order.paymentStatus === 'paid') {
+        return { success: true };
+      }
+
+      if (txn.order.status === 'cancelled') {
+        this.logger.warn(
+          `SePay IPN received for cancelled order ${txn.orderId} — manual review required`,
+        );
         return { success: true };
       }
 
@@ -271,7 +315,11 @@ export class PaymentsService {
         this.logger.warn(
           `SePay IPN amount mismatch for ${invoiceNumber}: expected ${expectedAmount}, got ${ipnAmount}`,
         );
-        return { success: true };
+        await this.prisma.paymentTransaction.update({
+          where: { id: txn.id },
+          data: { status: 'failed', rawResponse: body },
+        });
+        return { success: false };
       }
 
       const externalTxnId =
@@ -304,10 +352,11 @@ export class PaymentsService {
           Number(txn.order.totalAmount),
         );
       }
+
+      return { success: true };
     } catch (err) {
       this.logger.error('SePay IPN processing error', err);
+      return { success: false };
     }
-
-    return { success: true };
   }
 }

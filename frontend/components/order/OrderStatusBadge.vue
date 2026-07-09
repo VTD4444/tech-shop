@@ -6,6 +6,7 @@ const map: Record<string, { variant: 'pending' | 'success' | 'neutral' | 'danger
   confirmed: { variant: 'success', label: 'Đã xác nhận' },
   processing: { variant: 'neutral', label: 'Đang xử lý' },
   shipping: { variant: 'neutral', label: 'Đang giao' },
+  delivered: { variant: 'success', label: 'Đã giao' },
   completed: { variant: 'success', label: 'Hoàn thành' },
   cancelled: { variant: 'danger', label: 'Đã hủy' },
 };

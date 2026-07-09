@@ -46,6 +46,11 @@ export default defineNuxtPlugin(() => {
           return api(request, options as Parameters<typeof api>[1]);
         }
         authStore.clearSession();
+        const route = useRoute();
+        const redirect = route.fullPath && route.fullPath !== '/login'
+          ? `?redirect=${encodeURIComponent(route.fullPath)}`
+          : '';
+        await navigateTo(`/login${redirect}`);
       } catch {
         // Never fail hydration because of auth refresh.
       }

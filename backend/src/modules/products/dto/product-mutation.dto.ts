@@ -2,12 +2,15 @@ import { Type } from 'class-transformer';
 import {
   IsArray,
   IsBoolean,
+  IsIn,
   IsNumber,
+  IsObject,
   IsOptional,
   IsString,
   MaxLength,
   Min,
   MinLength,
+  ValidateIf,
   ValidateNested,
 } from 'class-validator';
 
@@ -24,14 +27,46 @@ class ProductImageDto {
   sortOrder?: number;
 }
 
-class ProductSpecDto {
+class ProductSpecObjectDto {
   @IsOptional()
   @IsString()
-  specKey?: string;
+  cpuBrand?: string | null;
 
   @IsOptional()
   @IsString()
-  specValue?: string;
+  cpuSeries?: string | null;
+
+  @IsOptional()
+  @IsString()
+  cpuModel?: string | null;
+
+  @IsOptional()
+  @IsNumber()
+  ramCapacity?: number | null;
+
+  @IsOptional()
+  @IsString()
+  ramGeneration?: string | null;
+
+  @IsOptional()
+  @IsNumber()
+  storageCapacity?: number | null;
+
+  @IsOptional()
+  @IsString()
+  storageType?: string | null;
+
+  @IsOptional()
+  @IsString()
+  gpuModel?: string | null;
+
+  @IsOptional()
+  @IsNumber()
+  screenSize?: number | null;
+
+  @IsOptional()
+  @IsObject()
+  specs?: Record<string, string> | null;
 }
 
 class PcComponentDto {
@@ -90,12 +125,14 @@ class PcComponentDto {
 
 export class CreateProductDto {
   @IsOptional()
+  @ValidateIf((_, v) => v !== null && v !== undefined && v !== '')
   @IsString()
-  categoryId?: string;
+  categoryId?: string | null;
 
   @IsOptional()
+  @ValidateIf((_, v) => v !== null && v !== undefined && v !== '')
   @IsString()
-  brandId?: string;
+  brandId?: string | null;
 
   @IsString()
   @MinLength(2)
@@ -141,6 +178,7 @@ export class CreateProductDto {
 
   @IsOptional()
   @IsString()
+  @IsIn(['active', 'inactive', 'discontinued'])
   status?: string;
 
   @IsOptional()
@@ -155,20 +193,21 @@ export class CreateProductDto {
   pcComponent?: PcComponentDto;
 
   @IsOptional()
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => ProductSpecDto)
-  spec?: ProductSpecDto[];
+  @ValidateNested()
+  @Type(() => ProductSpecObjectDto)
+  spec?: ProductSpecObjectDto | null;
 }
 
 export class UpdateProductDto {
   @IsOptional()
+  @ValidateIf((_, v) => v !== null && v !== undefined && v !== '')
   @IsString()
-  categoryId?: string;
+  categoryId?: string | null;
 
   @IsOptional()
+  @ValidateIf((_, v) => v !== null && v !== undefined && v !== '')
   @IsString()
-  brandId?: string;
+  brandId?: string | null;
 
   @IsOptional()
   @IsString()
@@ -217,6 +256,7 @@ export class UpdateProductDto {
 
   @IsOptional()
   @IsString()
+  @IsIn(['active', 'inactive', 'discontinued'])
   status?: string;
 
   @IsOptional()
@@ -231,8 +271,7 @@ export class UpdateProductDto {
   pcComponent?: PcComponentDto;
 
   @IsOptional()
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => ProductSpecDto)
-  spec?: ProductSpecDto[];
+  @ValidateNested()
+  @Type(() => ProductSpecObjectDto)
+  spec?: ProductSpecObjectDto | null;
 }

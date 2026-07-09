@@ -7,31 +7,45 @@ const confirmDialog = useConfirmDialog();
 const categories = ref<any[]>([]);
 const name = ref('');
 const slug = ref('');
+const loadError = ref('');
 
-const res: any = await $api('/categories');
-categories.value = res.data || [];
+try {
+  const res: any = await $api('/categories');
+  categories.value = res.data || [];
+} catch (e: any) {
+  loadError.value = extractApiMessage(e, 'Không tải được danh mục');
+}
 
 async function create() {
-  await $api('/categories', { method: 'POST', body: { name: name.value, slug: slug.value } });
-  toast.success('Đã tạo danh mục');
-  name.value = '';
-  slug.value = '';
-  const r: any = await $api('/categories');
-  categories.value = r.data || [];
+  try {
+    await $api('/categories', { method: 'POST', body: { name: name.value, slug: slug.value } });
+    toast.success('Đã tạo danh mục');
+    name.value = '';
+    slug.value = '';
+    const r: any = await $api('/categories');
+    categories.value = r.data || [];
+  } catch (e: any) {
+    toast.error(extractApiMessage(e, 'Không thể tạo danh mục'));
+  }
 }
 
 async function remove(id: string) {
   const ok = await confirmDialog.confirm('Xóa danh mục này?');
   if (!ok) return;
-  await $api(`/categories/${id}`, { method: 'DELETE' });
-  categories.value = categories.value.filter((c) => c.id !== id);
-  toast.info('Đã xóa danh mục');
+  try {
+    await $api(`/categories/${id}`, { method: 'DELETE' });
+    categories.value = categories.value.filter((c) => c.id !== id);
+    toast.info('Đã xóa danh mục');
+  } catch (e: any) {
+    toast.error(extractApiMessage(e, 'Không thể xóa danh mục'));
+  }
 }
 </script>
 
 <template>
   <div>
     <UiText as="h1" size="2xl" class="mb-6">Danh mục</UiText>
+    <p v-if="loadError" class="mb-4 text-sm text-danger">{{ loadError }}</p>
 
     <UiCard padding="md" class="mb-6">
       <form class="flex flex-wrap gap-2" @submit.prevent="create">

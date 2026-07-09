@@ -6,6 +6,13 @@ import { toId } from '../../common/utils/serialize';
 export class CartService {
   constructor(private prisma: PrismaService) {}
 
+  private parseProductId(productId: string): bigint {
+    if (!/^\d+$/.test(productId)) {
+      throw new BadRequestException('Invalid product ID');
+    }
+    return BigInt(productId);
+  }
+
   private mapCartItem(item: {
     id: bigint;
     userId: bigint;
@@ -41,6 +48,7 @@ export class CartService {
       userId: item.userId.toString(),
       productId: item.productId.toString(),
       quantity: item.quantity,
+      unavailable: item.product.status !== 'active',
       product: { ...item.product, id: item.product.id.toString(), price: Number(item.product.price) },
     }));
 
@@ -58,8 +66,9 @@ export class CartService {
   }
 
   async addItem(userId: string, dto: { productId: string; quantity: number }) {
+    const productId = this.parseProductId(dto.productId);
     const product = await this.prisma.product.findUnique({
-      where: { id: BigInt(dto.productId) },
+      where: { id: productId },
     });
     if (!product || product.status !== 'active') {
       throw new NotFoundException('Product not found or unavailable');
@@ -69,7 +78,7 @@ export class CartService {
       where: {
         userId_productId: {
           userId: BigInt(userId),
-          productId: BigInt(dto.productId),
+          productId,
         },
       },
     });
@@ -94,7 +103,7 @@ export class CartService {
     const created = await this.prisma.cartItem.create({
       data: {
         userId: BigInt(userId),
-        productId: BigInt(dto.productId),
+        productId,
         quantity: dto.quantity,
       },
     });
@@ -105,16 +114,17 @@ export class CartService {
     };
   }
 
-  async updateItemQuantity(userId: string, productId: string, quantity: number) {
+  async updateItemQuantity(userId: string, productIdStr: string, quantity: number) {
     if (!Number.isInteger(quantity) || quantity < 1) {
       throw new BadRequestException('Quantity must be at least 1');
     }
 
+    const productId = this.parseProductId(productIdStr);
     const item = await this.prisma.cartItem.findUnique({
       where: {
         userId_productId: {
           userId: BigInt(userId),
-          productId: BigInt(productId),
+          productId,
         },
       },
       include: { product: true },
@@ -133,12 +143,13 @@ export class CartService {
     return this.mapCartItem(updated);
   }
 
-  async removeItem(userId: string, productId: string) {
+  async removeItem(userId: string, productIdStr: string) {
+    const productId = this.parseProductId(productIdStr);
     const cartItem = await this.prisma.cartItem.findUnique({
       where: {
         userId_productId: {
           userId: BigInt(userId),
-          productId: BigInt(productId),
+          productId,
         },
       },
     });

@@ -16,9 +16,13 @@ try {
 }
 
 async function update(payload: Record<string, unknown>) {
-  await $api(`/products/${product.value.id}`, { method: 'PATCH', body: payload });
-  toast.success('Đã cập nhật sản phẩm');
-  navigateTo('/admin/products');
+  try {
+    await $api(`/products/${product.value.id}`, { method: 'PATCH', body: payload });
+    toast.success('Đã cập nhật sản phẩm');
+    navigateTo('/admin/products');
+  } catch (e: any) {
+    toast.error(extractApiMessage(e, 'Không thể cập nhật sản phẩm'));
+  }
 }
 
 async function remove() {
@@ -28,9 +32,13 @@ async function remove() {
     confirmLabel: 'Ngừng kinh doanh',
   });
   if (!ok) return;
-  await $api(`/products/${product.value.id}`, { method: 'DELETE' });
-  toast.info('Đã ngừng kinh doanh sản phẩm');
-  navigateTo('/admin/products');
+  try {
+    await $api(`/products/${product.value.id}`, { method: 'DELETE' });
+    toast.info('Đã ngừng kinh doanh sản phẩm');
+    navigateTo('/admin/products');
+  } catch (e: any) {
+    toast.error(extractApiMessage(e, 'Không thể ngừng kinh doanh sản phẩm'));
+  }
 }
 </script>
 

@@ -19,9 +19,13 @@ async function loadOrders() {
 await loadOrders();
 
 async function updateStatus(id: string, status: string) {
-  await $api(`/admin/orders/${id}/status?status=${status}`, { method: 'PATCH' });
-  toast.success('Đã cập nhật trạng thái');
-  await loadOrders();
+  try {
+    await $api(`/admin/orders/${id}/status?status=${status}`, { method: 'PATCH' });
+    toast.success('Đã cập nhật trạng thái');
+    await loadOrders();
+  } catch (e: any) {
+    toast.error(extractApiMessage(e, 'Không thể cập nhật trạng thái đơn hàng'));
+  }
 }
 </script>
 

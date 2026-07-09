@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { toId } from '../../common/utils/serialize';
 
@@ -54,8 +54,31 @@ export class UsersService {
     userId: string,
     dto: { fullName?: string; email?: string; phone?: string },
   ) {
+    const id = BigInt(userId);
+
+    if (dto.email) {
+      const email = dto.email.trim().toLowerCase();
+      const conflict = await this.prisma.user.findFirst({
+        where: { email, NOT: { id } },
+      });
+      if (conflict) throw new ConflictException('Email already exists');
+      dto.email = email;
+    }
+
+    if (dto.phone) {
+      const phone = dto.phone.trim();
+      const conflict = await this.prisma.user.findFirst({
+        where: { phone, NOT: { id } },
+      });
+      if (conflict) throw new ConflictException('Phone number already exists');
+      dto.phone = phone;
+    }
+
+    const existing = await this.prisma.user.findUnique({ where: { id } });
+    if (!existing) throw new NotFoundException('User not found');
+
     const user = await this.prisma.user.update({
-      where: { id: BigInt(userId) },
+      where: { id },
       data: dto,
       select: {
         id: true,

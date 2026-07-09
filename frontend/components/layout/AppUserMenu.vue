@@ -22,11 +22,13 @@ async function logout() {
 
 const items = computed(() => {
   const links = [
-    { label: 'Đổi mật khẩu', to: '/forgot-password', icon: KeyRound },
     { label: 'Quản lý địa chỉ', to: '/profile#addresses', icon: MapPin },
     { label: 'Đơn hàng', to: '/orders', icon: Package },
     { label: 'Yêu thích của tôi', to: '/wishlist', icon: Heart },
   ];
+  if (authStore.user?.authProvider !== 'google') {
+    links.unshift({ label: 'Đổi mật khẩu', to: '/forgot-password', icon: KeyRound });
+  }
   if (authStore.isAdmin) {
     links.push({ label: 'Quản trị', to: '/admin', icon: Shield });
   }

@@ -42,7 +42,7 @@ async function main() {
       const orders = await prisma.order.findMany({
         where: {
           userId: row.user_id,
-          status: 'completed',
+          status: { in: ['delivered', 'completed'] },
           paymentStatus: 'paid',
           items: { some: { productId: row.product_id } },
         },

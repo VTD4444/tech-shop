@@ -107,7 +107,7 @@ export class ProductsRatingsService {
     const orders = await this.prisma.order.findMany({
       where: {
         userId: BigInt(userId),
-        status: 'completed',
+        status: { in: ['delivered', 'completed'] },
         paymentStatus: 'paid',
         items: { some: { productId } },
       },
@@ -140,7 +140,7 @@ export class ProductsRatingsService {
       where: {
         id: BigInt(orderId),
         userId: BigInt(userId),
-        status: 'completed',
+        status: { in: ['delivered', 'completed'] },
         paymentStatus: 'paid',
         items: { some: { productId } },
       },
@@ -148,7 +148,7 @@ export class ProductsRatingsService {
     if (!order) {
       throw new ForbiddenException({
         success: false,
-        error: { code: 'RATING_NOT_PURCHASED', message: 'You can only rate products from completed paid orders' },
+        error: { code: 'RATING_NOT_PURCHASED', message: 'You can only rate products from delivered paid orders' },
       });
     }
   }

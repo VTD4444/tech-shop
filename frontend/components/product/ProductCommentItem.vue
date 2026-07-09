@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { useAuthStore } from '~/stores/auth';
 import { useToast } from '~/composables/useToast';
-import { useCloudinaryUpload } from '~/composables/useCloudinaryUpload';
 
 const props = defineProps<{
   comment: any;
@@ -14,7 +13,6 @@ const emit = defineEmits<{ reply: []; updated: [] }>();
 const authStore = useAuthStore();
 const toast = useToast();
 const { $api } = useNuxtApp();
-const { uploadFile } = useCloudinaryUpload('/uploads/sign');
 
 const showReply = ref(false);
 const replyText = ref('');

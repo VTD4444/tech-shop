@@ -16,6 +16,15 @@ const authStore = useAuthStore();
 const toast = useToast();
 const { validateEmail, validatePassword } = useAuthValidation();
 
+const route = useRoute();
+
+async function redirectAfterLogin() {
+  const target = typeof route.query.redirect === 'string' && route.query.redirect.startsWith('/')
+    ? route.query.redirect
+    : '/';
+  await navigateTo(target);
+}
+
 async function handleLogin() {
   error.value = '';
   fieldErrors.value = {};
@@ -29,7 +38,7 @@ async function handleLogin() {
   try {
     await authStore.login(email.value, password.value);
     toast.success('Chào mừng trở lại!');
-    await navigateTo('/');
+    await redirectAfterLogin();
   } catch (e: any) {
     error.value = extractApiMessage(e, 'Đăng nhập thất bại');
     toast.error(error.value);

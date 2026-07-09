@@ -56,12 +56,22 @@ Login response body: { user } — tokens are not returned in JSON
 ```
 POST /orders/checkout
   → NestJS $transaction
+    → Read cart inside transaction
     → SELECT ... FOR UPDATE (lock product rows, sorted by id)
+    → Reject inactive products
     → Validate stock
     → UPDATE stock_quantity
-    → CREATE order + order_items
+    → CREATE order + order_items (with subtotal)
     → DELETE cart_items
   → Return order
+```
+
+### 3b. Order status & stock
+```
+Admin: pending → confirmed → shipping → delivered (requires payment_status=paid)
+Cancel (admin or user pending/unpaid): restore stock_quantity, status=cancelled
+Ratings unlock when status=delivered and payment_status=paid
+Run once if upgrading: npx ts-node prisma/scripts/migrate-order-status.ts
 ```
 
 ### 4. SePay Payment

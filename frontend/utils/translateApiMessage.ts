@@ -53,8 +53,10 @@ const EXACT: Record<string, string> = {
   'Maximum 5 images allowed': 'Tối đa 5 ảnh',
   'Rating not found': 'Không tìm thấy đánh giá',
   'Not your rating': 'Đây không phải đánh giá của bạn',
+  'You can only rate products from delivered paid orders':
+    'Bạn chỉ có thể đánh giá sản phẩm từ đơn hàng đã thanh toán và đã giao',
   'You can only rate products from completed paid orders':
-    'Bạn chỉ có thể đánh giá sản phẩm từ đơn hàng đã thanh toán và hoàn tất',
+    'Bạn chỉ có thể đánh giá sản phẩm từ đơn hàng đã thanh toán và đã giao',
   'You already rated this purchase': 'Bạn đã đánh giá đơn mua này',
   'Product is not an available PC component': 'Sản phẩm không phải linh kiện PC khả dụng',
   'One or more components not found': 'Không tìm thấy một hoặc nhiều linh kiện',
@@ -76,6 +78,24 @@ const EXACT: Record<string, string> = {
   'Passwords do not match': 'Mật khẩu xác nhận không khớp',
   'Phone must be a valid Vietnamese number (10 digits)':
     'Số điện thoại phải là số Việt Nam hợp lệ (10 chữ số)',
+  'Invalid product ID': 'Mã sản phẩm không hợp lệ',
+  'Brand not found': 'Không tìm thấy thương hiệu',
+  'Cannot delete category with child categories': 'Không thể xóa danh mục còn danh mục con',
+  'Cannot delete category linked to products': 'Không thể xóa danh mục đang gắn sản phẩm',
+  'Cannot delete brand linked to products': 'Không thể xóa thương hiệu đang gắn sản phẩm',
+  'Parent category not found': 'Không tìm thấy danh mục cha',
+  'Category cannot be its own parent': 'Danh mục không thể là cha của chính nó',
+  'Wishlist item not found': 'Không tìm thấy sản phẩm trong danh sách yêu thích',
+  'Order must be paid before marking as delivered': 'Đơn hàng phải được thanh toán trước khi đánh dấu đã giao',
+  'Order is already cancelled': 'Đơn hàng đã được hủy',
+  'Cannot cancel a delivered order': 'Không thể hủy đơn hàng đã giao',
+  'Not authorized to abandon this checkout': 'Không có quyền hủy phiên thanh toán này',
+  'Duplicate value violates unique constraint': 'Dữ liệu bị trùng (email, số điện thoại hoặc slug)',
+  'Record not found': 'Không tìm thấy bản ghi',
+  'Email or phone number already exists': 'Email hoặc số điện thoại đã được sử dụng',
+  'Nếu email đã đăng ký, bạn sẽ nhận liên kết đặt lại mật khẩu trong vài phút.':
+    'Nếu email đã đăng ký, bạn sẽ nhận liên kết đặt lại mật khẩu trong vài phút.',
+  'Đã vô hiệu hóa khách hàng (còn lịch sử đơn hàng)': 'Đã vô hiệu hóa khách hàng (còn lịch sử đơn hàng)',
 };
 
 const PATTERNS: { test: RegExp; format: (match: RegExpMatchArray) => string }[] = [
@@ -96,8 +116,20 @@ const PATTERNS: { test: RegExp; format: (match: RegExpMatchArray) => string }[] 
     format: (m) => `Trường "${m[1]}" là bắt buộc cho loại linh kiện ${m[2]}`,
   },
   {
-    test: /^Invalid image URL: (.+)$/i,
-    format: (m) => `URL ảnh không hợp lệ: ${m[1]}`,
+    test: /^Cannot change order status from "(.+)" to "(.+)"$/i,
+    format: (m) => `Không thể chuyển trạng thái đơn từ "${m[1]}" sang "${m[2]}"`,
+  },
+  {
+    test: /^Product "(.+)" is no longer available$/i,
+    format: (m) => `Sản phẩm "${m[1]}" không còn bán`,
+  },
+  {
+    test: /^name must be longer than or equal to (\d+) characters$/i,
+    format: (m) => `Tên phải có ít nhất ${m[1]} ký tự`,
+  },
+  {
+    test: /^slug must be longer than or equal to (\d+) characters$/i,
+    format: (m) => `Đường dẫn phải có ít nhất ${m[1]} ký tự`,
   },
 ];
 

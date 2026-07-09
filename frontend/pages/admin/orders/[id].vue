@@ -14,7 +14,7 @@ const statusOptions = [
   { label: 'Chờ xử lý', value: 'pending' },
   { label: 'Đã xác nhận', value: 'confirmed' },
   { label: 'Đang giao', value: 'shipping' },
-  { label: 'Hoàn thành', value: 'completed' },
+  { label: 'Đã giao', value: 'delivered' },
   { label: 'Đã hủy', value: 'cancelled' },
 ];
 

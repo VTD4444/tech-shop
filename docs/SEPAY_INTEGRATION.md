@@ -21,7 +21,8 @@ TechShop uses [SePay Payment Gateway](https://developer.sepay.vn/vi/cong-thanh-t
 | `SEPAY_SUCCESS_URL` | Frontend URL after success — `http://localhost:3001/payments/return?status=success` |
 | `SEPAY_ERROR_URL` | Frontend URL after error |
 | `SEPAY_CANCEL_URL` | Frontend URL after cancel |
-| `SEPAY_IPN_WHITELIST` | Optional comma-separated IPs allowed for IPN (empty = allow all) |
+| `SEPAY_IPN_WHITELIST` | Comma-separated SePay server IPs. **Required in production**; empty in dev allows all |
+| `SEPAY_WEBHOOK_SECRET` | Optional HMAC secret for `X-SePay-Signature` header verification |
 
 ### Example (`backend/.env`)
 

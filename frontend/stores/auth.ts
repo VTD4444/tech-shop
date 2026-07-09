@@ -9,6 +9,7 @@ interface User {
   email?: string;
   phone?: string;
   role: string;
+  authProvider?: string;
 }
 
 export const useAuthStore = defineStore('auth', () => {

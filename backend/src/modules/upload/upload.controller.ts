@@ -9,6 +9,6 @@ export class UploadController {
 
   @Post('sign')
   signUpload() {
-    return this.uploadService.getSignedUploadParams();
+    return this.uploadService.getProductUploadParams();
   }
 }

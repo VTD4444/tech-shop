@@ -7,6 +7,6 @@ export class UserUploadController {
 
   @Post('sign')
   signUpload() {
-    return this.uploadService.getSignedUploadParams();
+    return this.uploadService.getUserUploadParams();
   }
 }

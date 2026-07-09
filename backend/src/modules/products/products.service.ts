@@ -8,6 +8,7 @@ import { sanitizeLongDescription } from '../../common/utils/html-sanitize';
 import { normalizePcComponentInput, PcComponentInput } from './pc-component.util';
 import { normalizeProductSpecInput, ProductSpecInput } from './product-spec.util';
 import { ProductsRatingsService } from './products-ratings.service';
+import { CreateProductDto, UpdateProductDto } from './dto/product-mutation.dto';
 
 export type ProductListQuery = {
     page?: number;
@@ -266,28 +267,56 @@ export class ProductsService {
     });
   }
 
+  private async resolveCategoryBrandIds(
+    categoryId?: string | null,
+    brandId?: string | null,
+  ): Promise<{ categoryId: bigint | null; brandId: bigint | null }> {
+    let resolvedCategory: bigint | null = null;
+    let resolvedBrand: bigint | null = null;
+
+    if (categoryId) {
+      const cat = await this.prisma.category.findUnique({ where: { id: BigInt(categoryId) } });
+      if (!cat) throw new BadRequestException('Category not found');
+      resolvedCategory = cat.id;
+    }
+
+    if (brandId) {
+      const brand = await this.prisma.brand.findUnique({ where: { id: BigInt(brandId) } });
+      if (!brand) throw new BadRequestException('Brand not found');
+      resolvedBrand = brand.id;
+    }
+
+    return { categoryId: resolvedCategory, brandId: resolvedBrand };
+  }
+
   private productIncludeForAdmin = {
     images: { orderBy: { sortOrder: 'asc' as const } },
     pcComponent: true,
     spec: true,
   };
 
-  async create(dto: any) {
+  async create(dto: CreateProductDto) {
     this.validateImages(dto.images);
     const mainFromDto =
-      dto.images?.find((i: { isMain?: boolean }) => i.isMain)?.url ||
+      dto.images?.find((i) => i.isMain)?.url ||
       dto.images?.[0]?.url ||
       dto.imageUrl;
     if (mainFromDto && !UploadService.isAllowedImageUrl(mainFromDto)) {
       throw new BadRequestException('Invalid image URL');
     }
-    if (dto.longDescription?.length > 50000) {
+    if (dto.longDescription && dto.longDescription.length > 50000) {
       throw new BadRequestException('longDescription exceeds 50000 characters');
     }
+
+    const { categoryId, brandId } = await this.resolveCategoryBrandIds(
+      dto.categoryId ?? null,
+      dto.brandId ?? null,
+    );
+
     const product = await this.prisma.product.create({
       data: {
-        categoryId: dto.categoryId ? BigInt(dto.categoryId) : null,
-        brandId: dto.brandId ? BigInt(dto.brandId) : null,
+        categoryId,
+        brandId,
         name: dto.name,
         slug: dto.slug,
         price: dto.price,
@@ -328,15 +357,42 @@ export class ProductsService {
     };
   }
 
-  async update(id: string, dto: any) {
-    const data: any = { ...dto };
-    delete data.images;
-    delete data.pcComponent;
-    delete data.spec;
-    if (data.categoryId) data.categoryId = BigInt(data.categoryId);
-    if (data.brandId) data.brandId = BigInt(data.brandId);
+  async update(id: string, dto: UpdateProductDto) {
+    const existing = await this.prisma.product.findUnique({ where: { id: BigInt(id) } });
+    if (!existing) throw new NotFoundException('Product not found');
+
+    const data: Prisma.ProductUpdateInput = {};
+
+    if (dto.name !== undefined) data.name = dto.name;
+    if (dto.slug !== undefined) data.slug = dto.slug;
+    if (dto.price !== undefined) data.price = dto.price;
+    if (dto.stockQuantity !== undefined) data.stockQuantity = dto.stockQuantity;
+    if (dto.imageUrl !== undefined) data.imageUrl = dto.imageUrl;
+    if (dto.description !== undefined) data.description = dto.description;
+    if (dto.isPcComponent !== undefined) data.isPcComponent = dto.isPcComponent;
+    if (dto.aiTags !== undefined) data.aiTags = dto.aiTags;
+    if (dto.status !== undefined) data.status = dto.status;
+
+    if (dto.categoryId !== undefined) {
+      if (dto.categoryId === null || dto.categoryId === '') {
+        data.category = { disconnect: true };
+      } else {
+        const { categoryId } = await this.resolveCategoryBrandIds(dto.categoryId, null);
+        data.category = { connect: { id: categoryId! } };
+      }
+    }
+
+    if (dto.brandId !== undefined) {
+      if (dto.brandId === null || dto.brandId === '') {
+        data.brand = { disconnect: true };
+      } else {
+        const { brandId } = await this.resolveCategoryBrandIds(null, dto.brandId);
+        data.brand = { connect: { id: brandId! } };
+      }
+    }
+
     if (dto.longDescription !== undefined) {
-      if (dto.longDescription?.length > 50000) {
+      if (dto.longDescription && dto.longDescription.length > 50000) {
         throw new BadRequestException('longDescription exceeds 50000 characters');
       }
       data.longDescription = sanitizeLongDescription(dto.longDescription);
@@ -382,6 +438,9 @@ export class ProductsService {
   }
 
   async remove(id: string) {
+    const existing = await this.prisma.product.findUnique({ where: { id: BigInt(id) } });
+    if (!existing) throw new NotFoundException('Product not found');
+
     const product = await this.prisma.product.update({
       where: { id: BigInt(id) },
       data: { status: 'discontinued' },

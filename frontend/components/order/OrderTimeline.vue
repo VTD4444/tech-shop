@@ -13,7 +13,7 @@ const steps = computed(() => {
   const paid = o.paymentStatus === 'paid';
   const processing = ['confirmed', 'processing'].includes(o.status);
   const shipping = o.status === 'shipping';
-  const delivered = o.status === 'completed';
+  const delivered = o.status === 'delivered' || o.status === 'completed';
 
   return [
     { key: 'created', label: 'Đã tạo', done: true, date: o.createdAt },

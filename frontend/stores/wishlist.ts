@@ -25,9 +25,15 @@ export const useWishlistStore = defineStore('wishlist', () => {
 
   async function addItem(productId: string) {
     const { $api } = useNuxtApp();
-    await $api(`/wishlist/${productId}`, { method: 'POST' });
+    const prev = new Set(productIds.value);
     productIds.value.add(String(productId));
-    if (loaded.value) await fetchWishlist();
+    try {
+      await $api(`/wishlist/${productId}`, { method: 'POST' });
+      if (loaded.value) await fetchWishlist();
+    } catch (error) {
+      productIds.value = prev;
+      throw error;
+    }
   }
 
   async function removeItem(productId: string) {

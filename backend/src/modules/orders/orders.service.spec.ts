@@ -43,7 +43,11 @@ describe('OrdersService', () => {
       district: 'D',
       city: 'C',
     });
-    prisma.cartItem.findMany.mockResolvedValue([]);
+    prisma.$transaction.mockImplementation(async (cb: (tx: any) => Promise<unknown>) =>
+      cb({
+        cartItem: { findMany: jest.fn().mockResolvedValue([]) },
+      }),
+    );
     await expect(
       service.checkout('1', { shippingAddressId: '1' }),
     ).rejects.toBeInstanceOf(BadRequestException);

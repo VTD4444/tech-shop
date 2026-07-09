@@ -3,7 +3,6 @@ import {
   ConflictException,
   UnauthorizedException,
   BadRequestException,
-  NotFoundException,
   ServiceUnavailableException,
   InternalServerErrorException,
   Logger,
@@ -56,16 +55,24 @@ export class AuthService {
 
     const username = await this.generateUniqueUsername(dto.email);
     const passwordHash = await bcrypt.hash(dto.password, 10);
-    const user = await this.prisma.user.create({
-      data: {
-        username,
-        fullName: dto.fullName.trim(),
-        email: dto.email.trim().toLowerCase(),
-        phone: dto.phone.trim(),
-        passwordHash,
-        authProvider: 'local',
-      },
-    });
+    let user;
+    try {
+      user = await this.prisma.user.create({
+        data: {
+          username,
+          fullName: dto.fullName.trim(),
+          email: dto.email.trim().toLowerCase(),
+          phone: dto.phone.trim(),
+          passwordHash,
+          authProvider: 'local',
+        },
+      });
+    } catch (err: any) {
+      if (err?.code === 'P2002') {
+        throw new ConflictException('Email or phone number already exists');
+      }
+      throw err;
+    }
 
     return this.issueSession(user);
   }
@@ -140,7 +147,7 @@ export class AuthService {
     return this.jwtService.sign(
       { type: 'google_exchange', sub: userId },
       {
-        secret: process.env.JWT_SECRET || 'default-secret',
+        secret: this.config.get<string>('app.jwt.secret')!,
         expiresIn: '2m',
       },
     );
@@ -150,7 +157,7 @@ export class AuthService {
     let payload: { type?: string; sub?: string };
     try {
       payload = this.jwtService.verify(code, {
-        secret: process.env.JWT_SECRET || 'default-secret',
+        secret: this.config.get<string>('app.jwt.secret')!,
       });
     } catch {
       throw new UnauthorizedException('Invalid or expired Google login code');
@@ -173,7 +180,7 @@ export class AuthService {
   async refresh(refreshToken: string) {
     try {
       const payload = this.jwtService.verify(refreshToken, {
-        secret: process.env.JWT_REFRESH_SECRET || 'default-refresh-secret',
+        secret: this.config.get<string>('app.jwt.refreshSecret')!,
       });
       const user = await this.prisma.user.findUnique({
         where: { id: BigInt(payload.sub) },
@@ -194,7 +201,10 @@ export class AuthService {
       where: { email: normalized },
     });
     if (!user) {
-      throw new NotFoundException('Email chưa được đăng ký trong hệ thống');
+      return {
+        message:
+          'Nếu email đã đăng ký, bạn sẽ nhận liên kết đặt lại mật khẩu trong vài phút.',
+      };
     }
     if (!user.isActive) {
       throw new BadRequestException('Tài khoản đã bị vô hiệu hóa');
@@ -302,13 +312,13 @@ export class AuthService {
     };
 
     const accessToken = this.jwtService.sign(payload, {
-      secret: process.env.JWT_SECRET || 'default-secret',
-      expiresIn: (process.env.JWT_EXPIRES_IN || '15m') as `${number}${'s' | 'm' | 'h' | 'd'}`,
+      secret: this.config.get<string>('app.jwt.secret')!,
+      expiresIn: (this.config.get<string>('app.jwt.expiresIn') || '15m') as `${number}${'s' | 'm' | 'h' | 'd'}`,
     });
 
     const refreshToken = this.jwtService.sign(payload, {
-      secret: process.env.JWT_REFRESH_SECRET || 'default-refresh-secret',
-      expiresIn: (process.env.JWT_REFRESH_EXPIRES_IN || '7d') as `${number}${'s' | 'm' | 'h' | 'd'}`,
+      secret: this.config.get<string>('app.jwt.refreshSecret')!,
+      expiresIn: (this.config.get<string>('app.jwt.refreshExpiresIn') || '7d') as `${number}${'s' | 'm' | 'h' | 'd'}`,
     });
 
     return {
