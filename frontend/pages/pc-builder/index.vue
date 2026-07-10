@@ -310,39 +310,67 @@ onMounted(async () => {
       </UiCard>
     </div>
 
-    <UiModal :open="showSelector" :title="`Chọn ${typeLabel(selectedType)}`" @close="showSelector = false">
-      <div class="flex items-center justify-between mb-3">
-        <UiText variant="muted" size="xs">Mặc định chỉ hiển thị linh kiện tương thích</UiText>
-        <UiCheckbox v-model="showIncompatible" label="Hiện linh kiện không tương thích" />
-      </div>
-      <UiEmptyState v-if="!visibleComponents.length" title="Không có linh kiện" description="Không có linh kiện tương thích cho vị trí này. Hãy thử hiện linh kiện không tương thích hoặc thay đổi lựa chọn." />
-      <div v-else class="space-y-2 max-h-[50vh] overflow-y-auto">
-        <UiCard
-          v-for="comp in visibleComponents"
-          :key="comp.id"
-          padding="sm"
-          :hover="comp.compatible !== false"
-          :class="[
-            comp.compatible === false ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer',
-            selectedComponents[selectedType]?.id === comp.id ? 'border-accent bg-accent-muted/20' : '',
-          ]"
-          @click="comp.compatible !== false && selectComponent(comp)"
-        >
-          <div class="flex items-center gap-4">
-            <img :src="comp.product?.imageUrl || '/placeholder.svg'" class="w-14 h-14 object-cover rounded bg-surface-3" />
-            <div class="flex-1 min-w-0">
-              <p class="font-medium text-fg truncate">{{ comp.product?.name }}</p>
-              <p class="text-accent font-semibold text-sm">{{ formatPrice(comp.product?.price || 0) }}</p>
-              <p
-                v-for="reason in comp.incompatibilityReasons"
-                :key="reason"
-                class="text-xs text-warning mt-1"
-              >
-                ⚠ {{ reason }}
+    <UiModal
+      :open="showSelector"
+      size="lg"
+      :title="`Chọn ${typeLabel(selectedType)}`"
+      @close="showSelector = false"
+    >
+      <div class="space-y-4">
+        <UiCheckbox
+          v-model="showIncompatible"
+          label="Hiện linh kiện không tương thích"
+          description="Mặc định chỉ liệt kê linh kiện tương thích với cấu hình hiện tại."
+        />
+
+        <UiEmptyState
+          v-if="!visibleComponents.length"
+          title="Không có linh kiện"
+          description="Không có linh kiện tương thích cho vị trí này. Bật tùy chọn phía trên hoặc đổi linh kiện đã chọn."
+        />
+
+        <div v-else class="space-y-2 max-h-[min(52vh,28rem)] overflow-y-auto pr-1">
+          <button
+            v-for="comp in visibleComponents"
+            :key="comp.id"
+            type="button"
+            :disabled="comp.compatible === false"
+            :class="[
+              'flex w-full items-start gap-3 rounded-lg border border-subtle bg-surface-1 p-3 text-left transition-colors',
+              comp.compatible === false
+                ? 'cursor-not-allowed opacity-55'
+                : 'hover:border-accent/50 hover:bg-surface-2',
+              selectedComponents[selectedType]?.id === comp.id
+                ? 'border-accent bg-accent-muted/20 ring-1 ring-accent/30'
+                : '',
+            ]"
+            @click="comp.compatible !== false && selectComponent(comp)"
+          >
+            <img
+              :src="comp.product?.imageUrl || '/placeholder.svg'"
+              alt=""
+              class="h-16 w-16 shrink-0 rounded-md object-cover bg-surface-3"
+            />
+            <div class="min-w-0 flex-1">
+              <p class="font-medium text-fg leading-snug">{{ comp.product?.name }}</p>
+              <p class="mt-1 text-sm font-semibold text-accent">
+                {{ formatPrice(comp.product?.price || 0) }}
               </p>
+              <ul
+                v-if="comp.incompatibilityReasons?.length"
+                class="mt-2 space-y-1"
+              >
+                <li
+                  v-for="reason in comp.incompatibilityReasons"
+                  :key="reason"
+                  class="text-xs text-warning leading-snug"
+                >
+                  {{ reason }}
+                </li>
+              </ul>
             </div>
-          </div>
-        </UiCard>
+          </button>
+        </div>
       </div>
     </UiModal>
   </UiContainer>
