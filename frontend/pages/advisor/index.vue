@@ -74,7 +74,7 @@ async function addToCart(item: any) {
         <UiText as="h1" size="2xl">Cố vấn AI</UiText>
       </div>
       <UiText variant="muted" class="mb-6">
-        Nhận gợi ý cấu hình hoặc trò chuyện với Gemini về linh kiện PC.
+        Nhận gợi ý sản phẩm (PC, laptop, tai nghe,…) hoặc trò chuyện với Gemini.
       </UiText>
 
       <div class="flex gap-2 mb-6 border-b border-subtle">
@@ -133,7 +133,7 @@ async function addToCart(item: any) {
 
         <UiCard v-if="recommendation.length || aiSummary" padding="md">
           <div class="flex items-center justify-between gap-3 mb-4">
-            <UiText as="h2" size="xl">Cấu hình gợi ý</UiText>
+            <UiText as="h2" size="xl">Gợi ý sản phẩm</UiText>
             <UiText
               v-if="recommendationSource"
               size="xs"

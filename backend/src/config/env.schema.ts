@@ -43,6 +43,7 @@ export const envValidationSchema = Joi.object({
   CLOUDINARY_FOLDER: Joi.string().default('techshop/products'),
   CLOUDINARY_USER_FOLDER: Joi.string().default('techshop/user-uploads'),
   AI_SERVICE_URL: Joi.string().uri().allow('').optional(),
+  AI_INTERNAL_API_KEY: Joi.string().allow('').optional(),
   GOOGLE_CLIENT_ID: Joi.string().allow('').optional(),
   GOOGLE_CLIENT_SECRET: Joi.string().allow('').optional(),
   GOOGLE_CALLBACK_URL: Joi.string().uri().allow('').optional(),

@@ -246,8 +246,35 @@ Returns monthly revenue for charts:
 
 ## AI Service
 
-Base URL (direct): `http://localhost:8000/api/v1`  
+Base URL (direct): `http://localhost:8000/api/v1`
 Frontend dev proxy: `http://localhost:3001/api/ai` → `http://127.0.0.1:8000/api/v1` (see `frontend/nuxt.config.ts` `routeRules`)
+
+### NestJS catalog for AI (internal)
+
+`GET /api/v1/internal/ai/catalog`
+
+Returns all **active** products with compact fields for the Advisor prompt:
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "12",
+      "name": "Logitech G Pro X",
+      "slug": "logitech-g-pro-x",
+      "price": 2490000,
+      "category": "headphone",
+      "brand": "Logitech",
+      "componentType": null,
+      "pcComponentId": null
+    }
+  ],
+  "meta": { "total": 1 }
+}
+```
+
+Auth: header `X-AI-Internal-Key` must match `AI_INTERNAL_API_KEY` when that env is set. In production, the key is required (requests without a configured key are rejected).
 
 ### `POST /advisor/recommend`
 ```json

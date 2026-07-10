@@ -54,4 +54,5 @@ export default registerAs('app', () => ({
   },
   sentryDsn: env('SENTRY_DSN'),
   unpaidOrderTimeoutHours: Number(process.env.UNPAID_ORDER_TIMEOUT_HOURS || 24),
+  aiInternalApiKey: env('AI_INTERNAL_API_KEY'),
 }));

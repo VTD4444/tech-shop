@@ -14,12 +14,13 @@ class Settings(BaseSettings):
     database_url: str = "postgresql://techshop:techshop_pass@localhost:5432/techshop"
     backend_api_url: str = "http://localhost:3000/api/v1"
     frontend_url: str = "http://localhost:3001"
+    ai_internal_api_key: str = ""
 
     model_config = SettingsConfigDict(env_file=str(ENV_FILE))
 
-    @field_validator("gemini_api_key")
+    @field_validator("gemini_api_key", "ai_internal_api_key")
     @classmethod
-    def strip_api_key(cls, value: str) -> str:
+    def strip_secrets(cls, value: str) -> str:
         return value.strip()
 
 

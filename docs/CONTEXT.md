@@ -106,7 +106,7 @@ Frontend AI client: `$aiApi` + `useAdvisorChat` composable. Dev proxy: `NUXT_PUB
 4. **Checkout payment**: Review order → **Thanh toán bằng SePay** (form POST) or **Thanh toán sau** (pending order)
 5. **PC Builder rules**: Server-side NestJS service (6 rules) + `selectedIds` pre-filter in component picker
 6. **SePay**: HMAC-SHA256 form signature, idempotent IPN handler; callbacks → `/payments/return`
-7. **AI RAG**: FastAPI fetches live product data from NestJS → builds prompt → Gemini parses JSON
+7. **AI RAG**: FastAPI fetches compact catalog from NestJS `GET /internal/ai/catalog` → builds prompt → Gemini parses JSON
 8. **AI Chat**: SSE streaming with non-stream fallback; history in `localStorage` (50 messages)
 
 ## File Naming Conventions

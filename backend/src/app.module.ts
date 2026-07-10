@@ -20,6 +20,7 @@ import { OrdersModule } from './modules/orders/orders.module';
 import { PaymentsModule } from './modules/payments/payments.module';
 import { PcBuilderModule } from './modules/pc-builder/pc-builder.module';
 import { AdminModule } from './modules/admin/admin.module';
+import { InternalAiModule } from './modules/internal-ai/internal-ai.module';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { RolesGuard } from './common/guards/roles.guard';
 import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
@@ -65,6 +66,7 @@ import { HealthController } from './health.controller';
     PaymentsModule,
     PcBuilderModule,
     AdminModule,
+    InternalAiModule,
   ],
   controllers: [HealthController],
   providers: [

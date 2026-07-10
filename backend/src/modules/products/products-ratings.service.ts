@@ -168,16 +168,27 @@ export class ProductsRatingsService {
       });
     }
 
-    const rating = await this.prisma.productRating.create({
-      data: {
-        userId: BigInt(userId),
-        productId: product.id,
-        orderId: BigInt(dto.orderId),
-        rating: dto.rating,
-        images: dto.images ?? [],
-      },
-      include: { user: { select: { id: true, username: true, fullName: true } } },
-    });
+    let rating;
+    try {
+      rating = await this.prisma.productRating.create({
+        data: {
+          userId: BigInt(userId),
+          productId: product.id,
+          orderId: BigInt(dto.orderId),
+          rating: dto.rating,
+          images: dto.images ?? [],
+        },
+        include: { user: { select: { id: true, username: true, fullName: true } } },
+      });
+    } catch (err: any) {
+      if (err?.code === 'P2002') {
+        throw new ConflictException({
+          success: false,
+          error: { code: 'RATING_ALREADY_EXISTS', message: 'You already rated this purchase' },
+        });
+      }
+      throw err;
+    }
 
     await this.invalidateSummary(product.id);
     return serializeRating(rating);

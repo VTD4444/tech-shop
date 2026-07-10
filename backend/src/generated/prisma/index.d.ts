@@ -25818,6 +25818,7 @@ export namespace Prisma {
 
   export type ProductRatingWhereUniqueInput = Prisma.AtLeast<{
     id?: bigint | number
+    unique_product_rating_order_product?: ProductRatingUnique_product_rating_order_productCompoundUniqueInput
     AND?: ProductRatingWhereInput | ProductRatingWhereInput[]
     OR?: ProductRatingWhereInput[]
     NOT?: ProductRatingWhereInput | ProductRatingWhereInput[]
@@ -25831,7 +25832,7 @@ export namespace Prisma {
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
     product?: XOR<ProductScalarRelationFilter, ProductWhereInput>
     order?: XOR<OrderNullableScalarRelationFilter, OrderWhereInput> | null
-  }, "id">
+  }, "id" | "unique_product_rating_order_product">
 
   export type ProductRatingOrderByWithAggregationInput = {
     id?: SortOrder
@@ -28938,6 +28939,11 @@ export namespace Prisma {
   export type OrderNullableScalarRelationFilter = {
     is?: OrderWhereInput | null
     isNot?: OrderWhereInput | null
+  }
+
+  export type ProductRatingUnique_product_rating_order_productCompoundUniqueInput = {
+    orderId: bigint | number
+    productId: bigint | number
   }
 
   export type ProductRatingCountOrderByAggregateInput = {

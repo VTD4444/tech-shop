@@ -448,4 +448,35 @@ export class ProductsService {
     await this.invalidateProductListCache();
     return product;
   }
+
+  /** Compact catalog for AI Advisor — all active products, minimal fields. */
+  async getAiCatalog() {
+    const products = await this.prisma.product.findMany({
+      where: { status: 'active' },
+      orderBy: { id: 'asc' },
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        price: true,
+        category: { select: { name: true, slug: true } },
+        brand: { select: { name: true } },
+        pcComponent: { select: { id: true, componentType: true } },
+      },
+    });
+
+    return {
+      data: products.map((p) => ({
+        id: toId(p.id)!,
+        name: p.name,
+        slug: p.slug,
+        price: toNumber(p.price),
+        category: p.category?.slug || p.category?.name || null,
+        brand: p.brand?.name || null,
+        componentType: p.pcComponent?.componentType || null,
+        pcComponentId: p.pcComponent ? toId(p.pcComponent.id) : null,
+      })),
+      meta: { total: products.length },
+    };
+  }
 }
