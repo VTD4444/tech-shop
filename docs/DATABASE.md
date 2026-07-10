@@ -243,6 +243,8 @@ Creates admin, 1 customer, ~8 PC components, 1 laptop. Skips if `admin@techshop.
 
 File: [`scripts/sample-data-extended.sql`](../scripts/sample-data-extended.sql)
 
+Catalog-heavy sample (nhiều SP theo từng category/brand): [`scripts/sample-data-catalog-brands.sql`](../scripts/sample-data-catalog-brands.sql)
+
 **Append-only** — does not delete existing data. Adds:
 
 | Entity | ~Count added |
@@ -260,9 +262,13 @@ File: [`scripts/sample-data-extended.sql`](../scripts/sample-data-extended.sql)
 ```bash
 # Docker Postgres
 docker exec -i techshop-db psql -U techshop -d techshop < scripts/sample-data-extended.sql
+docker exec -i techshop-db psql -U techshop -d techshop < scripts/sample-data-catalog-brands.sql
 
-# Or with connection string
-psql "postgresql://techshop:techshop_pass@localhost:5433/techshop" -f scripts/sample-data-extended.sql
+# Or with connection string / Neon
+psql "$DATABASE_URL" -f scripts/sample-data-extended.sql
+psql "$DATABASE_URL" -f scripts/sample-data-catalog-brands.sql
 ```
+
+`sample-data-catalog-brands.sql` thêm ~80+ sản phẩm (CPU, mainboard, RAM, VGA, storage, PSU, case, cooler, laptop, monitor, keyboard, mouse, headset, webcam) gắn đúng category/brand; kèm `pc_components` / `product_specs` / ảnh placeholder. Chạy lại an toàn (`ON CONFLICT DO NOTHING`).
 
 Script ends with a row count summary per table.
