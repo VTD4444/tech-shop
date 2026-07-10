@@ -7,6 +7,7 @@ from app.schemas.response import ChatResponse
 from app.services.rag_engine import recommend_components
 from app.services.llm_client import generate, generate_stream, LlmError
 
+
 router = APIRouter()
 
 CHAT_SYSTEM_PROMPT = """You are a friendly tech product advisor for TechShop.

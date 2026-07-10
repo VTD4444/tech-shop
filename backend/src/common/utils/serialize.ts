@@ -62,6 +62,9 @@ export function serializePcComponent(c: any) {
           price: toNumber(c.product.price),
           imageUrl: c.product.imageUrl ?? null,
           description: c.product.description ?? null,
+          brand: c.product.brand
+            ? { name: c.product.brand.name, slug: c.product.brand.slug }
+            : undefined,
         }
       : undefined,
   };

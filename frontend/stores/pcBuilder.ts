@@ -8,11 +8,26 @@ export const usePcBuilderStore = defineStore('pcBuilder', () => {
   const builds = ref<any[]>([]);
   const loading = ref(false);
 
-  async function fetchComponents(type?: string, selectedIds?: string[]) {
+  async function fetchComponents(
+    type?: string,
+    selectedIds?: string[],
+    filters: {
+      search?: string;
+      brand?: string;
+      minPrice?: number;
+      maxPrice?: number;
+      sort?: string;
+    } = {},
+  ) {
     const { $api } = useNuxtApp();
     const params = new URLSearchParams();
     if (type) params.set('type', type);
     if (selectedIds?.length) params.set('selectedIds', selectedIds.join(','));
+    if (filters.search) params.set('search', filters.search);
+    if (filters.brand) params.set('brand', filters.brand);
+    if (filters.minPrice != null) params.set('minPrice', String(filters.minPrice));
+    if (filters.maxPrice != null) params.set('maxPrice', String(filters.maxPrice));
+    if (filters.sort) params.set('sort', filters.sort);
     const query = params.toString() ? `?${params.toString()}` : '';
     const data: any = await $api(`/pc-builder/components${query}`);
     components.value = data.data || [];

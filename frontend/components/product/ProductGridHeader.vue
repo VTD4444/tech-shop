@@ -1,5 +1,18 @@
 <script setup lang="ts">
-defineProps<{ sort: string }>();
+withDefaults(
+  defineProps<{
+    sort: string;
+    compact?: boolean;
+    title?: string;
+    subtitle?: string;
+  }>(),
+  {
+    compact: false,
+    title: 'Linh kiện hiệu năng cao',
+    subtitle:
+      'Khám phá bộ sưu tập phần cứng cao cấp được tuyển chọn cho cấu hình tiếp theo của bạn.',
+  },
+);
 defineEmits<{ 'update:sort': [value: string] }>();
 
 const sortOptions = [
@@ -11,12 +24,15 @@ const sortOptions = [
 </script>
 
 <template>
-  <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-8">
-    <div>
-      <UiText as="h1" size="3xl" class="mb-2">Linh kiện hiệu năng cao</UiText>
-      <UiText variant="muted" size="sm">
-        Khám phá bộ sưu tập phần cứng cao cấp được tuyển chọn cho cấu hình tiếp theo của bạn.
-      </UiText>
+  <div
+    :class="[
+      'flex flex-col sm:flex-row gap-4',
+      compact ? 'sm:items-center sm:justify-end mb-3' : 'sm:items-end sm:justify-between mb-8',
+    ]"
+  >
+    <div v-if="!compact">
+      <UiText as="h1" size="3xl" class="mb-2">{{ title }}</UiText>
+      <UiText variant="muted" size="sm">{{ subtitle }}</UiText>
     </div>
     <div class="w-full sm:w-48">
       <UiText variant="muted" size="xs" uppercase class="mb-1 block">Sắp xếp theo</UiText>

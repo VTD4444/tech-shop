@@ -5,16 +5,26 @@ import { useFormatPrice } from '~/composables/useFormatPrice';
 
 const productStore = useProductStore();
 
-const props = defineProps<{
-  filters: {
-    category: string;
-    brand: string;
-    search?: string;
-    minPrice?: number;
-    maxPrice?: number;
-    isPcComponent?: boolean;
-  };
-}>();
+const props = withDefaults(
+  defineProps<{
+    filters: {
+      category: string;
+      brand: string;
+      search?: string;
+      minPrice?: number;
+      maxPrice?: number;
+      isPcComponent?: boolean;
+    };
+    hideCategory?: boolean;
+    hidePcComponent?: boolean;
+    compact?: boolean;
+  }>(),
+  {
+    hideCategory: false,
+    hidePcComponent: false,
+    compact: false,
+  },
+);
 
 const emit = defineEmits<{
   update: [key: string, value: unknown];
@@ -32,6 +42,13 @@ watch(
   },
 );
 
+watch(
+  () => props.filters.maxPrice,
+  (v) => {
+    priceMax.value = v ?? 50000000;
+  },
+);
+
 const debouncedSearch = useDebounceFn((value: string) => {
   emit('update', 'search', value);
 }, 400);
@@ -46,8 +63,8 @@ function setFilter(key: string, value: unknown) {
 </script>
 
 <template>
-  <aside class="w-full lg:w-64 shrink-0 space-y-6">
-    <UiCard padding="md">
+  <aside :class="compact ? 'w-full shrink-0' : 'w-full lg:w-64 shrink-0 space-y-6'">
+    <UiCard :padding="compact ? 'sm' : 'md'">
       <UiText as="h3" size="sm" uppercase class="mb-4 border-b border-subtle pb-3">Bộ lọc</UiText>
 
       <div class="space-y-4">
@@ -56,7 +73,7 @@ function setFilter(key: string, value: unknown) {
           <UiInput v-model="localSearch" placeholder="Tìm sản phẩm..." />
         </div>
 
-        <div>
+        <div v-if="!hideCategory">
           <UiText variant="muted" size="xs" uppercase class="mb-2 block">Danh mục</UiText>
           <UiSelect
             :model-value="filters.category"
@@ -95,6 +112,7 @@ function setFilter(key: string, value: unknown) {
         </div>
 
         <UiCheckbox
+          v-if="!hidePcComponent"
           :model-value="!!filters.isPcComponent"
           label="Chỉ linh kiện PC"
           @update:model-value="setFilter('isPcComponent', $event || undefined)"

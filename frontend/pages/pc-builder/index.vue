@@ -3,6 +3,7 @@ import { storeToRefs } from 'pinia';
 import { useAuthStore } from '~/stores/auth';
 import { useCartStore } from '~/stores/cart';
 import { usePcBuilderStore } from '~/stores/pcBuilder';
+import { useProductStore } from '~/stores/product';
 import { useFormatPrice } from '~/composables/useFormatPrice';
 import { useToast } from '~/composables/useToast';
 import { useConfirmDialog } from '~/composables/useConfirmDialog';
@@ -11,6 +12,7 @@ import { usePromptDialog } from '~/composables/usePromptDialog';
 const route = useRoute();
 const router = useRouter();
 const pcBuilderStore = usePcBuilderStore();
+const productStore = useProductStore();
 const authStore = useAuthStore();
 const cartStore = useCartStore();
 const { formatPrice } = useFormatPrice();
@@ -31,8 +33,18 @@ const showSelector = ref(false);
 const selectedType = ref('');
 const availableComponents = ref<any[]>([]);
 const showIncompatible = ref(false);
+const selectorLoading = ref(false);
 const saving = ref(false);
 const addingToCart = ref(false);
+
+const selectorFilters = reactive({
+  category: '',
+  brand: '',
+  search: '',
+  minPrice: undefined as number | undefined,
+  maxPrice: undefined as number | undefined,
+  sort: 'name_asc',
+});
 
 const componentTypes = [
   { label: 'CPU', value: 'CPU' },
@@ -60,12 +72,62 @@ const visibleComponents = computed(() => {
   return availableComponents.value.filter((c) => c.compatible !== false);
 });
 
+function resetSelectorFilters() {
+  Object.assign(selectorFilters, {
+    category: '',
+    brand: '',
+    search: '',
+    minPrice: undefined,
+    maxPrice: undefined,
+    sort: 'name_asc',
+  });
+}
+
+async function loadSelectorComponents() {
+  if (!selectedType.value) return;
+  selectorLoading.value = true;
+  try {
+    const selectedIds = selectedIdsExcluding(selectedType.value);
+    availableComponents.value = await pcBuilderStore.fetchComponents(
+      selectedType.value,
+      selectedIds,
+      {
+        search: selectorFilters.search || undefined,
+        brand: selectorFilters.brand || undefined,
+        minPrice: selectorFilters.minPrice,
+        maxPrice: selectorFilters.maxPrice,
+        sort: selectorFilters.sort,
+      },
+    );
+  } finally {
+    selectorLoading.value = false;
+  }
+}
+
 async function openSelector(type: string) {
   selectedType.value = type;
   showIncompatible.value = false;
-  const selectedIds = selectedIdsExcluding(type);
-  availableComponents.value = await pcBuilderStore.fetchComponents(type, selectedIds);
+  resetSelectorFilters();
+  if (!productStore.brands.length) {
+    await productStore.fetchBrands();
+  }
   showSelector.value = true;
+  await loadSelectorComponents();
+}
+
+function onSelectorFilterUpdate(key: string, value: unknown) {
+  (selectorFilters as Record<string, unknown>)[key] = value;
+  loadSelectorComponents();
+}
+
+function clearSelectorFilters() {
+  resetSelectorFilters();
+  loadSelectorComponents();
+}
+
+function onSelectorSortChange(sort: string) {
+  selectorFilters.sort = sort;
+  loadSelectorComponents();
 }
 
 async function selectComponent(comp: any) {
@@ -312,64 +374,95 @@ onMounted(async () => {
 
     <UiModal
       :open="showSelector"
-      size="lg"
+      size="2xl"
       :title="`Chọn ${typeLabel(selectedType)}`"
       @close="showSelector = false"
     >
-      <div class="space-y-4">
-        <UiCheckbox
-          v-model="showIncompatible"
-          label="Hiện linh kiện không tương thích"
-          description="Mặc định chỉ liệt kê linh kiện tương thích với cấu hình hiện tại."
-        />
+      <div class="flex flex-col gap-4 sm:flex-row sm:items-start">
+        <div class="w-full sm:w-56 shrink-0 space-y-3">
+          <ProductFilterSidebar
+            compact
+            hide-category
+            hide-pc-component
+            :filters="selectorFilters"
+            @update="onSelectorFilterUpdate"
+            @clear="clearSelectorFilters"
+          />
+          <UiCheckbox
+            v-model="showIncompatible"
+            label="Hiện linh kiện không tương thích"
+            description="Mặc định chỉ liệt kê linh kiện tương thích với cấu hình hiện tại."
+          />
+        </div>
 
-        <UiEmptyState
-          v-if="!visibleComponents.length"
-          title="Không có linh kiện"
-          description="Không có linh kiện tương thích cho vị trí này. Bật tùy chọn phía trên hoặc đổi linh kiện đã chọn."
-        />
+        <div class="min-w-0 flex-1">
+          <ProductGridHeader
+            compact
+            :sort="selectorFilters.sort"
+            @update:sort="onSelectorSortChange"
+          />
 
-        <div v-else class="space-y-2 max-h-[min(52vh,28rem)] overflow-y-auto pr-1">
-          <button
-            v-for="comp in visibleComponents"
-            :key="comp.id"
-            type="button"
-            :disabled="comp.compatible === false"
-            :class="[
-              'flex w-full items-start gap-3 rounded-lg border border-subtle bg-surface-1 p-3 text-left transition-colors',
-              comp.compatible === false
-                ? 'cursor-not-allowed opacity-55'
-                : 'hover:border-accent/50 hover:bg-surface-2',
-              selectedComponents[selectedType]?.id === comp.id
-                ? 'border-accent bg-accent-muted/20 ring-1 ring-accent/30'
-                : '',
-            ]"
-            @click="comp.compatible !== false && selectComponent(comp)"
+          <div v-if="selectorLoading" class="space-y-2">
+            <UiSkeleton v-for="i in 4" :key="i" class="h-20" />
+          </div>
+
+          <UiEmptyState
+            v-else-if="!visibleComponents.length"
+            title="Không có linh kiện"
+            description="Không tìm thấy linh kiện phù hợp. Thử xóa bộ lọc hoặc hiện linh kiện không tương thích."
           >
-            <img
-              :src="comp.product?.imageUrl || '/placeholder.svg'"
-              alt=""
-              class="h-16 w-16 shrink-0 rounded-md object-cover bg-surface-3"
-            />
-            <div class="min-w-0 flex-1">
-              <p class="font-medium text-fg leading-snug">{{ comp.product?.name }}</p>
-              <p class="mt-1 text-sm font-semibold text-accent">
-                {{ formatPrice(comp.product?.price || 0) }}
-              </p>
-              <ul
-                v-if="comp.incompatibilityReasons?.length"
-                class="mt-2 space-y-1"
-              >
-                <li
-                  v-for="reason in comp.incompatibilityReasons"
-                  :key="reason"
-                  class="text-xs text-warning leading-snug"
+            <template #action>
+              <UiButton variant="secondary" size="sm" @click="clearSelectorFilters">
+                Xóa bộ lọc
+              </UiButton>
+            </template>
+          </UiEmptyState>
+
+          <div v-else class="space-y-2 max-h-[min(52vh,28rem)] overflow-y-auto pr-1">
+            <button
+              v-for="comp in visibleComponents"
+              :key="comp.id"
+              type="button"
+              :disabled="comp.compatible === false"
+              :class="[
+                'flex w-full items-start gap-3 rounded-lg border border-subtle bg-surface-1 p-3 text-left transition-colors',
+                comp.compatible === false
+                  ? 'cursor-not-allowed opacity-55'
+                  : 'hover:border-accent/50 hover:bg-surface-2',
+                selectedComponents[selectedType]?.id === comp.id
+                  ? 'border-accent bg-accent-muted/20 ring-1 ring-accent/30'
+                  : '',
+              ]"
+              @click="comp.compatible !== false && selectComponent(comp)"
+            >
+              <img
+                :src="comp.product?.imageUrl || '/placeholder.svg'"
+                alt=""
+                class="h-16 w-16 shrink-0 rounded-md object-cover bg-surface-3"
+              />
+              <div class="min-w-0 flex-1">
+                <p class="font-medium text-fg leading-snug">{{ comp.product?.name }}</p>
+                <p v-if="comp.product?.brand?.name" class="mt-0.5 text-xs text-fg-muted">
+                  {{ comp.product.brand.name }}
+                </p>
+                <p class="mt-1 text-sm font-semibold text-accent">
+                  {{ formatPrice(comp.product?.price || 0) }}
+                </p>
+                <ul
+                  v-if="comp.incompatibilityReasons?.length"
+                  class="mt-2 space-y-1"
                 >
-                  {{ reason }}
-                </li>
-              </ul>
-            </div>
-          </button>
+                  <li
+                    v-for="reason in comp.incompatibilityReasons"
+                    :key="reason"
+                    class="text-xs text-warning leading-snug"
+                  >
+                    {{ reason }}
+                  </li>
+                </ul>
+              </div>
+            </button>
+          </div>
         </div>
       </div>
     </UiModal>

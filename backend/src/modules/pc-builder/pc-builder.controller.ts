@@ -19,11 +19,24 @@ export class PcBuilderController {
   getComponents(
     @Query('type') type?: string,
     @Query('selectedIds') selectedIds?: string,
+    @Query('search') search?: string,
+    @Query('brand') brand?: string,
+    @Query('minPrice') minPrice?: string,
+    @Query('maxPrice') maxPrice?: string,
+    @Query('sort') sort?: string,
   ) {
     const ids = selectedIds
       ? selectedIds.split(',').map((s) => s.trim()).filter(Boolean)
       : undefined;
-    return this.pcBuilderService.getComponents(type, ids);
+    return this.pcBuilderService.getComponents({
+      type,
+      selectedIds: ids,
+      search,
+      brand,
+      minPrice: minPrice !== undefined && minPrice !== '' ? Number(minPrice) : undefined,
+      maxPrice: maxPrice !== undefined && maxPrice !== '' ? Number(maxPrice) : undefined,
+      sort,
+    });
   }
 
   @Public()

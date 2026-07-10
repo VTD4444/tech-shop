@@ -51,20 +51,56 @@ const productSelect = {
   price: true,
   imageUrl: true,
   description: true,
+  brand: { select: { name: true, slug: true } },
 } as const;
+
+export type PcComponentListQuery = {
+  type?: string;
+  selectedIds?: string[];
+  search?: string;
+  brand?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  sort?: string;
+};
 
 @Injectable()
 export class PcBuilderService {
   constructor(private prisma: PrismaService) {}
 
-  async getComponents(type?: string, selectedIds?: string[]) {
-    const where: any = {};
+  async getComponents(query: PcComponentListQuery = {}) {
+    const { type, selectedIds, search, brand, minPrice, maxPrice, sort } = query;
+
+    const productWhere: Record<string, unknown> = { status: 'active' };
+    if (search?.trim()) {
+      productWhere.OR = [
+        { name: { contains: search.trim(), mode: 'insensitive' } },
+        { description: { contains: search.trim(), mode: 'insensitive' } },
+      ];
+    }
+    if (brand?.trim()) {
+      productWhere.brand = { slug: brand.trim() };
+    }
+    if (minPrice !== undefined || maxPrice !== undefined) {
+      const priceFilter: { gte?: number; lte?: number } = {};
+      if (minPrice !== undefined) priceFilter.gte = Number(minPrice);
+      if (maxPrice !== undefined) priceFilter.lte = Number(maxPrice);
+      productWhere.price = priceFilter;
+    }
+
+    const where: Record<string, unknown> = { product: productWhere };
     if (type) where.componentType = type.toUpperCase();
 
+    let orderBy: Record<string, unknown> = { product: { name: 'asc' } };
+    if (sort === 'price_asc') orderBy = { product: { price: 'asc' } };
+    else if (sort === 'price_desc') orderBy = { product: { price: 'desc' } };
+    else if (sort === 'name_asc') orderBy = { product: { name: 'asc' } };
+    else if (sort === 'created_at') orderBy = { product: { createdAt: 'desc' } };
+
     const components = await this.prisma.pcComponent.findMany({
-      where: { ...where, product: { status: 'active' } },
+      where,
       include: { product: { select: productSelect } },
-      orderBy: { product: { name: 'asc' } },
+      orderBy,
     });
 
     const serialized = components.map(serializePcComponent);

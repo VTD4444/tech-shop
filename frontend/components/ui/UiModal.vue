@@ -5,7 +5,7 @@ const props = withDefaults(
   defineProps<{
     open: boolean;
     title?: string;
-    size?: 'md' | 'lg' | 'xl';
+    size?: 'md' | 'lg' | 'xl' | '2xl';
   }>(),
   { size: 'md' },
 );
@@ -13,7 +13,8 @@ const props = withDefaults(
 const emit = defineEmits<{ close: [] }>();
 
 const sizeClass = computed(() => {
-  if (props.size === 'xl') return 'max-w-2xl';
+  if (props.size === '2xl') return 'max-w-5xl';
+  if (props.size === 'xl') return 'max-w-3xl';
   if (props.size === 'lg') return 'max-w-xl';
   return 'max-w-lg';
 });
