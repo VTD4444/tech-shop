@@ -7,7 +7,7 @@
 TechShop uses [SePay Payment Gateway](https://developer.sepay.vn/vi/cong-thanh-toan/gioi-thieu) for online payments (VietQR bank transfer, NAPAS, cards depending on merchant config).
 
 - Checkout is a **POST HTML form** to SePay `checkout/init` with **HMAC-SHA256** (base64) signature.
-- Only the **IPN** webhook marks orders as `paid` and sends the payment confirmation email.
+- Only the **IPN** webhook marks orders as `paid`, sets order `status` to `confirmed` (from `pending`), and sends the payment confirmation email.
 - Browser redirect to `/payments/return` is **display-only** — the frontend reads status from the database.
 
 ## Environment variables

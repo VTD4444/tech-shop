@@ -68,7 +68,8 @@ POST /orders/checkout
 
 ### 3b. Order status & stock
 ```
-Admin: pending → confirmed → shipping → delivered (requires payment_status=paid)
+COD / pay-later: pending → (admin) confirmed → shipping → delivered (requires payment_status=paid)
+SePay success (IPN): pending → confirmed automatically + payment_status=paid
 Cancel (admin or user pending/unpaid): restore stock_quantity, status=cancelled
 Ratings unlock when status=delivered and payment_status=paid
 Run once if upgrading: npx ts-node prisma/scripts/migrate-order-status.ts
@@ -79,7 +80,7 @@ Run once if upgrading: npx ts-node prisma/scripts/migrate-order-status.ts
 User clicks "Thanh toán bằng SePay"
   → NestJS builds signed form fields → frontend POST form to SePay checkout
   → User pays on SePay
-  → SePay IPN (server-to-server POST JSON) → NestJS marks order paid
+  → SePay IPN (server-to-server POST JSON) → NestJS marks order paid + status confirmed
   → SePay redirect (browser) → Nuxt /payments/return reads DB status
 ```
 
@@ -91,6 +92,7 @@ User selects components → Vue modal
   → NestJS queries pc_components JOIN products
   → Applies 6 rules: socket, RAM gen, form factor, GPU length, cooler height, PSU wattage
   → Returns { compatible, issues[], totalWattage, totalPrice }
+  → Save build / add to cart allowed even when compatible=false (advisory only)
 ```
 
 ### 6. AI Advisor — Recommend (RAG)

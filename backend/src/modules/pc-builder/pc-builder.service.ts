@@ -2,6 +2,7 @@ import {
   Injectable,
   NotFoundException,
   ForbiddenException,
+  BadRequestException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { serializePcComponent, serializeSavedBuild } from '../../common/utils/serialize';
@@ -281,10 +282,12 @@ export class PcBuilderService {
   }
 
   async saveBuild(userId: string, dto: { name: string; componentIds: string[] }) {
-    const result = await this.validateBuild(dto.componentIds);
-    if (!result.compatible) {
-      throw new ForbiddenException('Build is not compatible');
+    if (!dto.componentIds?.length) {
+      throw new BadRequestException('Build must include at least one component');
     }
+
+    // Compatibility is advisory only — users may save incompatible builds.
+    const result = await this.validateBuild(dto.componentIds);
 
     const build = await this.prisma.savedBuild.create({
       data: {

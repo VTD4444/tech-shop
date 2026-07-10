@@ -103,12 +103,28 @@ export class AdminService {
     };
   }
 
-  async getOrders(page = 1, limit = 20, status?: string) {
+  async getOrders(page = 1, limit = 20, status?: string, search?: string) {
     const pageNum = Number(page) || 1;
     const limitNum = Number(limit) || 20;
     const skip = (pageNum - 1) * limitNum;
-    const where: any = {};
+    const where: Prisma.OrderWhereInput = {};
     if (status) where.status = status;
+
+    const q = search?.trim();
+    if (q) {
+      const or: Prisma.OrderWhereInput[] = [
+        { customerName: { contains: q, mode: 'insensitive' } },
+        { customerPhone: { contains: q } },
+        { shippingAddress: { contains: q, mode: 'insensitive' } },
+        { user: { email: { contains: q, mode: 'insensitive' } } },
+        { user: { fullName: { contains: q, mode: 'insensitive' } } },
+        { user: { username: { contains: q, mode: 'insensitive' } } },
+      ];
+      if (/^\d+$/.test(q)) {
+        or.push({ id: BigInt(q) });
+      }
+      where.OR = or;
+    }
 
     const [data, total] = await Promise.all([
       this.prisma.order.findMany({

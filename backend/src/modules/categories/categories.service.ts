@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Prisma } from '../../generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { serializeCategory } from '../../common/utils/serialize';
 
@@ -6,13 +7,47 @@ import { serializeCategory } from '../../common/utils/serialize';
 export class CategoriesService {
   constructor(private prisma: PrismaService) {}
 
-  async findAll() {
-    const categories = await this.prisma.category.findMany({
-      include: { children: true },
-      where: { parentId: null },
-      orderBy: { name: 'asc' },
-    });
-    return categories.map(serializeCategory);
+  async findAll(query?: { page?: number; limit?: number; search?: string }) {
+    const q = query?.search?.trim();
+    const where: Prisma.CategoryWhereInput = { parentId: null };
+    if (q) {
+      where.OR = [
+        { name: { contains: q, mode: 'insensitive' } },
+        { slug: { contains: q, mode: 'insensitive' } },
+      ];
+    }
+
+    const paginate =
+      query?.page != null || query?.limit != null || Boolean(q);
+
+    if (!paginate) {
+      const categories = await this.prisma.category.findMany({
+        include: { children: true },
+        where: { parentId: null },
+        orderBy: { name: 'asc' },
+      });
+      return categories.map(serializeCategory);
+    }
+
+    const page = Number(query?.page) || 1;
+    const limit = Math.min(Number(query?.limit) || 20, 100);
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await Promise.all([
+      this.prisma.category.findMany({
+        where,
+        include: { children: true },
+        orderBy: { name: 'asc' },
+        skip,
+        take: limit,
+      }),
+      this.prisma.category.count({ where }),
+    ]);
+
+    return {
+      data: data.map(serializeCategory),
+      meta: { page, limit, total, totalPages: Math.ceil(total / limit) || 1 },
+    };
   }
 
   async findBySlug(slug: string) {

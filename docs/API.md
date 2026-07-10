@@ -218,6 +218,7 @@ Returns:
 ```
 
 ### `POST /pc-builder/build` [Auth]
+Saves the build for the current user. Incompatible builds are allowed (validation is advisory).
 ```json
 { "name": "My Build", "componentIds": ["1", "2", "3"] }
 ```

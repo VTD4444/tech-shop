@@ -70,6 +70,8 @@ export const usePcBuilderStore = defineStore('pcBuilder', () => {
 
   async function saveBuild(name: string) {
     const componentIds = Object.values(selectedComponents.value).map((c: any) => c.id);
+    // Refresh advisory validation; save is allowed even when incompatible.
+    await validateBuild();
     const { $api } = useNuxtApp();
     const data: any = await $api('/pc-builder/build', {
       method: 'POST',

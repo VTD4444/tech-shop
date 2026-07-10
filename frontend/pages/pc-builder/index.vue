@@ -169,13 +169,13 @@ async function saveCurrentBuild() {
   if (!name) return;
   saving.value = true;
   try {
-    await pcBuilderStore.validateBuild();
-    if (validationResult.value && !validationResult.value.compatible) {
-      toast.error('Hãy sửa lỗi tương thích trước khi lưu');
-      return;
-    }
     await pcBuilderStore.saveBuild(name);
-    toast.success('Đã lưu cấu hình!');
+    const incompatible = validationResult.value && !validationResult.value.compatible;
+    toast.success(
+      incompatible
+        ? 'Đã lưu cấu hình (có cảnh báo tương thích)'
+        : 'Đã lưu cấu hình!',
+    );
   } catch (e: any) {
     toast.error(e?.data?.message || 'Không thể lưu cấu hình');
   } finally {
@@ -212,13 +212,13 @@ async function addBuildToCart() {
   if (selectedCount.value === 0) return;
   addingToCart.value = true;
   try {
-    await pcBuilderStore.validateBuild();
-    if (validationResult.value && !validationResult.value.compatible) {
-      toast.error('Hãy sửa lỗi tương thích trước khi thêm vào giỏ hàng');
-      return;
-    }
     await pcBuilderStore.addBuildToCart();
-    toast.success('Đã thêm tất cả linh kiện vào giỏ hàng');
+    const incompatible = validationResult.value && !validationResult.value.compatible;
+    toast.success(
+      incompatible
+        ? 'Đã thêm vào giỏ (cấu hình có cảnh báo tương thích)'
+        : 'Đã thêm tất cả linh kiện vào giỏ hàng',
+    );
     navigateTo('/cart');
   } catch (e: any) {
     toast.error(e?.data?.message || 'Không thể thêm vào giỏ hàng');
@@ -321,7 +321,6 @@ onMounted(async () => {
           variant="secondary"
           block
           :loading="addingToCart"
-          :disabled="validationResult && !validationResult.compatible"
           @click="addBuildToCart"
         >
           Thêm cấu hình vào giỏ
@@ -423,17 +422,14 @@ onMounted(async () => {
               v-for="comp in visibleComponents"
               :key="comp.id"
               type="button"
-              :disabled="comp.compatible === false"
               :class="[
-                'flex w-full items-start gap-3 rounded-lg border border-subtle bg-surface-1 p-3 text-left transition-colors',
-                comp.compatible === false
-                  ? 'cursor-not-allowed opacity-55'
-                  : 'hover:border-accent/50 hover:bg-surface-2',
+                'flex w-full items-start gap-3 rounded-lg border border-subtle bg-surface-1 p-3 text-left transition-colors hover:border-accent/50 hover:bg-surface-2',
+                comp.compatible === false ? 'opacity-80' : '',
                 selectedComponents[selectedType]?.id === comp.id
                   ? 'border-accent bg-accent-muted/20 ring-1 ring-accent/30'
                   : '',
               ]"
-              @click="comp.compatible !== false && selectComponent(comp)"
+              @click="selectComponent(comp)"
             >
               <img
                 :src="comp.product?.imageUrl || '/placeholder.svg'"

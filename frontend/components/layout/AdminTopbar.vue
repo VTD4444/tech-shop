@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { Search } from 'lucide-vue-next';
 import { useAuthStore } from '~/stores/auth';
 
 const authStore = useAuthStore();
@@ -13,11 +12,6 @@ const authStore = useAuthStore();
     </NuxtLink>
     <div class="flex items-center gap-4">
       <ThemeToggle />
-      <div class="hidden md:block w-64">
-        <UiInput placeholder="Tìm kiếm..." disabled>
-          <template #prefix><Search class="w-4 h-4" /></template>
-        </UiInput>
-      </div>
       <span class="text-sm text-fg-muted">{{ authStore.displayName }}</span>
       <UiButton variant="ghost" size="sm" @click="authStore.logout()">Đăng xuất</UiButton>
     </div>

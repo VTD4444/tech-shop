@@ -18,6 +18,10 @@ export class AdminOrdersQueryDto {
   @IsString()
   @IsIn(['pending', 'confirmed', 'shipping', 'delivered', 'cancelled', 'completed'])
   status?: string;
+
+  @IsOptional()
+  @IsString()
+  search?: string;
 }
 
 export class UpdateOrderStatusQueryDto {

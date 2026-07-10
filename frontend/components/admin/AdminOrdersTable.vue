@@ -1,7 +1,15 @@
 <script setup lang="ts">
 import { useFormatPrice } from '~/composables/useFormatPrice';
 
-defineProps<{ orders: any[] }>();
+withDefaults(
+  defineProps<{
+    orders: any[];
+    count?: number;
+    loading?: boolean;
+  }>(),
+  { loading: false },
+);
+
 defineEmits<{ 'update-status': [id: string, status: string] }>();
 
 const { formatPrice } = useFormatPrice();
@@ -19,8 +27,9 @@ const statusOptions = [
   <UiDataTable
     title="Giao dịch gần đây"
     description="Theo dõi và cập nhật trạng thái đơn hàng"
-    :count="orders.length"
-    :empty="orders.length === 0"
+    :loading="loading"
+    :count="count ?? orders.length"
+    :empty="!loading && orders.length === 0"
     empty-title="Chưa có đơn hàng"
     empty-description="Đơn hàng mới sẽ hiển thị tại đây."
   >
@@ -60,5 +69,9 @@ const statusOptions = [
         <UiTableAction :to="`/admin/orders/${order.id}`">Xem</UiTableAction>
       </UiTableCell>
     </UiTableRow>
+
+    <template v-if="$slots.footer" #footer>
+      <slot name="footer" />
+    </template>
   </UiDataTable>
 </template>

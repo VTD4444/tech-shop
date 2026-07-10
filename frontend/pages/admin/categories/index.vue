@@ -1,19 +1,55 @@
 <script setup lang="ts">
+import { Search } from 'lucide-vue-next';
+
 definePageMeta({ layout: 'admin', middleware: ['auth', 'admin'] });
 
 const { $api } = useNuxtApp();
 const toast = useToast();
 const confirmDialog = useConfirmDialog();
+
 const categories = ref<any[]>([]);
+const meta = ref({ page: 1, limit: 20, total: 0, totalPages: 1 });
+const loading = ref(true);
 const name = ref('');
 const slug = ref('');
-const loadError = ref('');
+const search = ref('');
+const searchDebounced = ref('');
 
-try {
-  const res: any = await $api('/categories');
-  categories.value = res.data || [];
-} catch (e: any) {
-  loadError.value = extractApiMessage(e, 'Không tải được danh mục');
+let searchTimer: ReturnType<typeof setTimeout> | null = null;
+
+watch(search, (value) => {
+  if (searchTimer) clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => {
+    searchDebounced.value = value.trim();
+    meta.value.page = 1;
+    loadCategories();
+  }, 350);
+});
+
+async function loadCategories() {
+  loading.value = true;
+  try {
+    const query = new URLSearchParams({
+      page: String(meta.value.page),
+      limit: String(meta.value.limit),
+    });
+    if (searchDebounced.value) query.set('search', searchDebounced.value);
+    const res: any = await $api(`/categories?${query}`);
+    categories.value = res.data || [];
+    meta.value = { ...meta.value, ...(res.meta || {}) };
+  } catch (e: any) {
+    toast.error(extractApiMessage(e, 'Không tải được danh mục'));
+  } finally {
+    loading.value = false;
+  }
+}
+
+await loadCategories();
+
+function goPage(page: number) {
+  if (page < 1 || page > meta.value.totalPages) return;
+  meta.value.page = page;
+  loadCategories();
 }
 
 async function create() {
@@ -22,8 +58,8 @@ async function create() {
     toast.success('Đã tạo danh mục');
     name.value = '';
     slug.value = '';
-    const r: any = await $api('/categories');
-    categories.value = r.data || [];
+    meta.value.page = 1;
+    await loadCategories();
   } catch (e: any) {
     toast.error(extractApiMessage(e, 'Không thể tạo danh mục'));
   }
@@ -34,8 +70,11 @@ async function remove(id: string) {
   if (!ok) return;
   try {
     await $api(`/categories/${id}`, { method: 'DELETE' });
-    categories.value = categories.value.filter((c) => c.id !== id);
     toast.info('Đã xóa danh mục');
+    if (categories.value.length === 1 && meta.value.page > 1) {
+      meta.value.page -= 1;
+    }
+    await loadCategories();
   } catch (e: any) {
     toast.error(extractApiMessage(e, 'Không thể xóa danh mục'));
   }
@@ -44,8 +83,14 @@ async function remove(id: string) {
 
 <template>
   <div>
-    <UiText as="h1" size="2xl" class="mb-6">Danh mục</UiText>
-    <p v-if="loadError" class="mb-4 text-sm text-danger">{{ loadError }}</p>
+    <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
+      <UiText as="h1" size="2xl">Danh mục</UiText>
+      <div class="w-full max-w-sm">
+        <UiInput v-model="search" placeholder="Tìm theo tên, đường dẫn...">
+          <template #prefix><Search class="h-4 w-4" /></template>
+        </UiInput>
+      </div>
+    </div>
 
     <UiCard padding="md" class="mb-6">
       <form class="flex flex-wrap gap-2" @submit.prevent="create">
@@ -56,8 +101,9 @@ async function remove(id: string) {
     </UiCard>
 
     <UiDataTable
-      :count="categories.length"
-      :empty="categories.length === 0"
+      :loading="loading"
+      :count="meta.total"
+      :empty="!loading && categories.length === 0"
       empty-title="Chưa có danh mục"
       empty-description="Thêm danh mục bằng form phía trên."
     >
@@ -76,6 +122,32 @@ async function remove(id: string) {
           </UiButton>
         </UiTableCell>
       </UiTableRow>
+
+      <template v-if="meta.totalPages > 1" #footer>
+        <div class="flex items-center justify-between gap-3">
+          <UiText variant="muted" size="sm">
+            Trang {{ meta.page }} / {{ meta.totalPages }}
+          </UiText>
+          <div class="flex gap-2">
+            <UiButton
+              variant="secondary"
+              size="sm"
+              :disabled="meta.page <= 1 || loading"
+              @click="goPage(meta.page - 1)"
+            >
+              Trước
+            </UiButton>
+            <UiButton
+              variant="secondary"
+              size="sm"
+              :disabled="meta.page >= meta.totalPages || loading"
+              @click="goPage(meta.page + 1)"
+            >
+              Sau
+            </UiButton>
+          </div>
+        </div>
+      </template>
     </UiDataTable>
   </div>
 </template>

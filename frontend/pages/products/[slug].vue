@@ -17,11 +17,12 @@ const { formatPrice } = useFormatPrice();
 const { stockBadge } = useProductStatus();
 const systemStore = useSystemStore();
 const wishlistStore = useWishlistStore();
+const { productIdList } = storeToRefs(wishlistStore);
 
 const slug = route.params.slug as string;
 const product = ref<any>(null);
 const loading = ref(true);
-const inWishlist = ref(false);
+const wishlistBusy = ref(false);
 
 const {
   ratingSummary,
@@ -46,12 +47,15 @@ if (product.value && !productStore.usingFallback) {
   if (authStore.isAuthenticated) {
     try {
       if (!wishlistStore.loaded) await wishlistStore.fetchWishlist();
-      inWishlist.value = wishlistStore.isInWishlist(product.value.id.toString());
     } catch {
       /* ignore */
     }
   }
 }
+
+const inWishlist = computed(() =>
+  product.value ? productIdList.value.includes(String(product.value.id)) : false,
+);
 
 const badge = computed(() => product.value ? stockBadge(product.value.stockQuantity) : null);
 
@@ -101,15 +105,23 @@ async function addToCart() {
 
 async function toggleWishlist() {
   if (!authStore.isAuthenticated) return navigateTo('/login');
-  const productId = product.value.id.toString();
-  if (inWishlist.value) {
-    await wishlistStore.removeItem(productId);
-    inWishlist.value = false;
-    toast.info('Đã xóa khỏi danh sách yêu thích');
-  } else {
-    await wishlistStore.addItem(productId);
-    inWishlist.value = true;
-    toast.success('Đã thêm vào danh sách yêu thích');
+  if (wishlistBusy.value || !product.value) return;
+  const productId = String(product.value.id);
+  const removing = inWishlist.value;
+  wishlistBusy.value = true;
+  try {
+    // Store updates productIdList immediately; rolls back if API fails
+    if (removing) {
+      await wishlistStore.removeItem(productId);
+      toast.info('Đã xóa khỏi danh sách yêu thích');
+    } else {
+      await wishlistStore.addItem(productId);
+      toast.success('Đã thêm vào danh sách yêu thích');
+    }
+  } catch (e: any) {
+    toast.error(extractApiMessage(e, 'Không thể cập nhật danh sách yêu thích'));
+  } finally {
+    wishlistBusy.value = false;
   }
 }
 
@@ -187,8 +199,18 @@ async function onCommentChange() {
             >
               Thêm vào giỏ
             </UiButton>
-            <UiButton variant="secondary" size="lg" @click="toggleWishlist">
-              <Heart class="w-5 h-5" :class="inWishlist ? 'fill-accent text-accent' : ''" />
+            <UiButton
+              variant="secondary"
+              size="lg"
+              :disabled="wishlistBusy"
+              :aria-pressed="inWishlist"
+              :aria-label="inWishlist ? 'Bỏ yêu thích' : 'Thêm yêu thích'"
+              @click="toggleWishlist"
+            >
+              <Heart
+                class="w-5 h-5 transition-colors"
+                :class="inWishlist ? 'fill-accent text-accent' : 'text-fg-muted'"
+              />
             </UiButton>
           </div>
         </div>

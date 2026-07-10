@@ -15,7 +15,7 @@ export class AdminController {
 
   @Get('orders')
   getOrders(@Query() query: AdminOrdersQueryDto) {
-    return this.adminService.getOrders(query.page, query.limit, query.status);
+    return this.adminService.getOrders(query.page, query.limit, query.status, query.search);
   }
 
   @Get('orders/:id')

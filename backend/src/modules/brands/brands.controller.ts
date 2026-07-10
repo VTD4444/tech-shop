@@ -1,8 +1,8 @@
-import { Controller, Get, Post, Patch, Delete, Body, Param } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Body, Param, Query } from '@nestjs/common';
 import { BrandsService } from './brands.service';
 import { Public } from '../../common/decorators/public.decorator';
 import { Roles } from '../../common/decorators/roles.decorator';
-import { CreateBrandDto, UpdateBrandDto } from './dto/brand.dto';
+import { BrandQueryDto, CreateBrandDto, UpdateBrandDto } from './dto/brand.dto';
 
 @Controller('brands')
 export class BrandsController {
@@ -10,8 +10,8 @@ export class BrandsController {
 
   @Public()
   @Get()
-  findAll() {
-    return this.brandsService.findAll();
+  findAll(@Query() query: BrandQueryDto) {
+    return this.brandsService.findAll(query);
   }
 
   @Public()

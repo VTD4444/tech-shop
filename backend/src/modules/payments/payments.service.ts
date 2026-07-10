@@ -329,6 +329,14 @@ export class PaymentsService {
       const paymentDateRaw = body.transaction?.transaction_date as string | undefined;
       const paymentDate = paymentDateRaw ? new Date(paymentDateRaw) : new Date();
 
+      // Paid online → auto-confirm so admin does not need a manual pending→confirmed step.
+      const orderUpdate: { paymentStatus: string; status?: string } = {
+        paymentStatus: 'paid',
+      };
+      if (txn.order.status === 'pending') {
+        orderUpdate.status = 'confirmed';
+      }
+
       await this.prisma.$transaction([
         this.prisma.paymentTransaction.update({
           where: { id: txn.id },
@@ -341,7 +349,7 @@ export class PaymentsService {
         }),
         this.prisma.order.update({
           where: { id: txn.orderId },
-          data: { paymentStatus: 'paid' },
+          data: orderUpdate,
         }),
       ]);
 

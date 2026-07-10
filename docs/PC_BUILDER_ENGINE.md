@@ -121,15 +121,17 @@ interface CompatibilityIssue {
 }
 ```
 
-## Saved Builds
+## Saved Builds & Cart
 
-Users can save builds (JWT required):
+Compatibility checks are **advisory**. Users may save a build or add all selected parts to the cart even when validation reports errors.
 
 ```
 POST /pc-builder/build { name, componentIds[] }
-  → Calls validateBuild internally
+  → Calls validateBuild for totalPrice (does not reject incompatible builds)
   → Creates saved_build + saved_build_items
   → Returns build with items
+
+Add to cart (frontend): loops POST /cart for each selected product — no compatibility gate
 
 GET /pc-builder/builds       → List user's builds
 GET /pc-builder/builds/:id   → Build detail

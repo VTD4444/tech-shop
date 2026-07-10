@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Prisma } from '../../generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { serializeBrand } from '../../common/utils/serialize';
 
@@ -6,9 +7,42 @@ import { serializeBrand } from '../../common/utils/serialize';
 export class BrandsService {
   constructor(private prisma: PrismaService) {}
 
-  async findAll() {
-    const brands = await this.prisma.brand.findMany({ orderBy: { name: 'asc' } });
-    return brands.map(serializeBrand);
+  async findAll(query?: { page?: number; limit?: number; search?: string }) {
+    const q = query?.search?.trim();
+    const where: Prisma.BrandWhereInput = {};
+    if (q) {
+      where.OR = [
+        { name: { contains: q, mode: 'insensitive' } },
+        { slug: { contains: q, mode: 'insensitive' } },
+      ];
+    }
+
+    const paginate =
+      query?.page != null || query?.limit != null || Boolean(q);
+
+    if (!paginate) {
+      const brands = await this.prisma.brand.findMany({ orderBy: { name: 'asc' } });
+      return brands.map(serializeBrand);
+    }
+
+    const page = Number(query?.page) || 1;
+    const limit = Math.min(Number(query?.limit) || 20, 100);
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await Promise.all([
+      this.prisma.brand.findMany({
+        where,
+        orderBy: { name: 'asc' },
+        skip,
+        take: limit,
+      }),
+      this.prisma.brand.count({ where }),
+    ]);
+
+    return {
+      data: data.map(serializeBrand),
+      meta: { page, limit, total, totalPages: Math.ceil(total / limit) || 1 },
+    };
   }
 
   async findBySlug(slug: string) {

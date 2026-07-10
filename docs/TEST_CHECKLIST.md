@@ -56,7 +56,7 @@ Dùng khi kiểm thử local, staging hoặc production. Đánh dấu `[x]` khi 
 | 21 | Checkout không có địa chỉ | Empty state, hướng dẫn thêm địa chỉ | [ ] |
 | 22 | Tạo đơn hàng | Order `pending`, giỏ trống | [ ] |
 | 23 | Init SePay → redirect cổng thanh toán | Form POST thành công | [ ] |
-| 24 | Thanh toán sandbox thành công | IPN → order `paid`, email (nếu có) | [ ] |
+| 24 | Thanh toán sandbox thành công | IPN → order `paid` + `confirmed`, email (nếu có) | [ ] |
 | 25 | Trang `/payments/return` success | Hiển thị trạng thái đúng từ DB | [ ] |
 | 26 | Hủy thanh toán trên SePay | Redirect cancel, đơn chưa paid | [ ] |
 | 27 | IPN không tới (local không ngrok) | UI “đang xử lý” — documented behavior | [ ] |

@@ -104,7 +104,7 @@ sequenceDiagram
   U->>S: Hoàn tất thanh toán
   par IPN (server-to-server)
     S->>B: POST /payments/sepay/ipn (ORDER_PAID)
-    B->>DB: Cập nhật payment_transaction + order status
+    B->>DB: payment_transaction success + order paid + status confirmed
     B->>M: Email xác nhận thanh toán (nếu cấu hình)
     B-->>S: {"success": true}
   and Redirect trình duyệt
