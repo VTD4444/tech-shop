@@ -7,6 +7,10 @@ pipeline {
         DATABASE_URL = 'postgresql://dummy:dummy@localhost:5432/dummy'
     }
 
+    tools {
+        nodejs 'Node-20' 
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -87,4 +91,4 @@ pipeline {
             echo 'Build backend thất bại! Vui lòng kiểm tra lại log.'
         }
     }
-}
+}
